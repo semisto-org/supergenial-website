@@ -1,0 +1,33 @@
+<%= page_header "Extraits bancaires" do %>
+  <%= link_to "Mouvements", bank_transactions_path, class: "button button--ghost" %>
+<% end %>
+
+<% if can_write? %>
+  <div class="card">
+    <h2>Importer un fichier CODA</h2>
+    <p class="muted">Belfius Web → Comptes → Extraits de compte → télécharger au format CODA. Les extraits déjà importés sont ignorés.</p>
+    <%= form_with url: bank_statements_path, multipart: true, class: "inline-form" do |f| %>
+      <%= f.file_field :file, accept: ".cod,.coda,.txt", required: true %>
+      <%= f.submit "Importer", class: "button" %>
+    <% end %>
+  </div>
+<% end %>
+
+<div class="card">
+  <table>
+    <thead><tr><th>Extrait</th><th>Compte</th><th class="num">Solde initial</th><th class="num">Mouvements</th><th class="num">Solde final</th><th>Contrôle</th></tr></thead>
+    <tbody>
+      <% @bank_statements.each do |statement| %>
+        <tr>
+          <td><%= link_to statement, statement %></td>
+          <td class="nowrap"><%= statement.iban %></td>
+          <td class="num"><%= eur(statement.opening_balance) %></td>
+          <td class="num"><%= statement.transactions.size %></td>
+          <td class="num"><%= eur(statement.closing_balance) %></td>
+          <td><%= statement.balanced? ? badge("équilibré", "actif") : badge("écart", "suspendu") %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <% if @bank_statements.empty? %><p class="muted">Aucun extrait importé.</p><% end %>
+</div>

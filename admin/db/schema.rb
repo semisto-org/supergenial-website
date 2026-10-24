@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_25_010000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_25_020000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -52,6 +52,49 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_25_010000) do
     t.index ["auditable_type", "auditable_id"], name: "index_audit_events_on_auditable_type_and_auditable_id"
     t.index ["created_at"], name: "index_audit_events_on_created_at"
     t.index ["user_id"], name: "index_audit_events_on_user_id"
+  end
+
+  create_table "bank_statements", force: :cascade do |t|
+    t.string "iban", null: false
+    t.integer "number", null: false
+    t.date "statement_on", null: false
+    t.decimal "opening_balance", precision: 12, scale: 2, null: false
+    t.decimal "closing_balance", precision: 12, scale: 2, null: false
+    t.string "filename"
+    t.string "digest", null: false
+    t.integer "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["digest"], name: "index_bank_statements_on_digest", unique: true
+    t.index ["iban", "statement_on", "number"], name: "index_bank_statements_on_iban_and_statement_on_and_number", unique: true
+    t.index ["user_id"], name: "index_bank_statements_on_user_id"
+  end
+
+  create_table "bank_transactions", force: :cascade do |t|
+    t.integer "bank_statement_id", null: false
+    t.integer "sequence", null: false
+    t.date "booked_on", null: false
+    t.date "value_on"
+    t.decimal "amount", precision: 12, scale: 2, null: false
+    t.string "counterparty_name"
+    t.string "counterparty_iban"
+    t.text "communication"
+    t.string "structured_reference"
+    t.string "transaction_code"
+    t.string "bank_reference"
+    t.string "status", default: "unmatched", null: false
+    t.string "category"
+    t.integer "invoice_id"
+    t.integer "purchase_invoice_id"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["bank_statement_id", "sequence"], name: "index_bank_transactions_on_bank_statement_id_and_sequence", unique: true
+    t.index ["bank_statement_id"], name: "index_bank_transactions_on_bank_statement_id"
+    t.index ["booked_on"], name: "index_bank_transactions_on_booked_on"
+    t.index ["invoice_id"], name: "index_bank_transactions_on_invoice_id"
+    t.index ["purchase_invoice_id"], name: "index_bank_transactions_on_purchase_invoice_id"
+    t.index ["status"], name: "index_bank_transactions_on_status"
   end
 
   create_table "clients", force: :cascade do |t|
@@ -411,6 +454,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_25_010000) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "audit_events", "users", on_delete: :nullify
+  add_foreign_key "bank_statements", "users"
+  add_foreign_key "bank_transactions", "bank_statements"
+  add_foreign_key "bank_transactions", "invoices"
+  add_foreign_key "bank_transactions", "purchase_invoices"
   add_foreign_key "comments", "users"
   add_foreign_key "contacts", "clients"
   add_foreign_key "contracts", "clients"

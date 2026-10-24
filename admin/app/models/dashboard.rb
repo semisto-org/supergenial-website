@@ -52,6 +52,8 @@ class Dashboard
 
   def purchases_to_review = PurchaseInvoice.to_review.count
 
+  def bank_transactions_to_match = BankTransaction.unmatched.count
+
   # A monthly fixed cost with a known supplier should bring one invoice a month: the ones missing for last month.
   def missing_purchase_invoices(today = Date.current)
     month = today.prev_month.all_month
