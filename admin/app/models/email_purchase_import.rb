@@ -1,3 +1,5 @@
+require "mail"
+
 # Turns the PDF attachments of the purchases mailbox into purchases to review, then labels the messages
 # so that they are not imported twice. Claude reads each PDF in the background to prefill the purchase.
 class EmailPurchaseImport

@@ -1,0 +1,17 @@
+<%= form_with model: tax_parameter do |f| %>
+  <%= render "shared/errors", object: tax_parameter %>
+  <div class="row">
+    <%= field f, :key, required: true, hint: "Identifiant utilisé par le calcul, ex. isoc_reduced_rate" %>
+    <%= field f, :label, required: true %>
+  </div>
+  <div class="row">
+    <%= field f, :value, :number_field, step: "0.0001", required: true %>
+    <%= field f, :valid_from, :date_field, required: true %>
+  </div>
+  <%= field f, :source, hint: "Article de loi, page du SPF Finances, de l'INASTI…" %>
+  <%= field f, :notes, :text_area, rows: 2 %>
+  <div class="form-actions">
+    <%= f.submit "Enregistrer", class: "button" %>
+    <%= link_to "Annuler", tax_parameters_path, class: "button button--ghost" %>
+  </div>
+<% end %>

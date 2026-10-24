@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_25_030000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_25_040000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -204,6 +204,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_25_030000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["key"], name: "index_expense_categories_on_key", unique: true
+  end
+
+  create_table "fiscal_plans", force: :cascade do |t|
+    t.integer "year", null: false
+    t.decimal "monthly_remuneration", precision: 10, scale: 2, default: "0.0", null: false
+    t.decimal "year_end_remuneration", precision: 10, scale: 2, default: "0.0", null: false
+    t.decimal "plci_amount", precision: 10, scale: 2, default: "0.0", null: false
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["year"], name: "index_fiscal_plans_on_year", unique: true
   end
 
   create_table "fixed_costs", force: :cascade do |t|
@@ -419,6 +430,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_25_030000) do
     t.datetime "updated_at", null: false
     t.index ["expense_category_id"], name: "index_suppliers_on_expense_category_id"
     t.index ["vat_number"], name: "index_suppliers_on_vat_number"
+  end
+
+  create_table "tax_parameters", force: :cascade do |t|
+    t.string "key", null: false
+    t.decimal "value", precision: 12, scale: 4, null: false
+    t.date "valid_from", null: false
+    t.string "label", null: false
+    t.string "source"
+    t.datetime "verified_at"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["key", "valid_from"], name: "index_tax_parameters_on_key_and_valid_from", unique: true
   end
 
   create_table "time_entries", force: :cascade do |t|

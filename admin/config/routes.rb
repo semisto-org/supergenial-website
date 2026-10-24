@@ -52,6 +52,10 @@ Rails.application.routes.draw do
       get :listing
     end
   end
+  resource :tax_projection, only: %i[ show update ]
+  resources :tax_parameters, except: %i[ show destroy ] do
+    patch :verify, on: :member
+  end
   resources :bank_statements, only: %i[ index show create destroy ] do
     get :file, on: :member
   end

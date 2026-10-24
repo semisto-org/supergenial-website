@@ -44,7 +44,7 @@ La base est créée et migrée au démarrage du conteneur. Créer ensuite le com
 
 - Double authentification (TOTP) obligatoire : configurée à la première connexion. Téléphone perdu :
   `bin/rails users:reset_two_factor EMAIL=…` dans le terminal Coolify.
-- Rôles : `admin` (tout) et `accountant` (lit tout, commente, valide les catégories de dépenses, clôture la TVA). Les comptes se gèrent
+- Rôles : `admin` (tout) et `accountant` (lit tout, commente, valide les catégories de dépenses, confirme les paramètres fiscaux, clôture la TVA). Les comptes se gèrent
   dans « Comptes », ou `bin/rails users:create EMAIL=… PASSWORD=… ROLE=accountant NAME=…`.
 - Sessions valables 30 jours. Chaque modification est écrite dans le journal (`AuditEvent`), avec son auteur.
 - Les secrets 2FA sont chiffrés (Active Record encryption, clés dérivées de `SECRET_KEY_BASE`, ou
@@ -106,6 +106,16 @@ puis **clôture** le trimestre (son seul droit d'écriture) : les pièces décla
 arrivée en retard tombe dans le trimestre ouvert suivant. Les trimestres se clôturent dans l'ordre et ne se
 rouvrent pas.
 
+### Pilotage fiscal
+
+« Pilotage » estime, pour l'année, le bénéfice imposable (factures, contrats et heures à venir, achats pour leur part
+déductible, frais fixes jusqu'au 31 décembre, rémunération versée et prévue, cotisations sociales, PLCI), l'impôt des
+sociétés (taux réduit si la rémunération du gérant atteint 45 000 € ou le bénéfice), les versements anticipés
+conseillés et ceux déjà payés (mouvements bancaires classés « Impôts »). Dès novembre, le tableau de bord signale la
+rémunération à verser avant le 31 décembre pour garder le taux réduit. Les taux et plafonds sont des
+« Paramètres fiscaux » datés et sourcés, que la comptable confirme ; les valeurs de départ (2026) sont à vérifier.
+C'est une estimation à discuter avec la comptable, pas une déclaration.
+
 ### Sauvegardes hors site
 
 Chaque nuit à 3 h (Solid Queue dans Puma : `SOLID_QUEUE_IN_PUMA=true`), `BackupJob` envoie la base et les fichiers,
@@ -137,6 +147,9 @@ restaurer : télécharger le fichier, `bin/rails backups:decrypt FILE=… BACKUP
 | `BankTransaction` | Mouvement bancaire, rapproché d'une facture de vente ou d'achat, ou classé sans pièce |
 | `VatReturn` | Déclaration TVA d'un trimestre : grilles, listing intracom, contrôles, clôture |
 | `VatPeriod` | Trimestre clôturé : grilles déclarées figées, pièces rattachées |
+| `TaxProjection` | Estimation du bénéfice, de l'ISOC, des versements anticipés et de la rémunération à verser |
+| `TaxParameter` | Taux ou plafond fiscal daté et sourcé, confirmé par la comptable |
+| `FiscalPlan` | Rémunération mensuelle, versement de fin d'année et PLCI prévus pour une année |
 | `ExpenseCategory` | Catégorie d'achat et traitement comptable proposé (compte PCMN, TVA, déductibilité ISOC), validé par la comptable |
 | `User` | Compte : rôle admin ou comptable, 2FA |
 | `Comment` | Commentaire sur une fiche (client, contrat, fournisseur…), surtout pour la comptable |

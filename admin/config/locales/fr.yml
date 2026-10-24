@@ -20,6 +20,8 @@ fr:
       hourly_rate: Taux horaire
       supplier: Fournisseur
       purchase_invoice: Achat
+      tax_parameter: Paramètre fiscal
+      fiscal_plan: Plan fiscal
       bank_statement: Extrait bancaire
       bank_transaction: Mouvement bancaire
       expense_category: Catégorie de dépenses
@@ -27,6 +29,18 @@ fr:
       comment: Commentaire
       audit_event: Événement du journal
     attributes:
+      tax_parameter:
+        key: Clé
+        label: Libellé
+        value: Valeur
+        valid_from: Valable depuis
+        source: Source
+        notes: Notes
+      fiscal_plan:
+        monthly_remuneration: Rémunération mensuelle
+        year_end_remuneration: Versement de fin d'année
+        plci_amount: PLCI
+        notes: Notes
       bank_transaction:
         category: Catégorie
       bank_statement:

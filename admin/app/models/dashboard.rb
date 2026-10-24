@@ -62,6 +62,8 @@ class Dashboard
     end
   end
 
+  def tax_projection = @tax_projection ||= TaxProjection.new(year:)
+
   def bank_transactions_to_match = BankTransaction.unmatched.count
 
   # A monthly fixed cost with a known supplier should bring one invoice a month: the ones missing for last month.
