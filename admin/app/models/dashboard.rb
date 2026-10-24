@@ -50,6 +50,15 @@ class Dashboard
       .sort_by { |row| row[:deadline] }
   end
 
+  def purchases_to_review = PurchaseInvoice.to_review.count
+
+  # A monthly fixed cost with a known supplier should bring one invoice a month: the ones missing for last month.
+  def missing_purchase_invoices(today = Date.current)
+    month = today.prev_month.all_month
+    received = PurchaseInvoice.issued_between(month).distinct.pluck(:supplier_id)
+    FixedCost.active.where(period: "mensuel").where("amount > 0").where.not(supplier_id: [ nil, *received ]).includes(:supplier).order(:name)
+  end
+
   def due_contracts(horizon = 30.days)
     Contract.due_by(Date.current + horizon).includes(:client, plan: :prices).by_due_date
   end

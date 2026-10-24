@@ -19,11 +19,34 @@ fr:
       plan_price: Prix
       hourly_rate: Taux horaire
       supplier: Fournisseur
+      purchase_invoice: Achat
       expense_category: Catégorie de dépenses
       user: Compte
       comment: Commentaire
       audit_event: Événement du journal
     attributes:
+      purchase_invoice:
+        document: Document
+        supplier: Fournisseur
+        supplier_id: Fournisseur
+        expense_category: Catégorie
+        expense_category_id: Catégorie
+        fixed_cost_id: Frais fixe
+        kind: Type
+        number: N° de facture
+        issued_on: Date de facture
+        due_on: Échéance
+        paid_on: Payée le
+        currency: Devise
+        original_amount: Montant en devise
+        exchange_rate: Taux de change
+        amount: HTVA (€)
+        vat_amount: TVA (€)
+        vat_regime: Régime de TVA
+        vat_rate: Taux de TVA
+        base_grid: Grille
+        vat_deductible_percent: TVA déductible (%)
+        notes: Notes
       supplier:
         name: Nom
         vat_number: N° de TVA

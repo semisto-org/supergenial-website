@@ -40,6 +40,9 @@ module Supergenial
     # Objectif de chiffre d'affaires annuel (HTVA), affiché sur le tableau de bord.
     config.x.annual_target = ENV.fetch("ANNUAL_TARGET", 30_000).to_d
 
+    # Purchase documents are served by the admin, behind the login: no public Active Storage URLs.
+    config.active_storage.draw_routes = false
+
     # Don't generate system test files.
     config.generators.system_tests = nil
   end

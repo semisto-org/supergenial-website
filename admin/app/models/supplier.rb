@@ -5,6 +5,7 @@ class Supplier < ApplicationRecord
 
   belongs_to :expense_category, optional: true
   has_many :fixed_costs, dependent: :nullify
+  has_many :purchase_invoices, dependent: :restrict_with_error
 
   normalizes :vat_number, with: ->(number) { number.upcase.gsub(/[^A-Z0-9]/, "") }
   normalizes :iban, with: ->(iban) { iban.upcase.gsub(/\s/, "") }

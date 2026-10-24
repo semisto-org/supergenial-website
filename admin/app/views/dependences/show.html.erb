@@ -1,0 +1,60 @@
+<%= page_header "Dépendances fournisseurs" do %>
+  <%= link_to "Achats", purchase_invoices_path, class: "button button--ghost" %>
+  <%= link_to "Fournisseurs", suppliers_path, class: "button button--ghost" %>
+<% end %>
+
+<p class="lead">Achats des 12 derniers mois (<%= date(@dependence.period.begin) %> – <%= date(@dependence.period.end) %>), classés selon le pays du groupe du fournisseur.</p>
+
+<% totals = @dependence.by_zone %>
+<section class="stats">
+  <% Country::ZONES.each do |zone, label| %>
+    <div class="stat">
+      <span class="stat__label"><%= label %></span>
+      <strong class="stat__value"><%= eur(totals[zone], precision: 0) %></strong>
+      <span class="stat__hint"><%= percent(@dependence.share(zone)) %> des achats</span>
+    </div>
+  <% end %>
+</section>
+
+<section class="grid-2">
+  <div class="card">
+    <h2>Part des États-Unis par trimestre</h2>
+    <table>
+      <thead><tr><th>Trimestre</th><% Country::ZONES.each_value do |label| %><th class="num"><%= label %></th><% end %><th class="num">Part US</th></tr></thead>
+      <tbody>
+        <% @dependence.quarters.each do |quarter| %>
+          <tr>
+            <td><%= quarter[:label] %></td>
+            <% Country::ZONES.each_key do |zone| %><td class="num"><%= eur(quarter[:totals][zone], precision: 0) %></td><% end %>
+            <td class="num"><strong><%= percent(quarter[:us_share]) %></strong></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Principaux fournisseurs américains</h2>
+    <% top = @dependence.top_suppliers("us") %>
+    <ul class="plain">
+      <% top.each do |row| %>
+        <li><%= link_to row[:supplier], row[:supplier] %> : <%= eur(row[:amount]) %>
+          <% if row[:supplier].alternative_note.present? %><small class="muted">· alternative : <%= row[:supplier].alternative_note.truncate(80) %></small><% end %></li>
+      <% end %>
+    </ul>
+    <% if top.empty? %><p class="muted">Aucun achat auprès d'un groupe américain sur la période.</p><% end %>
+  </div>
+</section>
+
+<div class="card">
+  <h2>Frais fixes par mois, par zone</h2>
+  <% costs = @dependence.fixed_costs_by_zone %>
+  <dl class="details">
+    <% Country::ZONES.each do |zone, label| %>
+      <dt><%= label %></dt><dd><%= eur(costs.fetch(zone, 0)) %></dd>
+    <% end %>
+    <% if costs["unknown"] %>
+      <dt>Sans fournisseur</dt><dd><%= eur(costs["unknown"]) %> <small class="muted">· lier ces frais fixes à un fournisseur pour les classer</small></dd>
+    <% end %>
+  </dl>
+</div>

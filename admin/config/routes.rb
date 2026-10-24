@@ -33,6 +33,17 @@ Rails.application.routes.draw do
   end
   resource :company_profile, only: %i[ show edit update ]
   resources :suppliers
+  resources :purchase_invoices do
+    post :collect, on: :collection
+    member do
+      post :book
+      post :reopen
+      post :extract
+      get :document
+      get :ubl
+    end
+  end
+  resource :dependence, only: :show
   resources :expense_categories, except: :show do
     patch :validate, on: :member
   end

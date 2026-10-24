@@ -23,12 +23,24 @@ module Recommand
     # Whether a Peppol address (e.g. 0208:0123456789) can receive documents.
     def verify(peppol_address) = post("/api/v1/verify", { peppolAddress: peppol_address })
 
+    # Received documents not marked as read yet.
+    def inbox = get("/api/v1/inbox?companyId=#{CGI.escape(@company_id)}").fetch("documents", [])
+
+    # One document with its UBL (xml) and its parsed content (same shape as the documents we send).
+    def document(id) = get("/api/v1/documents/#{CGI.escape(id)}").fetch("document")
+
+    def mark_as_read(id) = post("/api/v1/documents/#{CGI.escape(id)}/mark-as-read", {})
+
     private
-      def post(path, body)
+      def get(path) = perform(Net::HTTP::Get, path)
+
+      def post(path, body) = perform(Net::HTTP::Post, path, body)
+
+      def perform(verb, path, body = nil)
         uri = URI.join(@base_url, path)
-        request = Net::HTTP::Post.new(uri, "Content-Type" => "application/json", "Accept" => "application/json")
+        request = verb.new(uri, "Content-Type" => "application/json", "Accept" => "application/json")
         request.basic_auth(@key, @secret)
-        request.body = body.to_json
+        request.body = body.to_json if body
         response = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https", open_timeout: 10, read_timeout: 60) { |http| http.request(request) }
         parsed = JSON.parse(response.body.presence || "{}")
         raise Error, error_message(response, parsed) unless response.is_a?(Net::HTTPSuccess) && parsed["success"] != false
