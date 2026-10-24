@@ -10,7 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_24_213000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_24_220400) do
+  create_table "audit_events", force: :cascade do |t|
+    t.integer "user_id"
+    t.string "actor_kind", default: "user", null: false
+    t.string "action", null: false
+    t.string "auditable_type", null: false
+    t.integer "auditable_id"
+    t.string "auditable_label"
+    t.json "changeset", default: {}, null: false
+    t.string "request_id"
+    t.datetime "created_at", null: false
+    t.index ["auditable_type", "auditable_id"], name: "index_audit_events_on_auditable_type_and_auditable_id"
+    t.index ["created_at"], name: "index_audit_events_on_created_at"
+    t.index ["user_id"], name: "index_audit_events_on_user_id"
+  end
+
   create_table "clients", force: :cascade do |t|
     t.string "name", null: false
     t.string "kind", default: "organisation", null: false
@@ -22,6 +37,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_213000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_clients_on_name", unique: true
+  end
+
+  create_table "comments", force: :cascade do |t|
+    t.string "commentable_type", null: false
+    t.integer "commentable_id", null: false
+    t.integer "user_id", null: false
+    t.text "body", null: false
+    t.datetime "resolved_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["commentable_type", "commentable_id"], name: "index_comments_on_commentable"
+    t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
   create_table "contacts", force: :cascade do |t|
@@ -62,6 +89,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_213000) do
     t.index ["project_id"], name: "index_contracts_on_project_id"
   end
 
+  create_table "expense_categories", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "name", null: false
+    t.string "pcmn_account"
+    t.decimal "vat_rate", precision: 5, scale: 2
+    t.decimal "vat_deductible_percent", precision: 5, scale: 2, default: "100.0", null: false
+    t.decimal "tax_deductible_percent", precision: 5, scale: 2, default: "100.0", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "validated_at"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_expense_categories_on_key", unique: true
+  end
+
   create_table "fixed_costs", force: :cascade do |t|
     t.string "name", null: false
     t.string "category", default: "outils", null: false
@@ -75,6 +117,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_213000) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "supplier_id"
+    t.index ["supplier_id"], name: "index_fixed_costs_on_supplier_id"
   end
 
   create_table "hourly_rates", force: :cascade do |t|
@@ -160,6 +204,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_213000) do
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
+  create_table "suppliers", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "vat_number"
+    t.string "iban"
+    t.string "billing_country", default: "BE", null: false
+    t.string "group_country"
+    t.integer "expense_category_id"
+    t.string "peppol_id"
+    t.boolean "require_peppol", default: false, null: false
+    t.boolean "active", default: true, null: false
+    t.string "website"
+    t.text "alternative_note"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["expense_category_id"], name: "index_suppliers_on_expense_category_id"
+    t.index ["vat_number"], name: "index_suppliers_on_vat_number"
+  end
+
   create_table "time_entries", force: :cascade do |t|
     t.integer "client_id", null: false
     t.integer "project_id"
@@ -185,14 +248,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_213000) do
     t.string "password_digest", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "role", default: "admin", null: false
+    t.string "name"
+    t.text "otp_secret"
+    t.datetime "otp_enabled_at"
+    t.integer "otp_last_used_at"
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  add_foreign_key "audit_events", "users", on_delete: :nullify
+  add_foreign_key "comments", "users"
   add_foreign_key "contacts", "clients"
   add_foreign_key "contracts", "clients"
   add_foreign_key "contracts", "fixed_costs"
   add_foreign_key "contracts", "plans"
   add_foreign_key "contracts", "projects"
+  add_foreign_key "fixed_costs", "suppliers"
   add_foreign_key "invoices", "clients"
   add_foreign_key "invoices", "projects"
   add_foreign_key "packs", "clients"
@@ -200,6 +271,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_213000) do
   add_foreign_key "plan_prices", "plans"
   add_foreign_key "projects", "clients"
   add_foreign_key "sessions", "users"
+  add_foreign_key "suppliers", "expense_categories"
   add_foreign_key "time_entries", "clients"
   add_foreign_key "time_entries", "invoices"
   add_foreign_key "time_entries", "packs"

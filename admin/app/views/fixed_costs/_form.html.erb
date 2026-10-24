@@ -3,6 +3,7 @@
   <div class="row">
     <%= field f, :name, required: true, autofocus: true %>
     <%= field f, :category, :select, FixedCost.category_options %>
+    <%= field f, :supplier_id, :select, Supplier.alphabetical.pluck(:name, :id), include_blank: true %>
   </div>
   <div class="row">
     <%= field f, :amount, :number_field, step: "0.01", required: true %>

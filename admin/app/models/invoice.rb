@@ -1,5 +1,6 @@
 # Une facture émise dans OkiOki : l'admin ne la génère pas, elle la référence.
 class Invoice < ApplicationRecord
+  include Commentable
   belongs_to :client
   belongs_to :project, optional: true
   has_many :time_entries

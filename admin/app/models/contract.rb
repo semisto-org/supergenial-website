@@ -1,5 +1,6 @@
 # Ce qu'un client paie de manière récurrente : maintenance, hébergement, nom de domaine…
 class Contract < ApplicationRecord
+  include Commentable
   include Choices
   include Periodic
 

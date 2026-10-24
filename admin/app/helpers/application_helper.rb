@@ -24,6 +24,14 @@ module ApplicationHelper
     tag.span(label, class: "badge badge--#{BADGE_TONES.fetch(value.to_s, 'muted')}")
   end
 
+  # Links only to http(s) addresses, never to javascript: or data: URLs.
+  def external_link(url, label = url)
+    uri = URI.parse(url.to_s)
+    link_to(label, uri.to_s, target: "_blank", rel: "noopener") if uri.is_a?(URI::HTTP) && uri.host.present?
+  rescue URI::InvalidURIError
+    nil
+  end
+
   # Sidebar sections: label, route helper, controller name, icon.
   NAVIGATION = {
     "Travail" => [
@@ -38,7 +46,12 @@ module ApplicationHelper
     ],
     "Charges" => [
       [ "Frais fixes", :fixed_costs_path, :fixed_costs, "receipt" ],
+      [ "Fournisseurs", :suppliers_path, :suppliers, "truck" ],
       [ "Taux horaire", :hourly_rates_path, :hourly_rates, "euro" ]
+    ],
+    "Réglages" => [
+      [ "Journal", :audit_events_path, :audit_events, "history" ],
+      [ "Comptes", :users_path, :users, "key", :admin ]
     ]
   }.freeze
 
@@ -46,10 +59,15 @@ module ApplicationHelper
   PAGE_ICONS = {
     "dashboard" => "🧭", "clients" => "🤝", "contacts" => "🤝", "projects" => "📁", "time_entries" => "⏱️",
     "packs" => "⏳", "contracts" => "🔁", "invoices" => "🧾", "plans" => "🏷️", "hourly_rates" => "💶",
-    "fixed_costs" => "📌"
+    "fixed_costs" => "📌", "suppliers" => "🚚", "audit_events" => "📜", "users" => "🔑"
   }.freeze
 
-  def navigation = NAVIGATION
+  # Sidebar links the current user may see; a fifth element restricts a link to admins.
+  def navigation
+    NAVIGATION.transform_values do |links|
+      links.select { |link| link[4] != :admin || Current.user&.admin? }
+    end
+  end
 
   def icon(name, **options)
     tag.svg(tag.use(href: "#icon-#{name}"), class: [ "icon", options.delete(:class) ], "aria-hidden": true, **options)

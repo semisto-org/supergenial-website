@@ -14,6 +14,7 @@
   <% end %>
 
   <div class="sidebar__foot">
+    <% unless can_write? %><p class="sidebar__note"><span class="badge badge--info">Lecture seule</span></p><% end %>
     <%= button_to session_path, method: :delete, class: "nav-item" do %>
       <%= icon "logout" %><span>Déconnexion</span>
     <% end %>

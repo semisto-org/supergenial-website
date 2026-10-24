@@ -1,9 +1,11 @@
 # Un frais fixe de Super Génial (outil, serveur, abonnement).
 # forecast_amount : ce que le frais coûtera après les changements prévus (nil = inchangé, 0 = supprimé).
 class FixedCost < ApplicationRecord
+  include Commentable
   include Choices
   include Periodic
 
+  belongs_to :supplier, optional: true
   has_many :contracts, dependent: :nullify
 
   choices :category, ia: "IA", outils: "Outils", hebergement: "Hébergement", serveurs: "Serveurs",

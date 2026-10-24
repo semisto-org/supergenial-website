@@ -1,0 +1,30 @@
+<%= page_header "Fournisseurs" do %>
+  <%= link_to "Catégories de dépenses", expense_categories_path, class: "button button--ghost" %>
+  <%= link_to "+ Fournisseur", new_supplier_path, class: "button" %>
+<% end %>
+
+<nav class="filters">
+  <%= link_to "Tous", suppliers_path, class: ("is-active" if params[:zone].blank?) %>
+  <% Country::ZONES.each do |zone, label| %>
+    <%= link_to label, suppliers_path(zone:), class: ("is-active" if params[:zone] == zone) %>
+  <% end %>
+</nav>
+
+<div class="card">
+  <table>
+    <thead><tr><th>Fournisseur</th><th>Facture depuis</th><th>Groupe</th><th>Catégorie</th><th>Peppol</th><th class="num">Frais fixes / mois</th></tr></thead>
+    <tbody>
+      <% @suppliers.each do |supplier| %>
+        <tr class="<%= 'is-inactive' unless supplier.active? %>">
+          <td><%= link_to supplier, supplier %><% if supplier.alternative_note.present? %> <small class="muted">· alternative notée</small><% end %></td>
+          <td><%= Country.name(supplier.billing_country) %></td>
+          <td><%= supplier.group_country.present? ? Country.name(supplier.group_country) : "–" %></td>
+          <td><%= supplier.expense_category || "–" %></td>
+          <td><%= supplier.peppol_expected? ? badge("attendu", "en_cours") : "–" %></td>
+          <td class="num"><%= eur(supplier.fixed_costs.select(&:active?).sum(&:monthly_amount)) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <% if @suppliers.empty? %><p class="muted">Aucun fournisseur.</p><% end %>
+</div>

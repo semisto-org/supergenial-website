@@ -40,6 +40,26 @@ Nouvelle application dans Coolify, à côté du site statique :
 La base est créée et migrée au démarrage du conteneur. Créer ensuite le compte depuis le terminal Coolify :
 `bin/rails users:create EMAIL=… PASSWORD=…`, puis lancer l'import.
 
+### Accès et sécurité
+
+- Double authentification (TOTP) obligatoire : configurée à la première connexion. Téléphone perdu :
+  `bin/rails users:reset_two_factor EMAIL=…` dans le terminal Coolify.
+- Rôles : `admin` (tout) et `accountant` (lit tout, commente, valide les catégories de dépenses). Les comptes se gèrent
+  dans « Comptes », ou `bin/rails users:create EMAIL=… PASSWORD=… ROLE=accountant NAME=…`.
+- Sessions valables 30 jours. Chaque modification est écrite dans le journal (`AuditEvent`), avec son auteur.
+- Les secrets 2FA sont chiffrés (Active Record encryption, clés dérivées de `SECRET_KEY_BASE`, ou
+  `ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY`, `…_DETERMINISTIC_KEY`, `…_KEY_DERIVATION_SALT` si définies). Changer
+  `SECRET_KEY_BASE` oblige à réinitialiser la 2FA de chaque compte.
+
+### Sauvegardes hors site
+
+Chaque nuit à 3 h (Solid Queue dans Puma : `SOLID_QUEUE_IN_PUMA=true`), `BackupJob` envoie la base et les fichiers,
+chiffrés (AES-256-GCM), vers un bucket S3 compatible (Infomaniak Swiss Backup). Variables **runtime** :
+`BACKUP_S3_ENDPOINT`, `BACKUP_S3_BUCKET`, `BACKUP_S3_ACCESS_KEY_ID`, `BACKUP_S3_SECRET_ACCESS_KEY`, `BACKUP_S3_REGION`
+(optionnelle), `BACKUP_ENCRYPTION_KEY` (phrase secrète, à garder aussi hors du VPS), `BACKUP_RETENTION_DAYS` (défaut 90).
+Sans ces variables, la sauvegarde est sautée (avertissement dans les logs). Lancer à la main : `bin/rails backups:run` ;
+restaurer : télécharger le fichier, `bin/rails backups:decrypt FILE=… BACKUP_ENCRYPTION_KEY=…`, puis `tar xzf`.
+
 ## Modèle
 
 | Modèle | Rôle |
@@ -53,3 +73,8 @@ La base est créée et migrée au démarrage du conteneur. Créer ensuite le com
 | `FixedCost` | Frais de Super Génial, actuel et prévisionnel (vide = inchangé, 0 = supprimé) |
 | `Invoice` | Référence d'une facture OkiOki, sert au chiffre d'affaires |
 | `Dashboard` | Les totaux de l'ancien onglet « Revenus » |
+| `Supplier` | Fournisseur : pays de facturation et pays du groupe (zone BE / UE / US / autres), Peppol attendu |
+| `ExpenseCategory` | Catégorie d'achat et traitement comptable proposé (compte PCMN, TVA, déductibilité ISOC), validé par la comptable |
+| `User` | Compte : rôle admin ou comptable, 2FA |
+| `Comment` | Commentaire sur une fiche (client, contrat, fournisseur…), surtout pour la comptable |
+| `AuditEvent` | Journal append-only de chaque création, modification et suppression |

@@ -1,0 +1,22 @@
+<div class="card comments" id="comments">
+  <h2>Commentaires</h2>
+  <ul class="plain">
+    <% commentable.comments.chronological.includes(:user).each do |comment| %>
+      <li class="<%= 'is-inactive' if comment.resolved? %>">
+        <strong><%= comment.user %></strong> <small class="muted"><%= l(comment.created_at, format: :short) %></small>
+        <%= badge("traité", "facture") if comment.resolved? %>
+        <%= simple_format(comment.body) %>
+        <small>
+          <%= button_to (comment.resolved? ? "Rouvrir" : "Marquer traité"), comment_path(comment), method: :patch, class: "link-button", form_class: "inline-form" %>
+          <% if Current.user.admin? || comment.user == Current.user %>
+            · <%= button_to "Supprimer", comment_path(comment), method: :delete, class: "link-button danger", form_class: "inline-form", data: { turbo_confirm: "Supprimer ce commentaire ?" } %>
+          <% end %>
+        </small>
+      </li>
+    <% end %>
+  </ul>
+  <%= form_with url: comments_path(commentable_type: commentable.class.name, commentable_id: commentable.id), scope: :comment do |form| %>
+    <div class="field"><%= form.text_area :body, rows: 2, placeholder: "Une question, une remarque…", required: true %></div>
+    <%= form.submit "Commenter", class: "button button--small" %>
+  <% end %>
+</div>

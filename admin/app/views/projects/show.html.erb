@@ -26,3 +26,5 @@
 <% end %>
 
 <p><%= link_to "Supprimer ce projet", @project, data: { turbo_method: :delete, turbo_confirm: "Supprimer #{@project} ? Ses heures, contrats et factures restent chez le client, sans projet." }, class: "danger" %></p>
+
+<%= render "shared/comments", commentable: @project %>
