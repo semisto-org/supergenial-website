@@ -17,6 +17,7 @@
     <dt>Contact</dt><dd><%= [ @company_profile.email, @company_profile.phone, @company_profile.website ].compact_blank.join(" · ").presence || "–" %></dd>
     <dt>Compte</dt><dd><%= [ @company_profile.iban, @company_profile.bic ].compact_blank.join(" · ").presence || "–" %></dd>
     <dt>Délai de paiement</dt><dd><%= @company_profile.payment_terms_days %> jours</dd>
+    <dt>TVA suivie depuis</dt><dd><%= date(@company_profile.vat_tracked_since) %></dd>
     <dt>Dernier n° OkiOki</dt><dd><%= @company_profile.last_external_number.presence || "–" %> <small class="muted">· prochain numéro : <%= InvoiceNumbering.next(Date.current.year) %></small></dd>
     <dt>Pied de facture</dt><dd><%= simple_format(@company_profile.invoice_footer.presence || "–") %></dd>
   </dl>

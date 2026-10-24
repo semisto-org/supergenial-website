@@ -1,0 +1,87 @@
+<% quarter = @vat_return.quarter %>
+<%= page_header "TVA #{quarter.label}" do %>
+  <%= link_to "Pack comptable (zip)", export_vat_return_path(quarter.to_param), class: "button button--ghost" %>
+  <%= link_to "XML Intervat", declaration_vat_return_path(quarter.to_param), class: "button button--ghost" %>
+  <%= link_to "Listing intracom", listing_vat_return_path(quarter.to_param), class: "button button--ghost" if @vat_return.intracom_listing.any? %>
+  <% if @vat_return.closable? %>
+    <%= button_to "Clôturer le trimestre", close_vat_return_path(quarter.to_param), class: "button",
+          form: { data: { turbo_confirm: "Clôturer #{quarter.label} ? Fais-le une fois la déclaration déposée dans Intervat : les pièces du trimestre ne pourront plus changer." } } %>
+  <% end %>
+<% end %>
+
+<p class="lead">
+  <% if @vat_return.closed? %>
+    <%= badge("clôturé", "actif") %> le <%= l(@vat_return.period.closed_at.to_date) %><%= " par #{@vat_return.period.closed_by.name.presence || @vat_return.period.closed_by.email_address}" if @vat_return.period.closed_by %>
+  <% else %>
+    <%= badge(quarter.ends_on >= Date.current ? "en cours" : "à déclarer", quarter.ends_on >= Date.current ? "prospect" : "a_facturer") %>
+    échéance le <%= date(quarter.deadline) %> · <%= quarter.starts_on.day %>/<%= quarter.starts_on.month %> → <%= l(quarter.ends_on) %>
+    <% unless @vat_return.previous_closed? %> · clôturer d'abord <%= link_to quarter.previous.label, vat_return_path(quarter.previous.to_param) %><% end %>
+  <% end %>
+</p>
+
+<% if @vat_return.controls.any? %>
+  <div class="card">
+    <h2>Contrôles</h2>
+    <ul class="plain">
+      <% @vat_return.controls.each do |control| %>
+        <li class="<%= 'danger' if control.blocking %>">
+          <strong><%= control.documents.size %></strong> <%= control.message %><%= " (bloquant)" if control.blocking %> :
+          <%= safe_join(control.documents.first(6).map { |document| link_to(document.is_a?(BankTransaction) ? document.label : document.to_s.presence || "##{document.id}", document) }, ", ") %>
+          <%= "…" if control.documents.size > 6 %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<section class="grid-2">
+  <div class="card">
+    <h2>Grilles</h2>
+    <table>
+      <tbody>
+        <% @vat_return.grids.each do |grid, amount| %>
+          <tr class="<%= 'is-total' if grid.in?(%w[ 71 72 ]) %>">
+            <td class="nowrap"><strong><%= grid %></strong></td>
+            <td><%= VatReturn::GRID_LABELS[grid] %></td>
+            <td class="num"><%= eur(amount) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <% if @vat_return.grids.empty? %><p class="muted">Aucune opération.</p><% end %>
+    <p class="hint">Notes de crédit reçues en autoliquidation : grilles 84/85, TVA en 63 et 64, à confirmer avec la comptable.</p>
+  </div>
+
+  <div class="card">
+    <h2>Listing intracommunautaire</h2>
+    <table>
+      <tbody>
+        <% @vat_return.intracom_listing.each do |row| %>
+          <tr><td><%= row["client"] %></td><td class="nowrap"><%= row["vat_number"] %></td><td><%= row["code"] %></td><td class="num"><%= eur(row["amount"].to_d) %></td></tr>
+        <% end %>
+      </tbody>
+    </table>
+    <% if @vat_return.intracom_listing.empty? %><p class="muted">Aucun client intracommunautaire : listing « néant ».</p><% end %>
+  </div>
+</section>
+
+<section class="grid-2">
+  <div class="card">
+    <h2>Ventes (<%= @vat_return.invoices.size %>)</h2>
+    <ul class="plain">
+      <% @vat_return.invoices.sort_by(&:issued_on).each do |invoice| %>
+        <li><%= link_to "#{invoice.number} · #{invoice.client}", invoice %> <%= eur(invoice.amount) %> <small class="muted"><%= date(invoice.issued_on) %> · <%= invoice.vat_regime_label %></small></li>
+      <% end %>
+    </ul>
+  </div>
+  <div class="card">
+    <h2>Achats (<%= @vat_return.purchase_invoices.size %>)</h2>
+    <ul class="plain">
+      <% @vat_return.purchase_invoices.sort_by { |purchase| purchase.issued_on || Date.current }.each do |purchase| %>
+        <li><%= link_to purchase, purchase %> <%= eur(purchase.sign * purchase.amount) %> <small class="muted"><%= date(purchase.issued_on) %> · <%= purchase.vat_regime_label %></small></li>
+      <% end %>
+    </ul>
+  </div>
+</section>
+
+<%= render "shared/comments", commentable: @vat_return.period if @vat_return.closed? %>

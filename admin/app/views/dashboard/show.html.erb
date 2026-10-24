@@ -119,10 +119,14 @@
     <% to_review = @dashboard.purchases_to_review %>
     <% missing = @dashboard.missing_purchase_invoices %>
     <% to_match = @dashboard.bank_transactions_to_match %>
-    <% if packs.empty? && renewals.empty? && to_review.zero? && missing.empty? && to_match.zero? %>
+    <% vat_due = @dashboard.vat_return_due %>
+    <% if packs.empty? && renewals.empty? && to_review.zero? && missing.empty? && to_match.zero? && vat_due.nil? %>
       <p class="muted">Rien à signaler.</p>
     <% end %>
     <ul class="plain">
+      <% if vat_due %>
+        <li class="<%= 'danger' if vat_due.quarter.deadline < Date.current %>"><%= link_to "TVA #{vat_due.quarter.label} à déclarer", vat_return_path(vat_due.quarter.to_param) %> au plus tard le <%= date(vat_due.quarter.deadline) %></li>
+      <% end %>
       <% if to_review.positive? %>
         <li><%= link_to "#{to_review} achat#{'s' if to_review > 1} à vérifier", purchase_invoices_path(status: "to_review") %></li>
       <% end %>

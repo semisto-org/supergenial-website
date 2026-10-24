@@ -1,0 +1,24 @@
+<%= page_header "TVA trimestrielle" %>
+
+<p class="lead">Déclaration et listing intracommunautaire : au plus tard le 20 du mois qui suit le trimestre. Pièces suivies dans l'admin depuis le <%= date(CompanyProfile.current.vat_tracked_since) %> (« Société »).</p>
+
+<div class="card">
+  <table>
+    <thead><tr><th>Trimestre</th><th>Échéance</th><th>Statut</th><th class="num">À payer</th><th class="num">À récupérer</th></tr></thead>
+    <tbody>
+      <% @vat_returns.each do |vat_return| %>
+        <tr>
+          <td><%= link_to vat_return.quarter.label, vat_return_path(vat_return.quarter.to_param) %></td>
+          <td class="<%= 'danger' if !vat_return.closed? && vat_return.quarter.deadline < Date.current %>"><%= date(vat_return.quarter.deadline) %></td>
+          <td>
+            <% if vat_return.closed? %><%= badge("clôturé", "actif") %>
+            <% elsif vat_return.quarter.ends_on >= Date.current %><%= badge("en cours", "prospect") %>
+            <% else %><%= badge("à déclarer", "a_facturer") %><% end %>
+          </td>
+          <td class="num"><%= eur(vat_return.to_pay) %></td>
+          <td class="num"><%= eur(vat_return.to_recover) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

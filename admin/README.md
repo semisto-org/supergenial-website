@@ -44,7 +44,7 @@ La base est créée et migrée au démarrage du conteneur. Créer ensuite le com
 
 - Double authentification (TOTP) obligatoire : configurée à la première connexion. Téléphone perdu :
   `bin/rails users:reset_two_factor EMAIL=…` dans le terminal Coolify.
-- Rôles : `admin` (tout) et `accountant` (lit tout, commente, valide les catégories de dépenses). Les comptes se gèrent
+- Rôles : `admin` (tout) et `accountant` (lit tout, commente, valide les catégories de dépenses, clôture la TVA). Les comptes se gèrent
   dans « Comptes », ou `bin/rails users:create EMAIL=… PASSWORD=… ROLE=accountant NAME=…`.
 - Sessions valables 30 jours. Chaque modification est écrite dans le journal (`AuditEvent`), avec son auteur.
 - Les secrets 2FA sont chiffrés (Active Record encryption, clés dérivées de `SECRET_KEY_BASE`, ou
@@ -95,6 +95,17 @@ montant exact avec le numéro de facture (ou l'IBAN du fournisseur) pour un acha
 parmi les pièces non payées les plus proches, ou se classe « sans pièce » (rémunération, impôts, TVA, frais
 bancaires, transfert…). Rapprocher une pièce la marque payée à la date du mouvement.
 
+### TVA trimestrielle et pack comptable
+
+« TVA » calcule chaque trimestre depuis la date « TVA suivie depuis » (« Société ») : grilles de la déclaration
+périodique (ventes 00-03, 44, 47, 48/49, 54, 64 ; achats 81-83, 84-88, 55/56, 59, 63 ; solde 71/72), listing
+intracommunautaire et contrôles (achats à vérifier et client intracom sans n° de TVA bloquent la clôture).
+Téléchargements : XML Intervat (`VATConsignment`), listing (`IntraConsignment`) et un zip pour la comptable (UBL et
+PDF des ventes et achats, fichiers CODA, grilles et achats en CSV). La comptable dépose la déclaration dans Intervat
+puis **clôture** le trimestre (son seul droit d'écriture) : les pièces déclarées ne changent plus, une pièce
+arrivée en retard tombe dans le trimestre ouvert suivant. Les trimestres se clôturent dans l'ordre et ne se
+rouvrent pas.
+
 ### Sauvegardes hors site
 
 Chaque nuit à 3 h (Solid Queue dans Puma : `SOLID_QUEUE_IN_PUMA=true`), `BackupJob` envoie la base et les fichiers,
@@ -124,6 +135,8 @@ restaurer : télécharger le fichier, `bin/rails backups:decrypt FILE=… BACKUP
 | `SupplierDependence` | Achats par zone et part des États-Unis |
 | `BankStatement` | Extrait bancaire importé d'un fichier CODA, avec ses soldes et le fichier d'origine |
 | `BankTransaction` | Mouvement bancaire, rapproché d'une facture de vente ou d'achat, ou classé sans pièce |
+| `VatReturn` | Déclaration TVA d'un trimestre : grilles, listing intracom, contrôles, clôture |
+| `VatPeriod` | Trimestre clôturé : grilles déclarées figées, pièces rattachées |
 | `ExpenseCategory` | Catégorie d'achat et traitement comptable proposé (compte PCMN, TVA, déductibilité ISOC), validé par la comptable |
 | `User` | Compte : rôle admin ou comptable, 2FA |
 | `Comment` | Commentaire sur une fiche (client, contrat, fournisseur…), surtout pour la comptable |

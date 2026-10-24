@@ -203,6 +203,7 @@ fr:
         period_start: Début de période
         period_end: Fin de période
       company_profile:
+        vat_tracked_since: TVA suivie depuis le
         legal_name: Dénomination
         trade_name: Nom commercial
         vat_number: N° de TVA
