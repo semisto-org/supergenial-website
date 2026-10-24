@@ -7,7 +7,7 @@
   </div>
   <div class="row">
     <%= field f, :vat_number %>
-    <%= field f, :hourly_rate, :number_field, step: "0.01", hint: "Vide = #{Client::DEFAULT_HOURLY_RATE} €/h" %>
+    <%= field f, :hourly_rate, :number_field, step: "0.01", hint: "Vide = taux standard (#{eur(HourlyRate.on)}/h aujourd'hui)" %>
   </div>
   <%= field f, :address, :text_area, rows: 2 %>
   <%= field f, :notes, :text_area, rows: 3 %>

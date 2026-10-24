@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   resources :plans do
     resources :prices, only: %i[ create destroy ], controller: "plan_prices"
   end
+  resources :hourly_rates, only: %i[ index create destroy ]
   resources :fixed_costs, except: :show
   resources :invoices, except: :show
 

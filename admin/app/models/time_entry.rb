@@ -16,7 +16,7 @@ class TimeEntry < ApplicationRecord
 
   scope :recent, -> { order(performed_on: :desc, id: :desc) }
 
-  def rate = project&.rate || client.rate
+  def rate = project&.rate(performed_on) || client.rate(performed_on)
 
   def amount = hours * rate
 
