@@ -9,7 +9,17 @@
     <%= field f, :vat_number %>
     <%= field f, :hourly_rate, :number_field, step: "0.01", hint: "Vide = taux standard (#{eur(HourlyRate.on)}/h aujourd'hui)" %>
   </div>
-  <%= field f, :address, :text_area, rows: 2 %>
+  <div class="row">
+    <%= field f, :street, hint: "Adresse de facturation" %>
+    <%= field f, :postal_code %>
+    <%= field f, :city %>
+    <%= field f, :country, :select, Country.options %>
+  </div>
+  <div class="row">
+    <%= field f, :billing_email, :email_field, hint: "Vide = e-mail du contact principal" %>
+    <%= field f, :peppol_id, placeholder: client.suggested_peppol_id || "0208:0123456789", hint: "Vide = deviné depuis le n° de TVA belge" %>
+  </div>
+  <%= field f, :address, :text_area, rows: 2, hint: "Ancienne adresse libre, pour mémoire" %>
   <%= field f, :notes, :text_area, rows: 3 %>
   <div class="form-actions">
     <%= f.submit "Enregistrer", class: "button" %>

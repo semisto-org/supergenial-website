@@ -1,6 +1,20 @@
 dici:
   name: D'ici
   hourly_rate: 80
+  vat_number: BE0888888888
+  street: Rue de l'Exemple 2
+  postal_code: "5000"
+  city: Namur
+  country: BE
 
 silvea:
   name: Silvéa
+
+lux:
+  name: Client luxembourgeois fictif
+  vat_number: LU99999999
+  street: Rue fictive 3
+  postal_code: "1000"
+  city: Luxembourg
+  country: LU
+  billing_email: compta@example.com

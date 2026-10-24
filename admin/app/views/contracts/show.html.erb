@@ -19,13 +19,12 @@
 
 <% if @contract.actif? %>
   <div class="card">
-    <h2>Enregistrer la facture de l'échéance</h2>
+    <h2>Facturer l'échéance</h2>
     <%= form_with url: bill_contract_path(@contract), class: "inline-form" do |f| %>
-      <%= f.text_field :number, placeholder: "N° OkiOki", "aria-label": "Numéro de facture OkiOki" %>
       <%= f.date_field :issued_on, value: Date.current, "aria-label": "Date de facture" %>
-      <%= f.submit "Facturé #{eur(@contract.amount_on(@contract.next_billing_on || Date.current))}", class: "button" %>
+      <%= f.submit "Préparer la facture de #{eur(@contract.amount_on(@contract.next_billing_on || Date.current))}", class: "button" %>
     <% end %>
-    <p class="hint">Crée la facture dans l'admin et avance l'échéance d'un <%= @contract.period == "annuel" ? "an" : "mois" %>.</p>
+    <p class="hint">Crée un brouillon de facture et avance l'échéance d'un <%= @contract.period == "annuel" ? "an" : "mois" %>.</p>
   </div>
 <% end %>
 

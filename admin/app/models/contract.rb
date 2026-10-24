@@ -73,11 +73,15 @@ class Contract < ApplicationRecord
   def due?(on = Date.current) = actif? && next_billing_on.present? && next_billing_on <= on
 
   # Enregistre la facture OkiOki de l'échéance et avance la prochaine d'une période.
-  def bill!(on: Date.current, number: nil)
+  # Creates the draft invoice of the coming period and moves the due date forward.
+  def bill!(on: Date.current)
     base = next_billing_on || on
+    period_end = (period == "annuel" ? base.next_year : base.next_month) - 1.day
     transaction do
-      invoice = client.invoices.create!(project:, number:, issued_on: on, amount: amount_on(base),
-                                        label: "#{label} (#{I18n.l(base, format: :month)})")
+      invoice = client.invoices.create!(project:, issued_on: on, source: "admin", status: "draft", vat_regime: VatRegime.suggest(client),
+                                        label: "#{label} (#{I18n.l(base, format: :month)})",
+                                        lines_attributes: [ { description: label, quantity: 1, unit: period == "annuel" ? "year" : "month",
+                                                              unit_price: amount_on(base), vat_rate: 21, period_start: base, period_end: } ])
       update!(last_billed_on: on, next_billing_on: period == "annuel" ? base.next_year : base.next_month)
       invoice
     end

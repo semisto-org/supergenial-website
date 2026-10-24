@@ -1,27 +1,48 @@
 <%= page_header "Factures #{@year}" do %>
   <%= link_to "← #{@year - 1}", invoices_path(year: @year - 1), class: "button button--ghost" %>
   <% if @year < Date.current.year %><%= link_to "#{@year + 1} →", invoices_path(year: @year + 1), class: "button button--ghost" %><% end %>
-  <%= link_to "+ Facture", new_invoice_path, class: "button" %>
+  <% if can_write? %>
+    <%= link_to "Référencer une facture OkiOki", new_invoice_path(source: "okioki"), class: "button button--ghost" %>
+    <%= link_to "+ Facture", new_invoice_path, class: "button" %>
+  <% end %>
 <% end %>
 
-<p class="hint">Les factures sont émises dans OkiOki ; ici, on les référence pour suivre le chiffre d'affaires.</p>
+<% if @drafts.any? %>
+  <div class="card">
+    <h2>Brouillons</h2>
+    <table>
+      <tbody>
+        <% @drafts.each do |invoice| %>
+          <tr>
+            <td><%= invoice.kind_label %></td>
+            <td><%= link_to invoice.client, invoice.client %></td>
+            <td><%= link_to invoice.label, invoice %></td>
+            <td class="num"><%= eur(invoice.amount) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>
 
 <div class="card">
   <table>
-    <thead><tr><th>Date</th><th>N°</th><th>Client</th><th>Libellé</th><th class="num">HTVA</th><th>Paiement</th></tr></thead>
+    <thead><tr><th>Date</th><th>N°</th><th>Client</th><th>Libellé</th><th class="num">HTVA</th><th class="num">TVAC</th><th>Envoi</th><th>Paiement</th></tr></thead>
     <tbody>
-      <% @invoices.each do |invoice| %>
+      <% @invoices.reject(&:draft?).each do |invoice| %>
         <tr>
           <td class="nowrap"><%= date(invoice.issued_on) %></td>
-          <td><%= invoice.number %></td>
+          <td class="nowrap"><%= invoice.number %><% if invoice.credit_note? %> <small class="muted">NC</small><% end %></td>
           <td><%= link_to invoice.client, invoice.client %></td>
-          <td><%= link_to invoice.label, edit_invoice_path(invoice) %></td>
+          <td><%= link_to invoice.label, invoice %><% unless invoice.admin? %> <small class="muted"><%= invoice.source_label %></small><% end %></td>
           <td class="num"><%= eur(invoice.amount) %></td>
+          <td class="num"><%= invoice.admin? ? eur(invoice.total) : "–" %></td>
+          <td><%= invoice_delivery_badge(invoice) %></td>
           <td><%= invoice.paid? ? badge("payée le #{l(invoice.paid_on, format: :short)}", "facture") : badge("à encaisser", "a_facturer") %></td>
         </tr>
       <% end %>
     </tbody>
-    <tfoot><tr><th colspan="4">Total</th><th class="num"><%= eur(@invoices.sum(&:amount)) %></th><th></th></tr></tfoot>
+    <tfoot><tr><th colspan="4">Total</th><th class="num"><%= eur(@invoices.reject(&:draft?).sum(&:amount)) %></th><th colspan="3"></th></tr></tfoot>
   </table>
-  <% if @invoices.empty? %><p class="muted">Aucune facture en <%= @year %>.</p><% end %>
+  <% if @invoices.reject(&:draft?).empty? %><p class="muted">Aucune facture en <%= @year %>.</p><% end %>
 </div>

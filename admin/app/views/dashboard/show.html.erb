@@ -28,6 +28,25 @@
   </div>
 </section>
 
+<% deadlines = @dashboard.billing_deadlines %>
+<% drafts = @dashboard.draft_invoices %>
+<% if deadlines.any? || drafts.any? %>
+  <div class="card">
+    <h2>À facturer</h2>
+    <ul class="plain">
+      <% deadlines.each do |row| %>
+        <li class="<%= 'danger' if row[:late] %>">
+          <strong><%= eur(row[:amount]) %></strong> de prestations à facturer <%= row[:late] ? "depuis le" : "au plus tard le" %> <%= date(row[:deadline]) %> :
+          <%= safe_join(row[:clients].map { |client| link_to(client, time_entries_path(client_id: client.id)) }, ", ") %>
+        </li>
+      <% end %>
+      <% drafts.each do |invoice| %>
+        <li>Brouillon à émettre : <%= link_to "#{invoice.client} · #{invoice.label}", invoice %> (<%= eur(invoice.amount) %>)</li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
 <section class="grid-2">
   <div class="card">
     <h2>Heures à facturer</h2>
@@ -65,7 +84,7 @@
               <td><%= link_to contract, contract %><br><small class="muted"><%= contract.client %></small></td>
               <td><%= date(contract.next_billing_on) %></td>
               <td class="num"><%= eur(contract.amount_on(contract.next_billing_on)) %></td>
-              <td><%= button_to "Facturé", bill_contract_path(contract), class: "button button--small", form: { data: { turbo_confirm: "Enregistrer la facture de #{contract} ?" } } %></td>
+              <td><%= button_to "Facturer", bill_contract_path(contract), class: "button button--small", form: { data: { turbo_confirm: "Préparer la facture de #{contract} ?" } } %></td>
             </tr>
           <% end %>
         </tbody>
@@ -83,7 +102,7 @@
         <tbody>
           <% invoices.each do |invoice| %>
             <tr>
-              <td><%= link_to invoice.client, invoice.client %><br><small class="muted"><%= invoice %></small></td>
+              <td><%= link_to invoice.client, invoice.client %><br><small class="muted"><%= link_to invoice, invoice %></small></td>
               <td><%= date(invoice.issued_on) %></td>
               <td class="num"><%= eur(invoice.amount) %></td>
             </tr>
