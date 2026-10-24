@@ -5,6 +5,8 @@ class User < ApplicationRecord
 
   has_secure_password
   has_many :sessions, dependent: :destroy
+  has_many :oauth_tokens, class_name: "Oauth::Token", dependent: :delete_all
+  has_many :oauth_authorization_codes, class_name: "Oauth::AuthorizationCode", dependent: :delete_all
 
   # admin: full access. accountant: reads everything, comments, and closes VAT periods.
   choices :role, admin: "Administrateur", accountant: "Comptable"

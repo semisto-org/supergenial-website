@@ -1,0 +1,26 @@
+<%= page_header "Connexions Claude" %>
+
+<div class="card">
+  <p>Pour gérer l'admin depuis Claude, ajoute un connecteur personnalisé avec l'adresse <code><%= mcp_url %></code>, puis connecte-toi et autorise l'accès.</p>
+  <p class="muted">Chaque connexion reste valable 30 jours sans utilisation. Révoquer une connexion coupe l'accès immédiatement.</p>
+</div>
+
+<div class="card">
+  <% if @tokens.any? %>
+    <table>
+      <thead><tr><th>Application</th><th>Autorisée le</th><th>Dernière utilisation</th><th></th></tr></thead>
+      <tbody>
+        <% @tokens.each do |token| %>
+          <tr>
+            <td><%= token.client.name %></td>
+            <td><%= l(token.created_at, format: :short) %></td>
+            <td><%= token.last_used_at ? l(token.last_used_at, format: :short) : "–" %></td>
+            <td class="num"><%= button_to "Révoquer", connection_path(token), method: :delete, class: "button button--small button--ghost" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p class="muted">Aucune connexion active.</p>
+  <% end %>
+</div>
