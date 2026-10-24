@@ -1,0 +1,84 @@
+<%= page_header @purchase_invoice.to_s do %>
+  <% if can_write? %>
+    <% if @purchase_invoice.to_review? %>
+      <%= button_to "Comptabiliser", book_purchase_invoice_path(@purchase_invoice), class: "button", form_class: "inline-form" %>
+    <% else %>
+      <%= button_to "Remettre à vérifier", reopen_purchase_invoice_path(@purchase_invoice), class: "button button--ghost", form_class: "inline-form" %>
+    <% end %>
+    <%= link_to "Modifier", edit_purchase_invoice_path(@purchase_invoice), class: "button button--ghost" %>
+  <% end %>
+<% end %>
+
+<p class="lead">
+  <%= badge(@purchase_invoice.status_label, @purchase_invoice.booked? ? "facture" : "a_facturer") %>
+  <%= @purchase_invoice.kind_label %> reçue par <%= @purchase_invoice.source_label.downcase %>
+  <% if @purchase_invoice.sender_email.present? %> de <%= @purchase_invoice.sender_email %><% end %>
+  <% if @purchase_invoice.peppol_missing? %> · <%= badge("Peppol exigé", "en_attente") %><% end %>
+</p>
+
+<% if @purchase_invoice.extraction_pending? %>
+  <div class="flash flash--notice">Claude lit le document : recharge la page dans quelques secondes.</div>
+<% elsif @purchase_invoice.extraction_status == "failed" %>
+  <div class="flash flash--alert">Lecture par Claude impossible : <%= @purchase_invoice.extraction_error %>
+    <%= button_to "Relancer", extract_purchase_invoice_path(@purchase_invoice), class: "button button--ghost", form_class: "inline-form" if can_write? %></div>
+<% end %>
+
+<section class="grid-2">
+  <div class="card">
+    <h2>Facture</h2>
+    <dl class="details">
+      <dt>Fournisseur</dt><dd><%= @purchase_invoice.supplier ? link_to(@purchase_invoice.supplier, @purchase_invoice.supplier) : (@purchase_invoice.seller_name.presence || "À identifier") %>
+        <% if @purchase_invoice.supplier %><small class="muted"><%= @purchase_invoice.supplier.zone_label %></small><% end %></dd>
+      <% if @purchase_invoice.supplier.nil? && @purchase_invoice.seller_vat_number.present? %><dt>N° de TVA lu</dt><dd><%= @purchase_invoice.seller_vat_number %></dd><% end %>
+      <dt>N°</dt><dd><%= @purchase_invoice.number.presence || "–" %></dd>
+      <dt>Date</dt><dd><%= date(@purchase_invoice.issued_on) %></dd>
+      <dt>Échéance</dt><dd><%= date(@purchase_invoice.due_on) %></dd>
+      <dt>Payée le</dt><dd><%= date(@purchase_invoice.paid_on) %></dd>
+      <dt>Catégorie</dt><dd><%= @purchase_invoice.expense_category || "–" %><% if @purchase_invoice.expense_category&.pcmn_account %> <small class="muted">compte <%= @purchase_invoice.expense_category.pcmn_account %></small><% end %></dd>
+      <dt>Frais fixe</dt><dd><%= @purchase_invoice.fixed_cost || "–" %></dd>
+    </dl>
+  </div>
+
+  <div class="card">
+    <h2>Montants</h2>
+    <dl class="details">
+      <% if @purchase_invoice.foreign_currency? %>
+        <dt>En <%= @purchase_invoice.currency %></dt><dd><%= number_with_precision(@purchase_invoice.original_amount, precision: 2) %> <%= @purchase_invoice.currency %> HTVA × <%= @purchase_invoice.exchange_rate %></dd>
+      <% end %>
+      <dt>HTVA</dt><dd><%= eur(@purchase_invoice.sign * @purchase_invoice.amount) %></dd>
+      <dt>TVA facturée</dt><dd><%= eur(@purchase_invoice.sign * @purchase_invoice.vat_amount) %></dd>
+      <dt>TVA</dt><dd><%= @purchase_invoice.vat_regime_label %></dd>
+      <% if @purchase_invoice.reverse_charge? %>
+        <dt>TVA autoliquidée</dt><dd><%= eur(@purchase_invoice.sign * @purchase_invoice.self_assessed_vat) %> <small class="muted">(<%= percent(@purchase_invoice.vat_rate) %>, grilles <%= @purchase_invoice.regime[:base_grid] %> et <%= @purchase_invoice.regime[:due_grid] %>)</small></dd>
+      <% end %>
+      <dt>TVA déductible</dt><dd><%= eur(@purchase_invoice.sign * @purchase_invoice.deductible_vat) %> <small class="muted">(<%= percent(@purchase_invoice.vat_deductible_percent) %>, grille 59)</small></dd>
+      <dt>Grille de base</dt><dd><%= PurchaseVatRegime::BASE_GRIDS[@purchase_invoice.base_grid] %></dd>
+    </dl>
+  </div>
+</section>
+
+<% if @purchase_invoice.document.attached? || @purchase_invoice.ubl_xml.present? %>
+  <div class="card">
+    <h2>Document</h2>
+    <p>
+      <% if @purchase_invoice.document.attached? %><%= link_to "Télécharger #{@purchase_invoice.document.filename}", document_purchase_invoice_path(@purchase_invoice, download: 1) %><% end %>
+      <% if @purchase_invoice.ubl_xml.present? %> · <%= link_to "UBL Peppol (original légal)", ubl_purchase_invoice_path(@purchase_invoice) %><% end %>
+    </p>
+    <% if @purchase_invoice.document.attached? %>
+      <iframe class="document-preview" src="<%= document_purchase_invoice_path(@purchase_invoice) %>" title="Document"></iframe>
+    <% end %>
+  </div>
+<% end %>
+
+<% if @purchase_invoice.extraction.present? && @purchase_invoice.extraction["description"].present? %>
+  <p class="muted">Lu par Claude : <%= @purchase_invoice.extraction["description"] %></p>
+<% end %>
+<% if @purchase_invoice.notes.present? %>
+  <div class="card"><h2>Notes</h2><%= simple_format(@purchase_invoice.notes) %></div>
+<% end %>
+
+<%= render "shared/comments", commentable: @purchase_invoice %>
+
+<% if can_write? %>
+  <p><%= link_to "Supprimer cet achat", @purchase_invoice, class: "danger", data: { turbo_method: :delete, turbo_confirm: "Supprimer #{@purchase_invoice} ?" } %></p>
+<% end %>

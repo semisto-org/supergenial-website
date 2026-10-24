@@ -10,7 +10,35 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_25_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_25_010000) do
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
   create_table "audit_events", force: :cascade do |t|
     t.integer "user_id"
     t.string "actor_kind", default: "user", null: false
@@ -275,6 +303,48 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_25_000000) do
     t.index ["client_id"], name: "index_projects_on_client_id"
   end
 
+  create_table "purchase_invoices", force: :cascade do |t|
+    t.integer "supplier_id"
+    t.integer "expense_category_id"
+    t.integer "fixed_cost_id"
+    t.string "kind", default: "invoice", null: false
+    t.string "status", default: "to_review", null: false
+    t.string "source", default: "manual", null: false
+    t.string "external_id"
+    t.string "number"
+    t.date "issued_on"
+    t.date "due_on"
+    t.date "paid_on"
+    t.string "currency", default: "EUR", null: false
+    t.decimal "exchange_rate", precision: 12, scale: 6, default: "1.0", null: false
+    t.decimal "original_amount", precision: 10, scale: 2
+    t.decimal "amount", precision: 10, scale: 2, default: "0.0", null: false
+    t.decimal "vat_amount", precision: 10, scale: 2, default: "0.0", null: false
+    t.string "vat_regime", default: "domestic", null: false
+    t.decimal "vat_rate", precision: 5, scale: 2, default: "21.0", null: false
+    t.string "base_grid", default: "82", null: false
+    t.decimal "vat_deductible_percent", precision: 5, scale: 2, default: "100.0", null: false
+    t.string "seller_name"
+    t.string "seller_vat_number"
+    t.string "seller_country"
+    t.string "sender_email"
+    t.string "email_subject"
+    t.text "ubl_xml"
+    t.json "extraction"
+    t.string "extraction_status"
+    t.text "extraction_error"
+    t.datetime "booked_at"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["expense_category_id"], name: "index_purchase_invoices_on_expense_category_id"
+    t.index ["fixed_cost_id"], name: "index_purchase_invoices_on_fixed_cost_id"
+    t.index ["issued_on"], name: "index_purchase_invoices_on_issued_on"
+    t.index ["source", "external_id"], name: "index_purchase_invoices_on_source_and_external_id", unique: true, where: "external_id IS NOT NULL"
+    t.index ["status"], name: "index_purchase_invoices_on_status"
+    t.index ["supplier_id"], name: "index_purchase_invoices_on_supplier_id"
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "ip_address"
@@ -338,6 +408,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_25_000000) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "audit_events", "users", on_delete: :nullify
   add_foreign_key "comments", "users"
   add_foreign_key "contacts", "clients"
@@ -355,6 +427,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_25_000000) do
   add_foreign_key "packs", "invoices"
   add_foreign_key "plan_prices", "plans"
   add_foreign_key "projects", "clients"
+  add_foreign_key "purchase_invoices", "expense_categories"
+  add_foreign_key "purchase_invoices", "fixed_costs"
+  add_foreign_key "purchase_invoices", "suppliers"
   add_foreign_key "sessions", "users"
   add_foreign_key "suppliers", "expense_categories"
   add_foreign_key "time_entries", "clients"

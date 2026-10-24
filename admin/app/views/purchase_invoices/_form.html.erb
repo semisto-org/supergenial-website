@@ -1,0 +1,38 @@
+<%= form_with model: purchase_invoice do |f| %>
+  <%= render "shared/errors", object: purchase_invoice %>
+  <% unless purchase_invoice.document.attached? && purchase_invoice.persisted? %>
+    <%= field f, :document, :file_field, accept: PurchaseInvoice::DOCUMENT_TYPES.join(","), hint: (PurchaseExtraction.configured? ? "PDF ou photo : Claude le lit et préremplit les champs vides" : "PDF ou photo") %>
+  <% end %>
+  <div class="row">
+    <%= field f, :supplier_id, :select, Supplier.alphabetical.pluck(:name, :id), include_blank: purchase_invoice.seller_name.presence || "À identifier" %>
+    <%= field f, :expense_category_id, :select, ExpenseCategory.ordered.map { |category| [ category.name, category.id ] }, include_blank: true %>
+    <%= field f, :fixed_cost_id, :select, FixedCost.order(:name).pluck(:name, :id), include_blank: true %>
+  </div>
+  <div class="row">
+    <%= field f, :kind, :select, PurchaseInvoice.kind_options %>
+    <%= field f, :number %>
+    <%= field f, :issued_on, :date_field %>
+    <%= field f, :due_on, :date_field %>
+    <%= field f, :paid_on, :date_field %>
+  </div>
+  <div class="row">
+    <%= field f, :currency, maxlength: 3 %>
+    <%= field f, :original_amount, :number_field, step: "0.01", hint: "HTVA dans la devise de la facture, si ce n'est pas l'euro" %>
+    <%= field f, :exchange_rate, :number_field, step: "0.000001", hint: "1 unité de la devise = … €" %>
+  </div>
+  <div class="row">
+    <%= field f, :amount, :number_field, step: "0.01", hint: "HTVA en euros" %>
+    <%= field f, :vat_amount, :number_field, step: "0.01", hint: "TVA facturée (0 en autoliquidation)" %>
+  </div>
+  <div class="row">
+    <%= field f, :vat_regime, :select, PurchaseInvoice.vat_regime_options %>
+    <%= field f, :vat_rate, :number_field, step: "0.01", hint: "Taux autoliquidé" %>
+    <%= field f, :base_grid, :select, PurchaseVatRegime::BASE_GRIDS.invert %>
+    <%= field f, :vat_deductible_percent, :number_field, step: "0.01", hint: "Repris de la catégorie" %>
+  </div>
+  <%= field f, :notes, :text_area, rows: 2 %>
+  <div class="form-actions">
+    <%= f.submit "Enregistrer", class: "button" %>
+    <%= link_to "Annuler", purchase_invoice.persisted? ? purchase_invoice : purchase_invoices_path, class: "button button--ghost" %>
+  </div>
+<% end %>

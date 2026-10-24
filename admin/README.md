@@ -69,6 +69,23 @@ l'année devient le point de départ de la numérotation. Harvest : variables **
 `HARVEST_ACCOUNT_ID` ; clients, factures et, jusqu'à une date choisie, les heures (les heures jamais facturées
 passent en « offert »). Chaque import peut d'abord tourner en simulation ; relancé, il met à jour sans dupliquer.
 
+### Achats (Peppol, boîte e-mail, Claude)
+
+Toutes les 30 minutes (ou « Relever Peppol et e-mails » dans « Achats »), `PurchaseInboxJob` relève :
+
+- les documents reçus sur Peppol dans Recommand (mêmes variables que la facturation) : UBL archivé (l'original
+  légal), PDF joint, fournisseur créé s'il est nouveau, puis marqués comme lus ;
+- les PDF joints aux e-mails de la boîte achats, par l'API Gmail (scope `gmail.modify`) : variables **runtime**
+  `GMAIL_CLIENT_ID`, `GMAIL_CLIENT_SECRET`, `GMAIL_REFRESH_TOKEN`, `GMAIL_USER` (défaut `sg-invoices@semisto.org`).
+  Les messages traités reçoivent le libellé `admin-importee`.
+
+Chaque PDF (e-mail ou ajout manuel) est lu par Claude Haiku (`claude-haiku-5-5`, variable **runtime**
+`ANTHROPIC_API_KEY`) : fournisseur, numéro, dates, montants, autoliquidation. Les champs ne font que préremplir
+l'achat : il reste « à vérifier » jusqu'à ce qu'on le comptabilise. Un fournisseur belge qui envoie encore par
+e-mail apparaît dans « Exiger Peppol ». Les documents sont servis par l'admin, derrière la connexion (pas d'URL
+publique Active Storage). « Dépendances » montre les achats par zone (pays du groupe) et la part des États-Unis
+par trimestre ; le tableau de bord signale les factures mensuelles attendues d'un frais fixe et pas reçues.
+
 ### Sauvegardes hors site
 
 Chaque nuit à 3 h (Solid Queue dans Puma : `SOLID_QUEUE_IN_PUMA=true`), `BackupJob` envoie la base et les fichiers,
@@ -94,6 +111,8 @@ restaurer : télécharger le fichier, `bin/rails backups:decrypt FILE=… BACKUP
 | `CompanyProfile` | Le vendeur (Marco & Vespucci SRL) : identité, compte, délai de paiement, dernier n° OkiOki |
 | `Dashboard` | Les totaux de l'ancien onglet « Revenus » |
 | `Supplier` | Fournisseur : pays de facturation et pays du groupe (zone BE / UE / US / autres), Peppol attendu |
+| `PurchaseInvoice` | Facture ou note de crédit d'achat : Peppol, e-mail ou manuel, régime de TVA (autoliquidation, grilles), à vérifier puis comptabilisée |
+| `SupplierDependence` | Achats par zone et part des États-Unis |
 | `ExpenseCategory` | Catégorie d'achat et traitement comptable proposé (compte PCMN, TVA, déductibilité ISOC), validé par la comptable |
 | `User` | Compte : rôle admin ou comptable, 2FA |
 | `Comment` | Commentaire sur une fiche (client, contrat, fournisseur…), surtout pour la comptable |

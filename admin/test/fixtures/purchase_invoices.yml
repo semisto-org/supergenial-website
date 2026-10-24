@@ -1,0 +1,29 @@
+hosting_october:
+  supplier: hoster
+  expense_category: hosting
+  number: H-2026-10
+  issued_on: 2026-10-01
+  amount: 50
+  vat_amount: 0
+  vat_regime: outside_eu_services
+  source: email
+  status: booked
+
+ai_september:
+  supplier: ai_company
+  expense_category: hosting
+  number: AI-0009
+  issued_on: 2026-09-05
+  amount: 150
+  vat_amount: 0
+  vat_regime: intra_eu_services
+  source: email
+  status: to_review
+
+belgian_email:
+  supplier: belgian
+  number: BE-77
+  issued_on: 2026-10-10
+  amount: 100
+  vat_amount: 21
+  source: email

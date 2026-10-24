@@ -116,10 +116,18 @@
     <h2>À surveiller</h2>
     <% packs = @dashboard.low_packs %>
     <% renewals = @dashboard.renewals %>
-    <% if packs.empty? && renewals.empty? %>
+    <% to_review = @dashboard.purchases_to_review %>
+    <% missing = @dashboard.missing_purchase_invoices %>
+    <% if packs.empty? && renewals.empty? && to_review.zero? && missing.empty? %>
       <p class="muted">Rien à signaler.</p>
     <% end %>
     <ul class="plain">
+      <% if to_review.positive? %>
+        <li><%= link_to "#{to_review} achat#{'s' if to_review > 1} à vérifier", purchase_invoices_path(status: "to_review") %></li>
+      <% end %>
+      <% missing.each do |cost| %>
+        <li>Facture de <%= link_to cost.supplier, cost.supplier %> (<%= cost %>) pas reçue pour <%= l(Date.current.prev_month, format: "%B %Y") %></li>
+      <% end %>
       <% packs.each do |pack| %>
         <li><%= link_to pack.client, pack %> : <%= pack.label %>, reste <strong><%= hours(pack.remaining_hours) %></strong></li>
       <% end %>
