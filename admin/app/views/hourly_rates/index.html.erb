@@ -1,0 +1,31 @@
+<%= page_header "Taux horaire" %>
+
+<% next_rate = HourlyRate.next_change %>
+<section class="stats">
+  <div class="stat"><span class="stat__label">Taux actuel</span><strong class="stat__value"><%= eur(HourlyRate.on) %></strong><span class="stat__hint">par heure</span></div>
+  <div class="stat"><span class="stat__label">Prochain taux</span><strong class="stat__value"><%= next_rate ? eur(next_rate.amount) : "–" %></strong>
+    <span class="stat__hint"><%= "dès le #{l(next_rate.starts_on)}" if next_rate %></span></div>
+</section>
+
+<div class="card">
+  <h2>Historique</h2>
+  <table>
+    <thead><tr><th>Activé le</th><th class="num">Taux</th><th></th><th></th></tr></thead>
+    <tbody>
+      <% @rates.reverse_each do |rate| %>
+        <tr class="<%= 'is-inactive' unless rate.current? || rate.upcoming? %>">
+          <td><%= l(rate.starts_on) %></td>
+          <td class="num"><%= eur(rate.amount) %> <small class="muted">/h</small></td>
+          <td><%= badge("en vigueur", "actif") if rate.current? %><%= badge("à venir", "prospect") if rate.upcoming? %></td>
+          <td><% if @rates.size > 1 %><%= button_to "Supprimer", hourly_rate_path(rate), method: :delete, class: "link-button danger", form: { data: { turbo_confirm: "Supprimer le taux du #{l(rate.starts_on)} ?" } } %><% end %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <%= form_with model: @rate, url: hourly_rates_path, class: "inline-form" do |f| %>
+    <%= f.number_field :amount, step: "0.01", required: true, placeholder: "Nouveau taux", "aria-label": "Nouveau taux" %>
+    <%= f.date_field :starts_on, required: true, "aria-label": "Date d'activation" %>
+    <%= f.submit "Programmer ce taux", class: "button" %>
+  <% end %>
+  <p class="hint">Une prestation prend le taux en vigueur à sa date. Un client ou un projet qui a son propre taux le garde.</p>
+</div>

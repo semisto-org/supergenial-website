@@ -1,8 +1,6 @@
 class Client < ApplicationRecord
   include Choices
 
-  DEFAULT_HOURLY_RATE = 80
-
   # Les factures comptent dans le chiffre d'affaires : un client facturé ne se supprime pas,
   # il passe en « Ancien client ». Sans facture, il part avec tout ce qui le concerne.
   has_many :invoices, dependent: :restrict_with_error
@@ -21,7 +19,8 @@ class Client < ApplicationRecord
 
   def primary_contact = contacts.first
 
-  def rate = hourly_rate || DEFAULT_HOURLY_RATE
+  # Sans taux propre, le client suit le taux standard en vigueur à la date de la prestation.
+  def rate(date = Date.current) = hourly_rate || HourlyRate.on(date)
 
   def unbilled_hours = time_entries.a_facturer.sum(:hours)
 

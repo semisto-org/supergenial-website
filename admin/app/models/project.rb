@@ -16,7 +16,7 @@ class Project < ApplicationRecord
 
   scope :ongoing, -> { where(status: %w[devis en_attente en_cours maintenance]) }
 
-  def rate = hourly_rate || client.rate
+  def rate(date = Date.current) = hourly_rate || client.rate(date)
 
   def hours_spent = time_entries.sum(:hours)
 

@@ -16,7 +16,7 @@ class AdminFlowTest < ActionDispatch::IntegrationTest
       contract_path(contracts(:hosting)), new_contract_path, fixed_costs_path, new_fixed_cost_path,
       edit_fixed_cost_path(fixed_costs(:anthropic)), invoices_path(year: 2026), new_invoice_path,
       plans_path, plan_path(plans(:evolution)), new_plan_path, edit_plan_path(plans(:evolution)), new_contract_path(plan_id: plans(:essentiel).id),
-      contract_path(contracts(:maintenance)) ].each do |path|
+      contract_path(contracts(:maintenance)), hourly_rates_path, edit_client_path(clients(:silvea)) ].each do |path|
       get path
       assert_response :success, path
     end
@@ -85,6 +85,24 @@ class AdminFlowTest < ActionDispatch::IntegrationTest
     delete plan_price_path(plan, plan.prices.last)
     delete plan_price_path(plan, plan.prices.first)
     assert_equal 1, plan.prices.reload.size, "une formule garde au moins un prix"
+  end
+
+  test "the standard hourly rate applies at the date of the entry" do
+    client = clients(:silvea)
+    assert_nil client.hourly_rate
+    before = client.time_entries.create!(performed_on: "2026-12-31", hours: 1)
+    after = client.time_entries.create!(performed_on: "2027-01-01", hours: 1)
+    assert_equal [ 80, 90 ], [ before.rate, after.rate ]
+    assert_equal 80, clients(:dici).time_entries.create!(performed_on: "2027-02-01", hours: 1).rate, "un taux propre au client prime"
+
+    post hourly_rates_path, params: { hourly_rate: { amount: "100", starts_on: "2027-06-01" } }
+    assert_redirected_to hourly_rates_path
+    Current.reset # la requête a sa propre mise en cache des taux, pas celle du test
+    assert_equal 100, HourlyRate.on(Date.new(2027, 6, 1))
+
+    HourlyRate.where.not(starts_on: "2026-01-01").find_each { |rate| delete hourly_rate_path(rate) }
+    delete hourly_rate_path(hourly_rates(:standard_2026))
+    assert_equal 1, HourlyRate.count, "il reste au moins un taux"
   end
 
   test "link a contract to a plan" do
