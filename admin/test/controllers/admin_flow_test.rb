@@ -9,6 +9,18 @@ class AdminFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_session_path
   end
 
+  test "sidebar highlights the current section" do
+    get client_path(clients(:dici))
+    assert_select ".sidebar a[aria-current=page]", text: "Clients"
+
+    get new_client_contact_path(clients(:dici))
+    assert_select ".sidebar a[aria-current=page]", text: "Clients"
+
+    get root_path
+    assert_select ".sidebar a[aria-current=page]", text: "Tableau de bord"
+    assert_select ".page-header__icon", text: "🧭"
+  end
+
   test "every page renders" do
     [ root_path, clients_path, client_path(clients(:dici)), client_path(clients(:silvea)), new_client_path, new_client_contact_path(clients(:dici)),
       projects_path, project_path(projects(:platform)), new_project_path, time_entries_path, new_time_entry_path,

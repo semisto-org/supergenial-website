@@ -4,37 +4,35 @@
     <title><%= [ content_for(:title), "Admin Super Génial" ].compact.join(" · ") %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="robots" content="noindex, nofollow">
+    <meta name="color-scheme" content="light dark">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;600&family=Inter:wght@400..700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@600&family=Inter:wght@400..700&display=swap" rel="stylesheet">
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
   <body>
-    <nav class="topnav">
-      <%= link_to root_path, class: "brand" do %>Super <em>Génial</em><% end %>
-      <div class="topnav__links">
-        <%= nav_link "Tableau de bord", root_path, :dashboard %>
-        <%= nav_link "Clients", clients_path, :clients %>
-        <%= nav_link "Projets", projects_path, :projects %>
-        <%= nav_link "Heures", time_entries_path, :time_entries %>
-        <%= nav_link "Contrats", contracts_path, :contracts %>
-        <%= nav_link "Abonnements", plans_path, :plans %>
-        <%= nav_link "Taux horaire", hourly_rates_path, :hourly_rates %>
-        <%= nav_link "Factures", invoices_path, :invoices %>
-        <%= nav_link "Frais fixes", fixed_costs_path, :fixed_costs %>
-      </div>
-      <%= button_to "Déconnexion", session_path, method: :delete, class: "link-button" %>
-    </nav>
+    <%= render "layouts/icons" %>
+    <div class="app" data-controller="sidebar">
+      <%= render "layouts/sidebar" %>
+      <div class="sidebar-backdrop" data-action="click->sidebar#close"></div>
 
-    <main>
-      <% flash.each do |type, message| %>
-        <div class="flash flash--<%= type %>"><%= message %></div>
-      <% end %>
-      <%= yield %>
-    </main>
+      <div class="app__main">
+        <div class="mobilebar">
+          <button type="button" class="icon-button" aria-label="Ouvrir le menu" aria-controls="sidebar" aria-expanded="false" data-sidebar-target="toggle" data-action="sidebar#toggle"><%= icon "menu" %></button>
+          <%= link_to root_path, class: "workspace__name" do %>Super <em>Génial</em><% end %>
+        </div>
+
+        <main class="page">
+          <% flash.each do |type, message| %>
+            <div class="flash flash--<%= type %>" role="status"><%= message %></div>
+          <% end %>
+          <%= yield %>
+        </main>
+      </div>
+    </div>
   </body>
 </html>
