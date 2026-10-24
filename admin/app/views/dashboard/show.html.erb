@@ -120,10 +120,15 @@
     <% missing = @dashboard.missing_purchase_invoices %>
     <% to_match = @dashboard.bank_transactions_to_match %>
     <% vat_due = @dashboard.vat_return_due %>
-    <% if packs.empty? && renewals.empty? && to_review.zero? && missing.empty? && to_match.zero? && vat_due.nil? %>
+    <% tax = @dashboard.tax_projection if @dashboard.year == Date.current.year %>
+    <% remuneration_alert = tax&.year_end_alert? %>
+    <% if packs.empty? && renewals.empty? && to_review.zero? && missing.empty? && to_match.zero? && vat_due.nil? && !remuneration_alert %>
       <p class="muted">Rien à signaler.</p>
     <% end %>
     <ul class="plain">
+      <% if remuneration_alert %>
+        <li class="danger"><%= link_to "Verser #{eur(tax.remuneration_needed, precision: 0)} de rémunération avant le 31/12", tax_projection_path %> pour garder le taux réduit de l'impôt des sociétés</li>
+      <% end %>
       <% if vat_due %>
         <li class="<%= 'danger' if vat_due.quarter.deadline < Date.current %>"><%= link_to "TVA #{vat_due.quarter.label} à déclarer", vat_return_path(vat_due.quarter.to_param) %> au plus tard le <%= date(vat_due.quarter.deadline) %></li>
       <% end %>

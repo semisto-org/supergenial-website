@@ -1,0 +1,27 @@
+<%= page_header "Paramètres fiscaux" do %>
+  <%= link_to "Pilotage", tax_projection_path, class: "button button--ghost" %>
+  <%= link_to "+ Paramètre", new_tax_parameter_path, class: "button" if can_write? %>
+<% end %>
+
+<p class="hint">Taux et plafonds utilisés par le pilotage fiscal, datés et sourcés. Une nouvelle valeur s'ajoute avec sa date de début (« Nouvelle valeur ») : l'ancienne reste pour les années passées. La comptable confirme chaque ligne.</p>
+
+<div class="card">
+  <table>
+    <thead><tr><th>Paramètre</th><th class="num">Valeur</th><th>Depuis</th><th>Source</th><th>Confirmation</th></tr></thead>
+    <tbody>
+      <% @tax_parameters.each do |parameter| %>
+        <tr>
+          <td><%= can_write? ? link_to(parameter, edit_tax_parameter_path(parameter)) : parameter %> <small class="muted"><%= parameter.key %></small></td>
+          <td class="num"><%= number_with_precision(parameter.value, precision: 4, strip_insignificant_zeros: true, delimiter: " ", separator: ",") %></td>
+          <td class="nowrap"><%= date(parameter.valid_from) %></td>
+          <td><small><%= parameter.source %></small></td>
+          <td class="nowrap">
+            <%= button_to (parameter.verified? ? "✓ confirmé" : "Confirmer"), verify_tax_parameter_path(parameter), method: :patch,
+                  class: (parameter.verified? ? "link-button" : "button button--small"), form_class: "inline-form" %>
+            <%= link_to "Nouvelle valeur", new_tax_parameter_path(from: parameter.id), class: "small" if can_write? %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
