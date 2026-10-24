@@ -38,6 +38,7 @@ Rails.application.routes.draw do
   end
   resources :comments, only: %i[ create update destroy ]
   resources :audit_events, only: :index
+  resources :import_runs, only: %i[ index show create ]
   resources :users, except: :show do
     post :reset_two_factor, on: :member
   end

@@ -61,6 +61,14 @@ L'UBL renvoyé par Recommand est archivé avec la facture ; le PDF (polices Libe
 au document Peppol. Variables **runtime** : `RECOMMAND_API_KEY`, `RECOMMAND_API_SECRET`, `RECOMMAND_COMPANY_ID`
 (clés de l'équipe « playground » pour tester), `RECOMMAND_BASE_URL` (optionnelle).
 
+### Reprise de l'historique (OkiOki, Harvest)
+
+Page « Comptes » → « Reprise de l'historique » (admins). OkiOki : envoyer le CSV exporté (colonnes reconnues par
+leur en-tête) ; les références sans numéro reprises de la Google Sheet sont remplacées, et le dernier numéro de
+l'année devient le point de départ de la numérotation. Harvest : variables **runtime** `HARVEST_ACCESS_TOKEN` et
+`HARVEST_ACCOUNT_ID` ; clients, factures et, jusqu'à une date choisie, les heures (les heures jamais facturées
+passent en « offert »). Chaque import peut d'abord tourner en simulation ; relancé, il met à jour sans dupliquer.
+
 ### Sauvegardes hors site
 
 Chaque nuit à 3 h (Solid Queue dans Puma : `SOLID_QUEUE_IN_PUMA=true`), `BackupJob` envoie la base et les fichiers,
