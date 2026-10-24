@@ -61,3 +61,8 @@ gem "csv", "~> 3.3"
 # Error tracking [https://docs.sentry.io/platforms/ruby/guides/rails/]
 gem "sentry-ruby"
 gem "sentry-rails"
+
+gem "rotp", "~> 6.3"
+gem "rqrcode", "~> 3.2"
+
+gem "aws-sdk-s3", "~> 1.235", require: false

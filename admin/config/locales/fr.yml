@@ -16,7 +16,45 @@ fr:
       plan: Formule
       plan_price: Prix
       hourly_rate: Taux horaire
+      supplier: Fournisseur
+      expense_category: Catégorie de dépenses
+      user: Compte
+      comment: Commentaire
+      audit_event: Événement du journal
     attributes:
+      supplier:
+        name: Nom
+        vat_number: N° de TVA
+        iban: IBAN
+        billing_country: Pays de facturation
+        group_country: Pays du groupe
+        expense_category: Catégorie
+        expense_category_id: Catégorie
+        peppol_id: Identifiant Peppol
+        require_peppol: Exiger Peppol
+        active: Actif
+        website: Site web
+        alternative_note: Alternative européenne
+        notes: Notes
+      expense_category:
+        key: Clé
+        name: Nom
+        pcmn_account: Compte PCMN
+        vat_rate: Taux de TVA
+        vat_deductible_percent: TVA déductible (%)
+        tax_deductible_percent: Déductible à l'ISOC (%)
+        position: Ordre
+        validated_at: Validée le
+        notes: Notes
+      user:
+        name: Nom
+        email_address: E-mail
+        role: Rôle
+        password: Mot de passe
+        otp_enabled_at: Double authentification activée le
+      comment:
+        body: Commentaire
+        resolved_at: Traité le
       plan:
         name: Nom
         description: Description
@@ -98,6 +136,8 @@ fr:
         renews_on: Renouvellement
         action: Action prévue
         billing_url: Lien de facturation
+        supplier: Fournisseur
+        supplier_id: Fournisseur
         active: Actif
         notes: Notes
       invoice:

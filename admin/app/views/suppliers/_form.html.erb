@@ -1,0 +1,25 @@
+<%= form_with model: supplier do |f| %>
+  <%= render "shared/errors", object: supplier %>
+  <div class="row">
+    <%= field f, :name, required: true, autofocus: true %>
+    <%= field f, :expense_category_id, :select, ExpenseCategory.ordered.map { |category| [ category.name, category.id ] }, include_blank: true %>
+  </div>
+  <div class="row">
+    <%= field f, :billing_country, :select, Country.options, hint: "Pays de l'entité qui facture" %>
+    <%= field f, :group_country, :select, Country.options, include_blank: "Même pays", hint: "Pays du groupe (ex. filiale irlandaise d'un groupe américain)" %>
+  </div>
+  <div class="row">
+    <%= field f, :vat_number, placeholder: "BE0123456789" %>
+    <%= field f, :iban %>
+    <%= field f, :peppol_id, placeholder: "0208:0123456789" %>
+  </div>
+  <%= field f, :website, :url_field %>
+  <%= field f, :require_peppol, :check_box, hint: "Toujours le cas pour un fournisseur belge" %>
+  <%= field f, :alternative_note, :text_area, rows: 2, hint: "Alternative européenne envisagée, pour réduire la dépendance aux États-Unis" %>
+  <%= field f, :notes, :text_area, rows: 2 %>
+  <%= field f, :active, :check_box %>
+  <div class="form-actions">
+    <%= f.submit "Enregistrer", class: "button" %>
+    <%= link_to "Annuler", supplier.persisted? ? supplier : suppliers_path, class: "button button--ghost" %>
+  </div>
+<% end %>

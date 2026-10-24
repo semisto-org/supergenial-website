@@ -1,0 +1,36 @@
+<%= page_header "Catégories de dépenses" do %>
+  <%= link_to "+ Catégorie", new_expense_category_path, class: "button" if can_write? %>
+<% end %>
+
+<p class="hint">Traitement comptable proposé pour chaque catégorie d'achat. La comptable valide chaque ligne ou la commente.</p>
+
+<div class="card">
+  <table>
+    <thead><tr><th>Catégorie</th><th>Compte PCMN</th><th class="num">TVA</th><th class="num">TVA déductible</th><th class="num">Déductible ISOC</th><th>Validation</th></tr></thead>
+    <tbody>
+      <% @expense_categories.each do |category| %>
+        <tr>
+          <td>
+            <%= can_write? ? link_to(category, edit_expense_category_path(category)) : category %>
+            <% if category.comments.any? %><small class="muted">· <%= pluralize(category.comments.size, "commentaire") %></small><% end %>
+          </td>
+          <td><%= category.pcmn_account %></td>
+          <td class="num"><%= percent(category.vat_rate) %></td>
+          <td class="num"><%= percent(category.vat_deductible_percent) %></td>
+          <td class="num"><%= percent(category.tax_deductible_percent) %></td>
+          <td>
+            <%= button_to (category.validated? ? "✓ validée" : "Valider"), validate_expense_category_path(category), method: :patch,
+                  class: (category.validated? ? "link-button" : "button button--small"), form_class: "inline-form" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<% @expense_categories.each do |category| %>
+  <details class="card">
+    <summary><%= category %> : commentaires</summary>
+    <%= render "shared/comments", commentable: category %>
+  </details>
+<% end %>

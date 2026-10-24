@@ -1,0 +1,13 @@
+<div class="card session-card">
+  <h1>Super <em>Génial</em></h1>
+  <p class="muted">Code de l'application d'authentification</p>
+  <% if flash[:alert] %><div class="flash flash--alert"><%= flash[:alert] %></div><% end %>
+  <%= form_with url: two_factor_path do |form| %>
+    <div class="field">
+      <%= form.label :code, "Code à 6 chiffres" %>
+      <%= form.text_field :code, required: true, autofocus: true, autocomplete: "one-time-code", inputmode: "numeric", pattern: "[0-9 ]{6,7}", maxlength: 7 %>
+    </div>
+    <%= form.submit "Valider", class: "button" %>
+  <% end %>
+  <p class="small"><%= link_to "Recommencer la connexion", new_session_path, class: "muted" %></p>
+</div>

@@ -1,4 +1,5 @@
 class Project < ApplicationRecord
+  include Commentable
   include Choices
 
   belongs_to :client

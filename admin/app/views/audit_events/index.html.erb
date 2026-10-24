@@ -1,0 +1,39 @@
+<%= page_header "Journal des modifications" %>
+
+<p class="hint">Chaque création, modification et suppression, avec son auteur. Le journal ne se modifie pas.</p>
+
+<nav class="filters">
+  <%= link_to "Tout", audit_events_path, class: ("is-active" if params[:type].blank?) %>
+  <% @types.each do |type| %>
+    <%= link_to (type.safe_constantize&.model_name&.human || type), audit_events_path(type:), class: ("is-active" if params[:type] == type) %>
+  <% end %>
+</nav>
+
+<div class="card">
+  <table>
+    <thead><tr><th>Quand</th><th>Qui</th><th>Action</th><th>Élément</th><th>Changements</th></tr></thead>
+    <tbody>
+      <% @events.each do |event| %>
+        <tr>
+          <td class="nowrap"><%= l(event.created_at, format: :short) %></td>
+          <td><%= event.actor_label %></td>
+          <td><%= badge event.action_label, { "create" => "actif", "update" => "en_attente", "destroy" => "ancien" }[event.action] %></td>
+          <td><%= link_to "#{event.auditable_model_name} · #{event.auditable_label}", audit_events_path(type: event.auditable_type, record_id: event.auditable_id) %></td>
+          <td>
+            <small>
+              <% event.changeset.each do |attribute, (before, after)| %>
+                <% name = event.auditable_type.safe_constantize&.human_attribute_name(attribute) || attribute %>
+                <div><strong><%= name %></strong> : <%= event.action == "create" ? after.to_s.truncate(80) : "#{before.to_s.truncate(40).presence || '∅'} → #{after.to_s.truncate(40).presence || '∅'}" %></div>
+              <% end %>
+            </small>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <% if @events.empty? %><p class="muted">Aucune modification.</p><% end %>
+  <footer class="card-footer">
+    <% if @page > 1 %><%= link_to "← Plus récent", request.query_parameters.merge(page: @page - 1) %><% end %>
+    <% if @next_page %><%= link_to "Plus ancien →", request.query_parameters.merge(page: @page + 1) %><% end %>
+  </footer>
+</div>

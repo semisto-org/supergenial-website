@@ -41,6 +41,6 @@ class FixedCostsController < ApplicationController
     end
 
     def fixed_cost_params
-      params.expect(fixed_cost: %i[ name category amount period forecast_amount renews_on action billing_url active notes ])
+      params.expect(fixed_cost: %i[ name category supplier_id amount period forecast_amount renews_on action billing_url active notes ])
     end
 end

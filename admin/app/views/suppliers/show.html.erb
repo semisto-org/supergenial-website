@@ -1,0 +1,46 @@
+<%= page_header @supplier.name do %>
+  <%= link_to "Modifier", edit_supplier_path(@supplier), class: "button button--ghost" if can_write? %>
+<% end %>
+
+<p class="lead">
+  <%= badge(@supplier.active? ? "Actif" : "Inactif", @supplier.active? ? "actif" : "ancien") %>
+  <%= @supplier.zone_label %>
+  · facture depuis <%= Country.name(@supplier.billing_country) %>
+  <% if @supplier.group_country.present? %> · groupe : <%= Country.name(@supplier.group_country) %><% end %>
+</p>
+
+<section class="grid-2">
+  <div class="card">
+    <h2>Identité</h2>
+    <dl class="details">
+      <dt>N° de TVA</dt><dd><%= @supplier.vat_number.presence || "–" %></dd>
+      <dt>IBAN</dt><dd><%= @supplier.iban.presence || "–" %></dd>
+      <dt>Identifiant Peppol</dt><dd><%= @supplier.peppol_id.presence || "–" %> <%= badge("Peppol exigé", "en_cours") if @supplier.peppol_expected? %></dd>
+      <dt>Catégorie</dt><dd><%= @supplier.expense_category || "–" %></dd>
+      <dt>Site</dt><dd><%= external_link(@supplier.website) || "–" %></dd>
+    </dl>
+  </div>
+
+  <div class="card">
+    <h2>Frais fixes</h2>
+    <ul class="plain">
+      <% @supplier.fixed_costs.order(:name).each do |cost| %>
+        <li><%= cost %> : <%= eur(cost.amount) %> <small class="muted"><%= cost.period_label %></small></li>
+      <% end %>
+    </ul>
+    <% if @supplier.fixed_costs.empty? %><p class="muted">Aucun frais fixe lié.</p><% end %>
+  </div>
+</section>
+
+<% if @supplier.alternative_note.present? %>
+  <div class="card"><h2>Alternative européenne</h2><%= simple_format(@supplier.alternative_note) %></div>
+<% end %>
+<% if @supplier.notes.present? %>
+  <div class="card"><h2>Notes</h2><%= simple_format(@supplier.notes) %></div>
+<% end %>
+
+<%= render "shared/comments", commentable: @supplier %>
+
+<% if can_write? %>
+  <p><%= link_to "Supprimer ce fournisseur", @supplier, class: "danger", data: { turbo_method: :delete, turbo_confirm: "Supprimer #{@supplier} ?" } %></p>
+<% end %>

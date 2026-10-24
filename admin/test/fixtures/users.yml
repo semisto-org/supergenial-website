@@ -3,7 +3,19 @@
 one:
   email_address: one@example.com
   password_digest: <%= password_digest %>
+  role: admin
+  otp_secret: JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP
+  otp_enabled_at: 2026-10-01 10:00:00
 
 two:
   email_address: two@example.com
   password_digest: <%= password_digest %>
+  role: admin
+
+accountant:
+  email_address: comptable@example.com
+  name: Comptable fictive
+  password_digest: <%= password_digest %>
+  role: accountant
+  otp_secret: KRSXG5CTMVRXEZLUKRSXG5CTMVRXEZLU
+  otp_enabled_at: 2026-10-01 10:00:00

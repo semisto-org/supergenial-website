@@ -26,7 +26,11 @@
         <%= nav_link "Taux horaire", hourly_rates_path, :hourly_rates %>
         <%= nav_link "Factures", invoices_path, :invoices %>
         <%= nav_link "Frais fixes", fixed_costs_path, :fixed_costs %>
+        <%= nav_link "Fournisseurs", suppliers_path, :suppliers %>
+        <%= nav_link "Journal", audit_events_path, :audit_events %>
+        <%= nav_link "Comptes", users_path, :users if Current.user&.admin? %>
       </div>
+      <% unless can_write? %><span class="badge badge--info">Lecture seule</span><% end %>
       <%= button_to "Déconnexion", session_path, method: :delete, class: "link-button" %>
     </nav>
 

@@ -1,0 +1,18 @@
+<%= form_with model: user do |f| %>
+  <%= render "shared/errors", object: user %>
+  <div class="row">
+    <%= field f, :name, autofocus: true %>
+    <%= field f, :email_address, :email_field, required: true %>
+  </div>
+  <div class="row">
+    <%= field f, :role, :select, User.role_options, disabled: user == Current.user %>
+    <%= field f, :password, :password_field, required: user.new_record?, autocomplete: "new-password", hint: (user.persisted? ? "Vide = inchangé" : "À transmettre de vive voix") %>
+  </div>
+  <div class="form-actions">
+    <%= f.submit "Enregistrer", class: "button" %>
+    <%= link_to "Annuler", users_path, class: "button button--ghost" %>
+    <% if user.persisted? && user != Current.user %>
+      <%= link_to "Supprimer", user, data: { turbo_method: :delete, turbo_confirm: "Supprimer le compte #{user.email_address} ?" }, class: "danger" %>
+    <% end %>
+  </div>
+<% end %>

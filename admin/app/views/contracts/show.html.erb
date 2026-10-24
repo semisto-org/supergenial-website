@@ -38,3 +38,5 @@
 </dl>
 
 <p><%= link_to "Supprimer ce contrat", @contract, data: { turbo_method: :delete, turbo_confirm: "Supprimer #{@contract} ?" }, class: "danger" %></p>
+
+<%= render "shared/comments", commentable: @contract %>
