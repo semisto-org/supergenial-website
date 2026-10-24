@@ -25,6 +25,7 @@
     <div class="row">
       <%= field f, :payment_terms_days, :number_field %>
       <%= field f, :last_external_number, placeholder: "2026-042", hint: "La numérotation de l'admin continue après ce numéro" %>
+      <%= field f, :vat_tracked_since, :date_field, hint: "Premier jour du premier trimestre déclaré depuis l'admin ; avant, la TVA a été déclarée ailleurs" %>
     </div>
     <%= field f, :invoice_footer, :text_area, rows: 3, hint: "Mentions légales : siège, RPM (tribunal de l'entreprise), etc." %>
     <div class="form-actions">

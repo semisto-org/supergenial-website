@@ -5,6 +5,7 @@
 class PurchaseInvoice < ApplicationRecord
   include Commentable
   include Choices
+  include VatDeclared
 
   DOCUMENT_TYPES = %w[ application/pdf image/png image/jpeg ].freeze
   MAX_DOCUMENT_SIZE = 15.megabytes

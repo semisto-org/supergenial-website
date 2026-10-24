@@ -4,6 +4,7 @@
 class Invoice < ApplicationRecord
   include Commentable
   include Choices
+  include VatDeclared
 
   # What can still change once an admin document is issued: payment, notes and delivery tracking.
   MUTABLE_WHEN_ISSUED = %w[ paid_on notes ubl_xml peppol_status peppol_document_id sent_at send_error updated_at ].freeze

@@ -44,6 +44,14 @@ Rails.application.routes.draw do
     end
   end
   resource :dependence, only: :show
+  resources :vat_returns, only: %i[ index show ] do
+    member do
+      post :close
+      get :export
+      get :declaration
+      get :listing
+    end
+  end
   resources :bank_statements, only: %i[ index show create destroy ] do
     get :file, on: :member
   end

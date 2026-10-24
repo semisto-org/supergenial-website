@@ -52,6 +52,16 @@ class Dashboard
 
   def purchases_to_review = PurchaseInvoice.to_review.count
 
+  # The oldest quarter still to declare, once it is over.
+  def vat_return_due(today = Date.current)
+    quarter = VatReturn::Quarter.containing(CompanyProfile.current.vat_tracked_since || today)
+    while quarter.ends_on < today
+      vat_return = VatReturn.new(quarter)
+      return vat_return unless vat_return.closed?
+      quarter = quarter.next
+    end
+  end
+
   def bank_transactions_to_match = BankTransaction.unmatched.count
 
   # A monthly fixed cost with a known supplier should bring one invoice a month: the ones missing for last month.

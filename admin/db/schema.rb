@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_25_020000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_25_030000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -150,6 +150,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_25_020000) do
     t.text "invoice_footer"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.date "vat_tracked_since"
   end
 
   create_table "contacts", force: :cascade do |t|
@@ -288,12 +289,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_25_020000) do
     t.datetime "sent_at"
     t.text "send_error"
     t.string "external_id"
+    t.integer "vat_period_id"
     t.index ["client_id"], name: "index_invoices_on_client_id"
     t.index ["credited_invoice_id"], name: "index_invoices_on_credited_invoice_id"
     t.index ["issued_on"], name: "index_invoices_on_issued_on"
     t.index ["number"], name: "index_invoices_on_number", unique: true, where: "number IS NOT NULL AND source = 'admin'"
     t.index ["project_id"], name: "index_invoices_on_project_id"
     t.index ["source", "external_id"], name: "index_invoices_on_source_and_external_id", unique: true, where: "external_id IS NOT NULL"
+    t.index ["vat_period_id"], name: "index_invoices_on_vat_period_id"
   end
 
   create_table "packs", force: :cascade do |t|
@@ -380,12 +383,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_25_020000) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "vat_period_id"
     t.index ["expense_category_id"], name: "index_purchase_invoices_on_expense_category_id"
     t.index ["fixed_cost_id"], name: "index_purchase_invoices_on_fixed_cost_id"
     t.index ["issued_on"], name: "index_purchase_invoices_on_issued_on"
     t.index ["source", "external_id"], name: "index_purchase_invoices_on_source_and_external_id", unique: true, where: "external_id IS NOT NULL"
     t.index ["status"], name: "index_purchase_invoices_on_status"
     t.index ["supplier_id"], name: "index_purchase_invoices_on_supplier_id"
+    t.index ["vat_period_id"], name: "index_purchase_invoices_on_vat_period_id"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -451,6 +456,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_25_020000) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  create_table "vat_periods", force: :cascade do |t|
+    t.integer "year", null: false
+    t.integer "quarter", null: false
+    t.datetime "closed_at", null: false
+    t.integer "closed_by_id"
+    t.json "grids", default: {}, null: false
+    t.json "intracom_listing", default: [], null: false
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["closed_by_id"], name: "index_vat_periods_on_closed_by_id"
+    t.index ["year", "quarter"], name: "index_vat_periods_on_year_and_quarter", unique: true
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "audit_events", "users", on_delete: :nullify
@@ -470,6 +489,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_25_020000) do
   add_foreign_key "invoices", "clients"
   add_foreign_key "invoices", "invoices", column: "credited_invoice_id"
   add_foreign_key "invoices", "projects"
+  add_foreign_key "invoices", "vat_periods"
   add_foreign_key "packs", "clients"
   add_foreign_key "packs", "invoices"
   add_foreign_key "plan_prices", "plans"
@@ -477,10 +497,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_25_020000) do
   add_foreign_key "purchase_invoices", "expense_categories"
   add_foreign_key "purchase_invoices", "fixed_costs"
   add_foreign_key "purchase_invoices", "suppliers"
+  add_foreign_key "purchase_invoices", "vat_periods"
   add_foreign_key "sessions", "users"
   add_foreign_key "suppliers", "expense_categories"
   add_foreign_key "time_entries", "clients"
   add_foreign_key "time_entries", "invoices"
   add_foreign_key "time_entries", "packs"
   add_foreign_key "time_entries", "projects"
+  add_foreign_key "vat_periods", "users", column: "closed_by_id"
 end

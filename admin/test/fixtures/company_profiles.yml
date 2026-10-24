@@ -9,3 +9,4 @@ main:
   iban: BE00000000000000
   payment_terms_days: 30
   last_external_number: 2026-042
+  vat_tracked_since: 2026-07-01
