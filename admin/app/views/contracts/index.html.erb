@@ -22,7 +22,7 @@
           <td class="num"><%= eur(contract.yearly_amount) %></td>
           <td class="num"><%= contract.cost ? percent(contract.margin_rate) : "–" %></td>
           <td><%= contract.actif? ? date(contract.next_billing_on) : badge(contract.status_label, contract.status) %></td>
-          <td><% if contract.due? %><%= button_to "Facturé", bill_contract_path(contract), class: "button button--small", form: { data: { turbo_confirm: "Enregistrer la facture de #{contract} ?" } } %><% end %></td>
+          <td><% if contract.due? %><%= button_to "Facturer", bill_contract_path(contract), class: "button button--small", form: { data: { turbo_confirm: "Préparer la facture de #{contract} ?" } } %><% end %></td>
         </tr>
       <% end %>
     </tbody>

@@ -8,7 +8,7 @@ class Dashboard
 
   def target = Rails.configuration.x.annual_target
 
-  def invoiced = @invoiced ||= Invoice.in_year(year).sum(:amount)
+  def invoiced = @invoiced ||= Invoice.counted.in_year(year).sum(:amount)
 
   def target_progress = target.zero? ? 0 : (invoiced / target * 100).round
 
@@ -38,6 +38,16 @@ class Dashboard
     TimeEntry.a_facturer.includes(:client, :project).group_by(&:client)
       .map { |client, entries| { client:, hours: entries.sum(&:hours), amount: entries.sum(&:amount), since: entries.map(&:performed_on).min } }
       .sort_by { |row| -row[:amount] }
+  end
+
+  def draft_invoices = Invoice.draft.includes(:client).recent
+
+  # Services must be invoiced by the 15th of the following month (Belgian VAT rule).
+  def billing_deadlines(today = Date.current)
+    TimeEntry.a_facturer.where(performed_on: ...today.beginning_of_month).includes(:client, :project).to_a
+      .group_by { |entry| entry.performed_on.next_month.beginning_of_month + 14 }
+      .map { |deadline, entries| { deadline:, late: deadline < today, amount: entries.sum(&:amount), clients: entries.map(&:client).uniq } }
+      .sort_by { |row| row[:deadline] }
   end
 
   def due_contracts(horizon = 30.days)

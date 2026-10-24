@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_24_220400) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_24_230200) do
   create_table "audit_events", force: :cascade do |t|
     t.integer "user_id"
     t.string "actor_kind", default: "user", null: false
@@ -36,6 +36,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_220400) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "street"
+    t.string "postal_code"
+    t.string "city"
+    t.string "country", default: "BE", null: false
+    t.string "billing_email"
+    t.string "peppol_id"
+    t.datetime "peppol_checked_at"
+    t.boolean "peppol_reachable"
     t.index ["name"], name: "index_clients_on_name", unique: true
   end
 
@@ -49,6 +57,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_220400) do
     t.datetime "updated_at", null: false
     t.index ["commentable_type", "commentable_id"], name: "index_comments_on_commentable"
     t.index ["user_id"], name: "index_comments_on_user_id"
+  end
+
+  create_table "company_profiles", force: :cascade do |t|
+    t.string "legal_name", null: false
+    t.string "trade_name"
+    t.string "vat_number"
+    t.string "street"
+    t.string "postal_code"
+    t.string "city"
+    t.string "country", default: "BE", null: false
+    t.string "email"
+    t.string "phone"
+    t.string "website"
+    t.string "iban"
+    t.string "bic"
+    t.integer "payment_terms_days", default: 30, null: false
+    t.string "last_external_number"
+    t.text "invoice_footer"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "contacts", force: :cascade do |t|
@@ -129,6 +157,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_220400) do
     t.index ["starts_on"], name: "index_hourly_rates_on_starts_on", unique: true
   end
 
+  create_table "invoice_lines", force: :cascade do |t|
+    t.integer "invoice_id", null: false
+    t.integer "position", default: 0, null: false
+    t.string "description", null: false
+    t.decimal "quantity", precision: 10, scale: 2, default: "1.0", null: false
+    t.string "unit", default: "unit", null: false
+    t.decimal "unit_price", precision: 12, scale: 2, default: "0.0", null: false
+    t.decimal "vat_rate", precision: 5, scale: 2, default: "21.0", null: false
+    t.date "period_start"
+    t.date "period_end"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["invoice_id"], name: "index_invoice_lines_on_invoice_id"
+  end
+
   create_table "invoices", force: :cascade do |t|
     t.integer "client_id", null: false
     t.integer "project_id"
@@ -140,8 +183,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_220400) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "kind", default: "invoice", null: false
+    t.string "status", default: "draft", null: false
+    t.string "source", default: "admin", null: false
+    t.integer "credited_invoice_id"
+    t.date "due_on"
+    t.string "vat_regime", default: "standard", null: false
+    t.decimal "vat_amount", precision: 12, scale: 2, default: "0.0", null: false
+    t.string "structured_reference"
+    t.datetime "issued_at"
+    t.json "buyer", default: {}, null: false
+    t.json "seller", default: {}, null: false
+    t.text "ubl_xml"
+    t.string "peppol_status"
+    t.string "peppol_document_id"
+    t.datetime "sent_at"
+    t.text "send_error"
     t.index ["client_id"], name: "index_invoices_on_client_id"
+    t.index ["credited_invoice_id"], name: "index_invoices_on_credited_invoice_id"
     t.index ["issued_on"], name: "index_invoices_on_issued_on"
+    t.index ["number"], name: "index_invoices_on_number", unique: true, where: "number IS NOT NULL AND source = 'admin'"
     t.index ["project_id"], name: "index_invoices_on_project_id"
   end
 
@@ -264,7 +325,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_220400) do
   add_foreign_key "contracts", "plans"
   add_foreign_key "contracts", "projects"
   add_foreign_key "fixed_costs", "suppliers"
+  add_foreign_key "invoice_lines", "invoices", on_delete: :cascade
   add_foreign_key "invoices", "clients"
+  add_foreign_key "invoices", "invoices", column: "credited_invoice_id"
   add_foreign_key "invoices", "projects"
   add_foreign_key "packs", "clients"
   add_foreign_key "packs", "invoices"

@@ -51,6 +51,16 @@ La base est créée et migrée au démarrage du conteneur. Créer ensuite le com
   `ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY`, `…_DETERMINISTIC_KEY`, `…_KEY_DERIVATION_SALT` si définies). Changer
   `SECRET_KEY_BASE` oblige à réinitialiser la 2FA de chaque compte.
 
+### Facturation et Peppol (Recommand)
+
+Les factures et notes de crédit sont créées en brouillon (depuis les heures, un contrat ou « + Facture »), puis
+**émises** : numéro de la série annuelle `AAAA-NNN` (partagée avec les notes de crédit, suite du dernier numéro OkiOki
+saisi dans « Société »), communication structurée, plus aucune modification possible. L'envoi passe par l'API
+Recommand : Peppol si le client y est joignable, e-mail sinon, jamais d'e-mail pour une entreprise belge.
+L'UBL renvoyé par Recommand est archivé avec la facture ; le PDF (polices Liberation Sans, `vendor/fonts`) est joint
+au document Peppol. Variables **runtime** : `RECOMMAND_API_KEY`, `RECOMMAND_API_SECRET`, `RECOMMAND_COMPANY_ID`
+(clés de l'équipe « playground » pour tester), `RECOMMAND_BASE_URL` (optionnelle).
+
 ### Sauvegardes hors site
 
 Chaque nuit à 3 h (Solid Queue dans Puma : `SOLID_QUEUE_IN_PUMA=true`), `BackupJob` envoie la base et les fichiers,
@@ -71,7 +81,9 @@ restaurer : télécharger le fichier, `bin/rails backups:decrypt FILE=… BACKUP
 | `Pack` | Heures prépayées, solde calculé |
 | `Contract` | Récurrent : prix, coût, périodicité, prochaine échéance ; « Facturé » crée la facture et avance l'échéance |
 | `FixedCost` | Frais de Super Génial, actuel et prévisionnel (vide = inchangé, 0 = supprimé) |
-| `Invoice` | Référence d'une facture OkiOki, sert au chiffre d'affaires |
+| `Invoice` | Facture ou note de crédit : brouillon puis émise (immuable), lignes, TVA, envoi Peppol ; ou référence d'un document OkiOki / Harvest |
+| `InvoiceLine` | Ligne : quantité, unité, prix HTVA, taux de TVA, période |
+| `CompanyProfile` | Le vendeur (Marco & Vespucci SRL) : identité, compte, délai de paiement, dernier n° OkiOki |
 | `Dashboard` | Les totaux de l'ancien onglet « Revenus » |
 | `Supplier` | Fournisseur : pays de facturation et pays du groupe (zone BE / UE / US / autres), Peppol attendu |
 | `ExpenseCategory` | Catégorie d'achat et traitement comptable proposé (compte PCMN, TVA, déductibilité ISOC), validé par la comptable |

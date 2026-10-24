@@ -136,3 +136,10 @@ body.session main { max-width: 400px; padding-top: 12vh; }
 .qr-code img { width: 200px; height: 200px; background: #fff; padding: 8px; border-radius: 8px; }
 .comments form { margin-top: 0.8rem; }
 details.card > summary { cursor: pointer; font-weight: 600; }
+
+/* Invoice lines */
+.form-card--wide { max-width: none; }
+.lines-form { margin-bottom: 0.5rem; }
+.lines-form td { padding: 0.25rem; vertical-align: top; }
+.lines-form input[type="number"] { width: 7rem; }
+.lines-form input[type="date"] { width: 9rem; }

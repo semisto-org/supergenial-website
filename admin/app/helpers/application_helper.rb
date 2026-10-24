@@ -32,6 +32,15 @@ module ApplicationHelper
     nil
   end
 
+  def invoice_delivery_badge(invoice)
+    case invoice.peppol_status
+    when "peppol" then badge("Peppol", "actif")
+    when "email" then badge("e-mail", "en_cours")
+    when "pending" then badge("en cours", "en_attente")
+    else badge("refusé", "suspendu") if invoice.send_error.present?
+    end
+  end
+
   def nav_link(label, path, section)
     link_to label, path, class: ("is-active" if controller_name == section.to_s)
   end

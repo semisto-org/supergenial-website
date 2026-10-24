@@ -1,0 +1,105 @@
+<%= page_header "#{@invoice.kind_label} #{@invoice.number || '(brouillon)'}" do %>
+  <%= link_to "PDF", pdf_invoice_path(@invoice), class: "button button--ghost", target: "_blank" if @invoice.admin? %>
+  <% if can_write? %>
+    <%= link_to "Modifier", edit_invoice_path(@invoice), class: "button button--ghost" unless @invoice.locked? %>
+    <% if @invoice.draft? %>
+      <%= button_to "Émettre", issue_invoice_path(@invoice), class: "button", form: { data: { turbo_confirm: "Émettre ce document ? Il recevra son numéro et ne pourra plus être modifié." } } %>
+    <% elsif @invoice.admin? %>
+      <%= button_to (@invoice.sent_at ? "Renvoyer" : "Envoyer"), deliver_invoice_path(@invoice), class: "button",
+            form: { data: { turbo_confirm: "Envoyer #{@invoice.number} à #{@invoice.client} #{@invoice.client.peppol_id.present? ? 'par Peppol' : 'par e-mail'} ?" } } %>
+      <%= button_to "Note de crédit", credit_note_invoice_path(@invoice), class: "button button--ghost" if @invoice.invoice? %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<p class="lead">
+  <%= badge @invoice.status_label, @invoice.draft? ? "en_attente" : "actif" %>
+  <%= link_to @invoice.client, @invoice.client %>
+  <% if @invoice.project %> · <%= link_to @invoice.project, @invoice.project %><% end %>
+  · <%= @invoice.vat_regime_label %>
+  <% unless @invoice.admin? %> · référence <%= @invoice.source_label %><% end %>
+</p>
+
+<% if @invoice.send_error.present? %>
+  <div class="flash flash--alert">Dernier envoi refusé : <%= @invoice.send_error %></div>
+<% end %>
+
+<section class="grid-2">
+  <div class="card">
+    <h2><%= @invoice.label %></h2>
+    <dl class="details">
+      <dt>Date</dt><dd><%= date(@invoice.issued_on) %></dd>
+      <% if @invoice.due_on %><dt>Échéance</dt><dd><%= date(@invoice.due_on) %></dd><% end %>
+      <% if @invoice.structured_reference %><dt>Communication</dt><dd><code><%= @invoice.structured_reference %></code></dd><% end %>
+      <% if @invoice.credited_invoice %><dt>Facture créditée</dt><dd><%= link_to @invoice.credited_invoice, @invoice.credited_invoice %></dd><% end %>
+      <% @invoice.credit_notes.each do |credit_note| %><dt>Note de crédit</dt><dd><%= link_to credit_note, credit_note %></dd><% end %>
+      <dt>Paiement</dt><dd><%= @invoice.paid? ? "payée le #{date(@invoice.paid_on)}" : "à encaisser" %></dd>
+    </dl>
+  </div>
+
+  <div class="card">
+    <h2>Envoi</h2>
+    <% if @invoice.admin? %>
+      <dl class="details">
+        <dt>Statut</dt><dd><%= invoice_delivery_badge(@invoice) || "pas encore envoyée" %></dd>
+        <% if @invoice.sent_at %><dt>Envoyée le</dt><dd><%= l(@invoice.sent_at, format: :short) %></dd><% end %>
+        <dt>Peppol du client</dt><dd><%= @invoice.client.peppol_id.presence || "–" %></dd>
+        <dt>E-mail</dt><dd><%= @invoice.client.invoicing_email || "–" %></dd>
+        <% if @invoice.ubl_xml.present? %><dt>Original</dt><dd><%= link_to "UBL (XML)", ubl_invoice_path(@invoice) %></dd><% end %>
+      </dl>
+      <% if @invoice.client.belgian_business? && @invoice.client.peppol_id.blank? %>
+        <p class="hint">Entreprise belge : l'envoi passe obligatoirement par Peppol. <%= link_to "Vérifier son identifiant", @invoice.client %>.</p>
+      <% end %>
+    <% else %>
+      <p class="muted">Document émis dans <%= @invoice.source_label %> : l'original y reste.</p>
+    <% end %>
+  </div>
+</section>
+
+<% if @invoice.admin? %>
+  <div class="card">
+    <table>
+      <thead><tr><th>Description</th><th class="num">Quantité</th><th class="num">Prix unitaire</th><th class="num">TVA</th><th class="num">Total HTVA</th></tr></thead>
+      <tbody>
+        <% @invoice.lines.each do |line| %>
+          <tr>
+            <td><%= line.description %><% if line.period_start && line.period_end %><br><small class="muted"><%= date(line.period_start) %> – <%= date(line.period_end) %></small><% end %></td>
+            <td class="num"><%= number_with_precision(line.quantity, precision: 2, strip_insignificant_zeros: true, separator: ",") %> <%= line.unit_label %></td>
+            <td class="num"><%= eur(line.unit_price) %></td>
+            <td class="num"><%= @invoice.standard? ? percent(line.vat_rate) : "–" %></td>
+            <td class="num"><%= eur(line.net_amount) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+      <tfoot>
+        <tr><th colspan="4">Total HTVA</th><th class="num"><%= eur(@invoice.subtotal) %></th></tr>
+        <% @invoice.vat_subtotals.each do |subtotal| %>
+          <tr><td colspan="4">TVA <%= percent(subtotal[:rate]) %> sur <%= eur(subtotal[:taxable]) %></td><td class="num"><%= eur(subtotal[:vat]) %></td></tr>
+        <% end %>
+        <tr><th colspan="4">Total TVAC</th><th class="num"><%= eur(@invoice.subtotal + @invoice.vat_amount) %></th></tr>
+      </tfoot>
+    </table>
+    <% if @invoice.lines.empty? %><p class="muted">Aucune ligne.</p><% end %>
+    <% if (mention = @invoice.regime[:mention]) %><p class="hint"><%= mention %></p><% end %>
+  </div>
+<% else %>
+  <div class="card"><p>Montant HTVA : <strong><%= eur(@invoice.amount) %></strong></p></div>
+<% end %>
+
+<% if @invoice.issued? && can_write? %>
+  <div class="card">
+    <%= form_with model: @invoice, class: "inline-form" do |f| %>
+      <%= f.label :paid_on, "Payée le" %>
+      <%= f.date_field :paid_on %>
+      <%= f.submit "Enregistrer le paiement", class: "button button--small" %>
+    <% end %>
+  </div>
+<% end %>
+
+<% if @invoice.notes.present? %><div class="card"><h2>Notes</h2><%= simple_format(@invoice.notes) %></div><% end %>
+
+<%= render "shared/comments", commentable: @invoice %>
+
+<% if can_write? && !(@invoice.admin? && @invoice.issued?) %>
+  <p><%= link_to "Supprimer", @invoice, class: "danger", data: { turbo_method: :delete, turbo_confirm: "Supprimer ce document ? Les heures liées repassent « à facturer »." } %></p>
+<% end %>

@@ -1,0 +1,29 @@
+<%= page_header "Société" do %>
+  <%= link_to "Modifier", edit_company_profile_path, class: "button button--ghost" if can_write? %>
+<% end %>
+
+<% unless @company_profile.ready_for_invoicing? %>
+  <div class="flash flash--alert">À compléter avant d'émettre une facture : <%= @company_profile.missing_for_invoicing.map { |attribute| CompanyProfile.human_attribute_name(attribute) }.to_sentence %>.</div>
+<% end %>
+
+<div class="card">
+  <h2><%= @company_profile.legal_name %></h2>
+  <dl class="details">
+    <dt>Nom commercial</dt><dd><%= @company_profile.trade_name.presence || "–" %></dd>
+    <dt>N° de TVA</dt><dd><%= @company_profile.vat_number.presence || "–" %></dd>
+    <dt>N° d'entreprise</dt><dd><%= @company_profile.formatted_enterprise_number || "–" %></dd>
+    <dt>Identifiant Peppol</dt><dd><%= @company_profile.peppol_id || "–" %></dd>
+    <dt>Adresse</dt><dd><%= [ @company_profile.street, [ @company_profile.postal_code, @company_profile.city ].compact_blank.join(" "), Country.name(@company_profile.country) ].compact_blank.join(", ").presence || "–" %></dd>
+    <dt>Contact</dt><dd><%= [ @company_profile.email, @company_profile.phone, @company_profile.website ].compact_blank.join(" · ").presence || "–" %></dd>
+    <dt>Compte</dt><dd><%= [ @company_profile.iban, @company_profile.bic ].compact_blank.join(" · ").presence || "–" %></dd>
+    <dt>Délai de paiement</dt><dd><%= @company_profile.payment_terms_days %> jours</dd>
+    <dt>Dernier n° OkiOki</dt><dd><%= @company_profile.last_external_number.presence || "–" %> <small class="muted">· prochain numéro : <%= InvoiceNumbering.next(Date.current.year) %></small></dd>
+    <dt>Pied de facture</dt><dd><%= simple_format(@company_profile.invoice_footer.presence || "–") %></dd>
+  </dl>
+</div>
+
+<div class="card">
+  <h2>Envoi Peppol</h2>
+  <p><%= Recommand::Client.configured? ? badge("Recommand configuré", "actif") : badge("Recommand non configuré", "en_attente") %></p>
+  <p class="hint">Variables runtime dans Coolify : <code>RECOMMAND_API_KEY</code>, <code>RECOMMAND_API_SECRET</code>, <code>RECOMMAND_COMPANY_ID</code>. Les clés de l'équipe « playground » permettent de tester sans rien envoyer.</p>
+</div>

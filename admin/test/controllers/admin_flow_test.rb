@@ -36,12 +36,15 @@ class AdminFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to time_entries_path
   end
 
-  test "bill selected time entries into one invoice" do
+  test "bill selected time entries into one draft invoice" do
     entries = [ time_entries(:visio), time_entries(:dashboard) ]
-    post bill_time_entries_path, params: { ids: entries.map(&:id), number: "2026-050", issued_on: "2026-10-24" }
+    post bill_time_entries_path, params: { ids: entries.map(&:id) }
 
-    invoice = Invoice.find_by!(number: "2026-050")
+    invoice = Invoice.last
+    assert_redirected_to invoice_path(invoice)
+    assert invoice.draft?
     assert_equal 300, invoice.amount
+    assert_equal 2, invoice.lines.size
     assert entries.all? { |entry| entry.reload.facture? && entry.invoice == invoice }
   end
 
@@ -132,8 +135,8 @@ class AdminFlowTest < ActionDispatch::IntegrationTest
 
   test "deleting an invoice puts its hours back to bill" do
     entries = [ time_entries(:visio), time_entries(:dashboard) ]
-    post bill_time_entries_path, params: { ids: entries.map(&:id), number: "2026-052" }
-    delete invoice_path(Invoice.find_by!(number: "2026-052"))
+    post bill_time_entries_path, params: { ids: entries.map(&:id) }
+    delete invoice_path(Invoice.last)
     assert entries.all? { |entry| entry.reload.a_facturer? && entry.invoice.nil? }
   end
 

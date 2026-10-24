@@ -20,6 +20,11 @@ class TimeEntry < ApplicationRecord
 
   def amount = hours * rate
 
+  def invoice_line_attributes(position)
+    { position:, description: [ I18n.l(performed_on), description.presence || "Prestation" ].join(" · "),
+      quantity: hours, unit: "hour", unit_price: rate, vat_rate: 21 }
+  end
+
   private
     def status_from_pack
       self.status = "au_pack" if pack.present?

@@ -1,5 +1,5 @@
 class ClientsController < ApplicationController
-  before_action :set_client, only: %i[ show edit update destroy ]
+  before_action :set_client, only: %i[ show edit update destroy verify_peppol ]
 
   def index
     @status = params[:status].presence_in(Client::STATUSES.keys)
@@ -45,12 +45,24 @@ class ClientsController < ApplicationController
     end
   end
 
+  # Looks the client up in the Peppol network through Recommand and keeps the result.
+  def verify_peppol
+    address = @client.suggested_peppol_id
+    return redirect_to(@client, alert: "Renseigne un n° de TVA belge ou un identifiant Peppol.") if address.blank?
+
+    result = Recommand::Client.new.verify(address)
+    @client.update!(peppol_reachable: result["isValid"], peppol_checked_at: Time.current, peppol_id: result["isValid"] ? address : @client.peppol_id)
+    redirect_to @client, notice: result["isValid"] ? "#{address} reçoit les factures Peppol." : "#{address} n'est pas joignable sur Peppol."
+  rescue Recommand::Error, KeyError => error
+    redirect_to @client, alert: error.is_a?(KeyError) ? "Recommand n'est pas configuré (variables RECOMMAND_* dans Coolify)." : error.message
+  end
+
   private
     def set_client
       @client = Client.find(params[:id])
     end
 
     def client_params
-      params.expect(client: %i[ name kind status vat_number address hourly_rate notes ])
+      params.expect(client: %i[ name kind status vat_number street postal_code city country billing_email peppol_id address hourly_rate notes ])
     end
 end
