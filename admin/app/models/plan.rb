@@ -1,5 +1,6 @@
 # Une formule d'abonnement du catalogue (Essentiel, Évolution…) et l'historique de ses prix.
 class Plan < ApplicationRecord
+  include Commentable
   include Periodic
 
   has_many :prices, -> { order(:starts_on) }, class_name: "PlanPrice", dependent: :destroy, inverse_of: :plan

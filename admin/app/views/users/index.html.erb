@@ -1,0 +1,25 @@
+<%= page_header "Comptes" do %>
+  <%= link_to "+ Compte", new_user_path, class: "button" %>
+<% end %>
+
+<div class="card">
+  <table>
+    <thead><tr><th>Nom</th><th>E-mail</th><th>Rôle</th><th>Double authentification</th><th></th></tr></thead>
+    <tbody>
+      <% @users.each do |user| %>
+        <tr>
+          <td><%= link_to user.display_name, edit_user_path(user) %></td>
+          <td><%= user.email_address %></td>
+          <td><%= user.role_label %></td>
+          <td><%= user.two_factor_enabled? ? badge("active", "actif") : badge("à configurer", "en_attente") %></td>
+          <td>
+            <% if user.two_factor_enabled? %>
+              <%= button_to "Réinitialiser la 2FA", reset_two_factor_user_path(user), class: "link-button small", form_class: "inline-form",
+                    data: { turbo_confirm: "#{user.email_address} devra reconfigurer son application. Continuer ?" } %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

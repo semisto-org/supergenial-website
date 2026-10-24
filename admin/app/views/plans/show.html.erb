@@ -57,3 +57,5 @@
 </div>
 
 <p><%= link_to "Supprimer cette formule", @plan, data: { turbo_method: :delete, turbo_confirm: "Supprimer #{@plan} ?" }, class: "danger" %></p>
+
+<%= render "shared/comments", commentable: @plan %>

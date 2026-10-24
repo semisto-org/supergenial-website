@@ -1,4 +1,5 @@
 class Client < ApplicationRecord
+  include Commentable
   include Choices
 
   # Les factures comptent dans le chiffre d'affaires : un client facturé ne se supprime pas,

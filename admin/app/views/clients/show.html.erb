@@ -106,3 +106,5 @@
   <p><%= link_to "Supprimer ce client", @client, class: "danger", data: { turbo_method: :delete,
         turbo_confirm: "Supprimer #{@client} ?#{" Seront aussi supprimés : #{linked.map { |name, count| pluralize(count, name) }.to_sentence}." if linked.any?} C'est définitif." } %></p>
 <% end %>
+
+<%= render "shared/comments", commentable: @client %>

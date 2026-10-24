@@ -130,3 +130,9 @@ body.session main { max-width: 400px; padding-top: 12vh; }
 }
 .checks { display: flex; gap: 0.25rem 1rem; flex-wrap: wrap; }
 .checks label { display: flex; align-items: center; gap: 0.35rem; font-weight: 400; color: var(--text); }
+
+/* Two-factor setup */
+.qr-code { display: flex; justify-content: center; margin: 1rem 0; }
+.qr-code img { width: 200px; height: 200px; background: #fff; padding: 8px; border-radius: 8px; }
+.comments form { margin-top: 0.8rem; }
+details.card > summary { cursor: pointer; font-weight: 600; }

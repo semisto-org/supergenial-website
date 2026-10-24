@@ -1,0 +1,15 @@
+hoster:
+  name: Hébergeur fictif
+  billing_country: CH
+  expense_category: hosting
+
+ai_company:
+  name: IA fictive
+  billing_country: IE
+  group_country: US
+  alternative_note: Essayer un modèle européen.
+
+belgian:
+  name: Fournisseur belge fictif
+  billing_country: BE
+  vat_number: BE0123456789

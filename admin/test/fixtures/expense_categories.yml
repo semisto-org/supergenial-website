@@ -1,0 +1,15 @@
+hosting:
+  key: hosting
+  name: Hébergement, serveurs et noms de domaine
+  pcmn_account: "612200"
+  vat_rate: 21
+  position: 0
+
+restaurant:
+  key: restaurant
+  name: Restaurant et réception
+  pcmn_account: "614300"
+  vat_rate: 12
+  vat_deductible_percent: 0
+  tax_deductible_percent: 69
+  position: 1

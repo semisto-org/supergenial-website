@@ -1,0 +1,22 @@
+<%= form_with model: expense_category do |f| %>
+  <%= render "shared/errors", object: expense_category %>
+  <div class="row">
+    <%= field f, :name, required: true, autofocus: true %>
+    <%= field f, :key, required: true, hint: "Identifiant technique, en anglais" %>
+  </div>
+  <div class="row">
+    <%= field f, :pcmn_account %>
+    <%= field f, :vat_rate, :number_field, step: "0.01" %>
+    <%= field f, :vat_deductible_percent, :number_field, step: "0.01" %>
+    <%= field f, :tax_deductible_percent, :number_field, step: "0.01" %>
+  </div>
+  <%= field f, :position, :number_field %>
+  <%= field f, :notes, :text_area, rows: 2 %>
+  <div class="form-actions">
+    <%= f.submit "Enregistrer", class: "button" %>
+    <%= link_to "Annuler", expense_categories_path, class: "button button--ghost" %>
+    <% if expense_category.persisted? %>
+      <%= link_to "Supprimer", expense_category, data: { turbo_method: :delete, turbo_confirm: "Supprimer #{expense_category} ?" }, class: "danger" %>
+    <% end %>
+  </div>
+<% end %>

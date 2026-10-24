@@ -24,6 +24,14 @@ module ApplicationHelper
     tag.span(label, class: "badge badge--#{BADGE_TONES.fetch(value.to_s, 'muted')}")
   end
 
+  # Links only to http(s) addresses, never to javascript: or data: URLs.
+  def external_link(url, label = url)
+    uri = URI.parse(url.to_s)
+    link_to(label, uri.to_s, target: "_blank", rel: "noopener") if uri.is_a?(URI::HTTP) && uri.host.present?
+  rescue URI::InvalidURIError
+    nil
+  end
+
   def nav_link(label, path, section)
     link_to label, path, class: ("is-active" if controller_name == section.to_s)
   end

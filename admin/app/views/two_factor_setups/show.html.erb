@@ -1,0 +1,20 @@
+<div class="card session-card">
+  <h1>Double authentification</h1>
+  <p class="muted">Obligatoire pour accéder à l'admin : elle protège les données comptables.</p>
+  <% if flash[:alert] %><div class="flash flash--alert"><%= flash[:alert] %></div><% end %>
+  <ol class="small">
+    <li>Ouvre une application d'authentification (Authy, 1Password, Google Authenticator…).</li>
+    <li>Scanne ce QR code, ou saisis la clé à la main.</li>
+    <li>Entre le code affiché pour confirmer.</li>
+  </ol>
+  <div class="qr-code"><%= image_tag @qr_code_src, alt: "QR code à scanner" %></div>
+  <p class="small">Clé : <code><%= @secret.scan(/.{1,4}/).join(" ") %></code></p>
+  <%= form_with url: two_factor_setup_path do |form| %>
+    <div class="field">
+      <%= form.label :code, "Code à 6 chiffres" %>
+      <%= form.text_field :code, required: true, autofocus: true, autocomplete: "one-time-code", inputmode: "numeric", pattern: "[0-9 ]{6,7}", maxlength: 7 %>
+    </div>
+    <%= form.submit "Activer", class: "button" %>
+  <% end %>
+  <%= button_to "Déconnexion", session_path, method: :delete, class: "link-button small muted" %>
+</div>
