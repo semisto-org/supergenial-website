@@ -2,6 +2,7 @@
   <%= link_to "← #{@year - 1}", invoices_path(year: @year - 1), class: "button button--ghost" %>
   <% if @year < Date.current.year %><%= link_to "#{@year + 1} →", invoices_path(year: @year + 1), class: "button button--ghost" %><% end %>
   <% if can_write? %>
+    <%= link_to "Reprise de l'historique", import_runs_path, class: "button button--ghost" if Current.user.admin? %>
     <%= link_to "Référencer une facture OkiOki", new_invoice_path(source: "okioki"), class: "button button--ghost" %>
     <%= link_to "+ Facture", new_invoice_path, class: "button" %>
   <% end %>

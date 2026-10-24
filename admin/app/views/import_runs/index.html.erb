@@ -1,0 +1,49 @@
+<%= page_header "Reprise de l'historique" %>
+
+<p class="hint">Les données sont lues à l'exécution et restent dans l'admin : rien n'est versionné. Une simulation montre le résultat sans rien enregistrer. Relancer un import met à jour au lieu de dupliquer.</p>
+
+<section class="grid-2">
+  <div class="card">
+    <h2>OkiOki</h2>
+    <p class="small">Exporte la liste des factures et notes de crédit d'OkiOki en CSV. Colonnes reconnues : numéro, date, client, type, objet, montant HTVA, TVA, total, échéance, statut, date de paiement.</p>
+    <%= form_with url: import_runs_path, multipart: true do |f| %>
+      <%= f.hidden_field :kind, value: "okioki" %>
+      <div class="field"><%= f.file_field :file, accept: ".csv,text/csv", required: true %></div>
+      <div class="field field--check"><%= f.check_box :replace_unnumbered, { checked: true }, "1", "0" %><%= f.label :replace_unnumbered, "Remplacer les références sans numéro reprises de la Google Sheet" %></div>
+      <div class="field field--check"><%= f.check_box :dry_run, { checked: true }, "1", "0" %><%= f.label :dry_run, "Simulation" %></div>
+      <%= f.submit "Importer", class: "button" %>
+    <% end %>
+  </div>
+
+  <div class="card">
+    <h2>Harvest</h2>
+    <% if @harvest_configured %>
+      <p class="small">Clients et factures, puis, si tu donnes une date, les heures jusqu'à cette date (choisis la veille des premières heures saisies dans l'admin pour éviter les doublons).</p>
+      <%= form_with url: import_runs_path do |f| %>
+        <%= f.hidden_field :kind, value: "harvest" %>
+        <div class="field"><%= f.label :time_entries_until, "Heures jusqu'au (facultatif)" %><%= f.date_field :time_entries_until %></div>
+        <div class="field field--check"><%= f.check_box :dry_run, { checked: true }, "1", "0" %><%= f.label :dry_run, "Simulation" %></div>
+        <%= f.submit "Importer", class: "button" %>
+      <% end %>
+    <% else %>
+      <p class="muted">Pas encore configuré : crée un jeton personnel sur id.getharvest.com/developers, puis ajoute <code>HARVEST_ACCESS_TOKEN</code> et <code>HARVEST_ACCOUNT_ID</code> en variables runtime dans Coolify.</p>
+    <% end %>
+  </div>
+</section>
+
+<div class="card">
+  <h2>Imports précédents</h2>
+  <table>
+    <tbody>
+      <% @import_runs.each do |run| %>
+        <tr>
+          <td><%= link_to run, run %><%= " · #{run.filename}" if run.filename %></td>
+          <td><%= run.dry_run? ? "simulation" : "réel" %></td>
+          <td><%= badge run.status_label, { "done" => "actif", "failed" => "suspendu", "running" => "en_cours" }.fetch(run.status, "en_attente") %></td>
+          <td><%= run.user %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <% if @import_runs.empty? %><p class="muted">Aucun import.</p><% end %>
+</div>

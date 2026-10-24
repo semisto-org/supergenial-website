@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_24_230200) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_25_000000) do
   create_table "audit_events", force: :cascade do |t|
     t.integer "user_id"
     t.string "actor_kind", default: "user", null: false
@@ -44,6 +44,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_230200) do
     t.string "peppol_id"
     t.datetime "peppol_checked_at"
     t.boolean "peppol_reachable"
+    t.integer "harvest_id"
+    t.index ["harvest_id"], name: "index_clients_on_harvest_id", unique: true, where: "harvest_id IS NOT NULL"
     t.index ["name"], name: "index_clients_on_name", unique: true
   end
 
@@ -157,6 +159,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_230200) do
     t.index ["starts_on"], name: "index_hourly_rates_on_starts_on", unique: true
   end
 
+  create_table "import_runs", force: :cascade do |t|
+    t.string "kind", null: false
+    t.string "status", default: "pending", null: false
+    t.boolean "dry_run", default: false, null: false
+    t.string "filename"
+    t.json "options", default: {}, null: false
+    t.text "report"
+    t.text "error"
+    t.integer "user_id"
+    t.datetime "finished_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_import_runs_on_user_id"
+  end
+
   create_table "invoice_lines", force: :cascade do |t|
     t.integer "invoice_id", null: false
     t.integer "position", default: 0, null: false
@@ -199,11 +216,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_230200) do
     t.string "peppol_document_id"
     t.datetime "sent_at"
     t.text "send_error"
+    t.string "external_id"
     t.index ["client_id"], name: "index_invoices_on_client_id"
     t.index ["credited_invoice_id"], name: "index_invoices_on_credited_invoice_id"
     t.index ["issued_on"], name: "index_invoices_on_issued_on"
     t.index ["number"], name: "index_invoices_on_number", unique: true, where: "number IS NOT NULL AND source = 'admin'"
     t.index ["project_id"], name: "index_invoices_on_project_id"
+    t.index ["source", "external_id"], name: "index_invoices_on_source_and_external_id", unique: true, where: "external_id IS NOT NULL"
   end
 
   create_table "packs", force: :cascade do |t|
@@ -297,7 +316,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_230200) do
     t.string "status", default: "a_facturer", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "external_id"
     t.index ["client_id"], name: "index_time_entries_on_client_id"
+    t.index ["external_id"], name: "index_time_entries_on_external_id", unique: true, where: "external_id IS NOT NULL"
     t.index ["invoice_id"], name: "index_time_entries_on_invoice_id"
     t.index ["pack_id"], name: "index_time_entries_on_pack_id"
     t.index ["project_id"], name: "index_time_entries_on_project_id"
@@ -325,6 +346,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_230200) do
   add_foreign_key "contracts", "plans"
   add_foreign_key "contracts", "projects"
   add_foreign_key "fixed_costs", "suppliers"
+  add_foreign_key "import_runs", "users", on_delete: :nullify
   add_foreign_key "invoice_lines", "invoices", on_delete: :cascade
   add_foreign_key "invoices", "clients"
   add_foreign_key "invoices", "invoices", column: "credited_invoice_id"

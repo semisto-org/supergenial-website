@@ -143,3 +143,4 @@ details.card > summary { cursor: pointer; font-weight: 600; }
 .lines-form td { padding: 0.25rem; vertical-align: top; }
 .lines-form input[type="number"] { width: 7rem; }
 .lines-form input[type="date"] { width: 9rem; }
+pre.report { white-space: pre-wrap; font-size: 13px; }
