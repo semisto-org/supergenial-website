@@ -44,6 +44,16 @@ Rails.application.routes.draw do
     end
   end
   resource :dependence, only: :show
+  resources :bank_statements, only: %i[ index show create destroy ] do
+    get :file, on: :member
+  end
+  resources :bank_transactions, only: %i[ index show ] do
+    member do
+      post :match
+      post :unmatch
+      post :ignore
+    end
+  end
   resources :expense_categories, except: :show do
     patch :validate, on: :member
   end

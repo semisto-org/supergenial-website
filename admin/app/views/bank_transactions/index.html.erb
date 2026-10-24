@@ -1,0 +1,12 @@
+<%= page_header "Banque" do %>
+  <%= link_to "Extraits et import CODA", bank_statements_path, class: "button" %>
+<% end %>
+
+<nav class="filters">
+  <%= link_to "Tous", bank_transactions_path, class: ("is-active" if @status.nil?) %>
+  <% BankTransaction::STATUSES.each do |status, label| %>
+    <%= link_to "#{label} (#{@counts.fetch(status, 0)})", bank_transactions_path(status:), class: ("is-active" if @status == status) %>
+  <% end %>
+</nav>
+
+<%= render "table", bank_transactions: @bank_transactions %>

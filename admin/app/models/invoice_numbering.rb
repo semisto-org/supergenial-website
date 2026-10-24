@@ -17,4 +17,10 @@ module InvoiceNumbering
     digits = "#{base}#{check.to_s.rjust(2, '0')}"
     "+++#{digits[0, 3]}/#{digits[3, 4]}/#{digits[7, 5]}+++"
   end
+
+  # The twelve digits read from a bank statement, written the usual way.
+  def format_structured(digits)
+    digits = digits.to_s.gsub(/\D/, "")
+    digits.size == 12 ? "+++#{digits[0, 3]}/#{digits[3, 4]}/#{digits[7, 5]}+++" : digits
+  end
 end

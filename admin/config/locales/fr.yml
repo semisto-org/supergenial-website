@@ -20,11 +20,17 @@ fr:
       hourly_rate: Taux horaire
       supplier: Fournisseur
       purchase_invoice: Achat
+      bank_statement: Extrait bancaire
+      bank_transaction: Mouvement bancaire
       expense_category: Catégorie de dépenses
       user: Compte
       comment: Commentaire
       audit_event: Événement du journal
     attributes:
+      bank_transaction:
+        category: Catégorie
+      bank_statement:
+        digest: Extrait
       purchase_invoice:
         document: Document
         supplier: Fournisseur

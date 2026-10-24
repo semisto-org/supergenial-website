@@ -118,12 +118,16 @@
     <% renewals = @dashboard.renewals %>
     <% to_review = @dashboard.purchases_to_review %>
     <% missing = @dashboard.missing_purchase_invoices %>
-    <% if packs.empty? && renewals.empty? && to_review.zero? && missing.empty? %>
+    <% to_match = @dashboard.bank_transactions_to_match %>
+    <% if packs.empty? && renewals.empty? && to_review.zero? && missing.empty? && to_match.zero? %>
       <p class="muted">Rien à signaler.</p>
     <% end %>
     <ul class="plain">
       <% if to_review.positive? %>
         <li><%= link_to "#{to_review} achat#{'s' if to_review > 1} à vérifier", purchase_invoices_path(status: "to_review") %></li>
+      <% end %>
+      <% if to_match.positive? %>
+        <li><%= link_to "#{to_match} mouvement#{'s' if to_match > 1} bancaire#{'s' if to_match > 1} à rapprocher", bank_transactions_path(status: "unmatched") %></li>
       <% end %>
       <% missing.each do |cost| %>
         <li>Facture de <%= link_to cost.supplier, cost.supplier %> (<%= cost %>) pas reçue pour <%= l(Date.current.prev_month, format: "%B %Y") %></li>

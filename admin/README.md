@@ -86,6 +86,15 @@ e-mail apparaît dans « Exiger Peppol ». Les documents sont servis par l'admin
 publique Active Storage). « Dépendances » montre les achats par zone (pays du groupe) et la part des États-Unis
 par trimestre ; le tableau de bord signale les factures mensuelles attendues d'un frais fixe et pas reçues.
 
+### Banque (CODA Belfius)
+
+« Banque » → « Extraits et import CODA » : envoyer le fichier CODA téléchargé de Belfius Web. Chaque extrait est
+contrôlé (solde initial + mouvements = solde final), gardé avec son fichier d'origine pour la comptable, et ses
+mouvements sont rapprochés automatiquement quand c'est sûr : communication structurée d'une facture de vente, ou
+montant exact avec le numéro de facture (ou l'IBAN du fournisseur) pour un achat. Le reste se rapproche à la main
+parmi les pièces non payées les plus proches, ou se classe « sans pièce » (rémunération, impôts, TVA, frais
+bancaires, transfert…). Rapprocher une pièce la marque payée à la date du mouvement.
+
 ### Sauvegardes hors site
 
 Chaque nuit à 3 h (Solid Queue dans Puma : `SOLID_QUEUE_IN_PUMA=true`), `BackupJob` envoie la base et les fichiers,
@@ -113,6 +122,8 @@ restaurer : télécharger le fichier, `bin/rails backups:decrypt FILE=… BACKUP
 | `Supplier` | Fournisseur : pays de facturation et pays du groupe (zone BE / UE / US / autres), Peppol attendu |
 | `PurchaseInvoice` | Facture ou note de crédit d'achat : Peppol, e-mail ou manuel, régime de TVA (autoliquidation, grilles), à vérifier puis comptabilisée |
 | `SupplierDependence` | Achats par zone et part des États-Unis |
+| `BankStatement` | Extrait bancaire importé d'un fichier CODA, avec ses soldes et le fichier d'origine |
+| `BankTransaction` | Mouvement bancaire, rapproché d'une facture de vente ou d'achat, ou classé sans pièce |
 | `ExpenseCategory` | Catégorie d'achat et traitement comptable proposé (compte PCMN, TVA, déductibilité ISOC), validé par la comptable |
 | `User` | Compte : rôle admin ou comptable, 2FA |
 | `Comment` | Commentaire sur une fiche (client, contrat, fournisseur…), surtout pour la comptable |
