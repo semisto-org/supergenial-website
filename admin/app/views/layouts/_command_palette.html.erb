@@ -1,0 +1,15 @@
+<dialog class="palette" aria-label="Rechercher et naviguer" data-command-palette-target="dialog" data-action="click->command-palette#closeOnBackdrop close->command-palette#reset">
+  <div class="palette__search">
+    <%= icon "search" %>
+    <input type="text" class="palette__input" placeholder="Rechercher un client, un projet, une facture…" autocomplete="off" spellcheck="false"
+           role="combobox" aria-expanded="true" aria-controls="palette-results" aria-autocomplete="list"
+           data-command-palette-target="input" data-action="input->command-palette#search keydown->command-palette#navigate">
+  </div>
+  <ul id="palette-results" class="palette__results" role="listbox" data-command-palette-target="list"></ul>
+  <footer class="palette__help">
+    <span><kbd>↑</kbd><kbd>↓</kbd> naviguer</span>
+    <span><kbd>↵</kbd> ouvrir</span>
+    <span><kbd>esc</kbd> fermer</span>
+    <span><kbd>G</kbd> puis <kbd>C</kbd> clients, <kbd>P</kbd> projets, <kbd>H</kbd> heures, <kbd>F</kbd> factures…</span>
+  </footer>
+</dialog>

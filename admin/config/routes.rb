@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   resource :two_factor_setup, only: %i[ show create ]
 
   root "dashboard#show"
+  resource :search, only: :show
 
   resources :clients do
     post :verify_peppol, on: :member

@@ -16,7 +16,7 @@
 
   <body>
     <%= render "layouts/icons" %>
-    <div class="app" data-controller="sidebar">
+    <div class="app" data-controller="sidebar command-palette" data-command-palette-url-value="<%= search_path %>">
       <%= render "layouts/sidebar" %>
       <div class="sidebar-backdrop" data-action="click->sidebar#close"></div>
 
@@ -24,6 +24,7 @@
         <div class="mobilebar">
           <button type="button" class="icon-button" aria-label="Ouvrir le menu" aria-controls="sidebar" aria-expanded="false" data-sidebar-target="toggle" data-action="sidebar#toggle"><%= icon "menu" %></button>
           <%= link_to root_path, class: "workspace__name" do %>Super <em>Génial</em><% end %>
+          <button type="button" class="icon-button mobilebar__search" aria-label="Rechercher" data-action="command-palette#open"><%= icon "search" %></button>
         </div>
 
         <main class="page">
@@ -33,6 +34,7 @@
           <%= yield %>
         </main>
       </div>
+      <%= render "layouts/command_palette" %>
     </div>
   </body>
 </html>
