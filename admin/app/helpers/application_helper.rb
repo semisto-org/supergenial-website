@@ -67,7 +67,8 @@ module ApplicationHelper
     "Réglages" => [
       [ "Société", :company_profile_path, :company_profiles, "building" ],
       [ "Journal", :audit_events_path, :audit_events, "history" ],
-      [ "Comptes", :users_path, :users, "key", :admin ]
+      [ "Comptes", :users_path, :users, "key", :admin ],
+      [ "Claude", :connections_path, :connections, "plug" ]
     ]
   }.freeze
 
@@ -82,7 +83,7 @@ module ApplicationHelper
     "dashboard" => "🧭", "clients" => "🤝", "contacts" => "🤝", "projects" => "📁", "time_entries" => "⏱️",
     "packs" => "⏳", "contracts" => "🔁", "invoices" => "🧾", "plans" => "🏷️", "hourly_rates" => "💶",
     "fixed_costs" => "📌", "suppliers" => "🚚", "audit_events" => "📜", "users" => "🔑",
-    "purchase_invoices" => "📥", "bank_transactions" => "🏦", "vat_returns" => "🧮", "tax_projections" => "📈", "company_profiles" => "🏢", "dependences" => "🌍", "import_runs" => "📦", "bank_statements" => "🏦", "tax_parameters" => "📈", "expense_categories" => "📥", "two_factor_setups" => "🔐", "two_factors" => "🔐"
+    "purchase_invoices" => "📥", "bank_transactions" => "🏦", "vat_returns" => "🧮", "tax_projections" => "📈", "company_profiles" => "🏢", "dependences" => "🌍", "import_runs" => "📦", "bank_statements" => "🏦", "tax_parameters" => "📈", "expense_categories" => "📥", "two_factor_setups" => "🔐", "two_factors" => "🔐", "connections" => "🔌"
   }.freeze
 
   # Sidebar links the current user may see; a fifth element restricts a link to admins.

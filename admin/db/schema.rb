@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_25_040000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_25_230000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -310,6 +310,48 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_25_040000) do
     t.index ["vat_period_id"], name: "index_invoices_on_vat_period_id"
   end
 
+  create_table "oauth_authorization_codes", force: :cascade do |t|
+    t.integer "oauth_client_id", null: false
+    t.integer "user_id", null: false
+    t.string "code_digest", null: false
+    t.string "redirect_uri", null: false
+    t.string "code_challenge", null: false
+    t.string "resource"
+    t.datetime "expires_at", null: false
+    t.datetime "used_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code_digest"], name: "index_oauth_authorization_codes_on_code_digest", unique: true
+    t.index ["oauth_client_id"], name: "index_oauth_authorization_codes_on_oauth_client_id"
+    t.index ["user_id"], name: "index_oauth_authorization_codes_on_user_id"
+  end
+
+  create_table "oauth_clients", force: :cascade do |t|
+    t.string "uid", null: false
+    t.string "name", null: false
+    t.json "redirect_uris", default: [], null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["uid"], name: "index_oauth_clients_on_uid", unique: true
+  end
+
+  create_table "oauth_tokens", force: :cascade do |t|
+    t.integer "oauth_client_id", null: false
+    t.integer "user_id", null: false
+    t.string "access_token_digest", null: false
+    t.string "refresh_token_digest", null: false
+    t.datetime "access_expires_at", null: false
+    t.datetime "refresh_expires_at", null: false
+    t.datetime "revoked_at"
+    t.datetime "last_used_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["access_token_digest"], name: "index_oauth_tokens_on_access_token_digest", unique: true
+    t.index ["oauth_client_id"], name: "index_oauth_tokens_on_oauth_client_id"
+    t.index ["refresh_token_digest"], name: "index_oauth_tokens_on_refresh_token_digest", unique: true
+    t.index ["user_id"], name: "index_oauth_tokens_on_user_id"
+  end
+
   create_table "packs", force: :cascade do |t|
     t.integer "client_id", null: false
     t.integer "invoice_id"
@@ -514,6 +556,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_25_040000) do
   add_foreign_key "invoices", "invoices", column: "credited_invoice_id"
   add_foreign_key "invoices", "projects"
   add_foreign_key "invoices", "vat_periods"
+  add_foreign_key "oauth_authorization_codes", "oauth_clients"
+  add_foreign_key "oauth_authorization_codes", "users"
+  add_foreign_key "oauth_tokens", "oauth_clients"
+  add_foreign_key "oauth_tokens", "users"
   add_foreign_key "packs", "clients"
   add_foreign_key "packs", "invoices"
   add_foreign_key "plan_prices", "plans"

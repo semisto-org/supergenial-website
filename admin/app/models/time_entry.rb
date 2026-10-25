@@ -16,6 +16,24 @@ class TimeEntry < ApplicationRecord
 
   scope :recent, -> { order(performed_on: :desc, id: :desc) }
 
+  # Groups unbilled entries of a single client into one draft invoice, one line per entry.
+  def self.bill!(entries)
+    entries = entries.to_a
+    raise ArgumentError, "Coche au moins une prestation à facturer." if entries.empty?
+    raise ArgumentError, "Une facture ne peut concerner qu'un seul client." if entries.map(&:client_id).uniq.size > 1
+
+    client = entries.first.client
+    hours = ActiveSupport::NumberHelper.number_to_rounded(entries.sum(&:hours), precision: 2, strip_insignificant_zeros: true, separator: ",")
+    transaction do
+      client.invoices.create!(
+        source: "admin", status: "draft", issued_on: Date.current, vat_regime: VatRegime.suggest(client),
+        project: entries.map(&:project).uniq.one? ? entries.first.project : nil,
+        label: "Prestations en régie (#{hours} h)",
+        lines_attributes: entries.sort_by(&:performed_on).each_with_index.map { |entry, index| entry.invoice_line_attributes(index) }
+      ).tap { |invoice| entries.each { |entry| entry.update!(status: "facture", invoice:) } }
+    end
+  end
+
   def rate = project&.rate(performed_on) || client.rate(performed_on)
 
   def amount = hours * rate

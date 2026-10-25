@@ -77,5 +77,20 @@ Rails.application.routes.draw do
     post :reset_two_factor, on: :member
   end
 
+  resources :connections, only: %i[ index destroy ]
+
+  # MCP server and the OAuth 2.1 authorization server that protects it.
+  post "mcp" => "mcp#create", as: :mcp
+  match "mcp" => "mcp#unsupported", via: %i[ get delete ]
+  get ".well-known/oauth-protected-resource(/mcp)" => "oauth/metadata#protected_resource", as: :oauth_protected_resource
+  get ".well-known/oauth-authorization-server" => "oauth/metadata#authorization_server", as: :oauth_authorization_server
+  namespace :oauth do
+    get "authorize" => "authorizations#new", as: :authorization
+    post "authorize" => "authorizations#create"
+    post "token" => "tokens#create", as: :token
+    post "revoke" => "tokens#revoke", as: :revocation
+    post "register" => "registrations#create", as: :registration
+  end
+
   get "up" => "rails/health#show", as: :rails_health_check
 end
