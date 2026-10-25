@@ -3,10 +3,10 @@
   <%= link_to "Modifier", edit_project_path(@project), class: "button button--ghost" %>
 <% end %>
 
-<p class="lead">
-  <%= link_to @project.client, @project.client %> · <%= @project.kind_label %> · <%= @project.billing_mode_label %>
-  <%= badge @project.status_label, @project.status %>
-</p>
+<%= properties "Client" => link_to(@project.client, @project.client),
+               "Statut" => badge(@project.status_label, @project.status),
+               "Type" => @project.kind_label,
+               "Facturation" => @project.billing_mode_label %>
 
 <section class="stats">
   <div class="stat"><span class="stat__label">Forfait</span><strong class="stat__value"><%= @project.fixed_price ? eur(@project.fixed_price) : "–" %></strong></div>

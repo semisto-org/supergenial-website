@@ -42,7 +42,7 @@
           <% if row[:supplier].alternative_note.present? %><small class="muted">· alternative : <%= row[:supplier].alternative_note.truncate(80) %></small><% end %></li>
       <% end %>
     </ul>
-    <% if top.empty? %><p class="muted">Aucun achat auprès d'un groupe américain sur la période.</p><% end %>
+    <% if top.empty? %><%= empty_state "Aucun achat auprès d'un groupe américain sur la période." %><% end %>
   </div>
 </section>
 

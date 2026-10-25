@@ -45,5 +45,5 @@
     </tbody>
     <tfoot><tr><th colspan="4">Total</th><th class="num"><%= eur(@invoices.reject(&:draft?).sum(&:amount)) %></th><th colspan="3"></th></tr></tfoot>
   </table>
-  <% if @invoices.reject(&:draft?).empty? %><p class="muted">Aucune facture en <%= @year %>.</p><% end %>
+  <% if @invoices.reject(&:draft?).empty? %><%= empty_state "Aucune facture en #{@year}." %><% end %>
 </div>

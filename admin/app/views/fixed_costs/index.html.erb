@@ -30,4 +30,4 @@
     </table>
   </div>
 <% end %>
-<% if @fixed_costs.empty? %><div class="card"><p class="muted">Aucun frais fixe.</p></div><% end %>
+<% if @fixed_costs.empty? %><%= empty_state "Aucun frais fixe.", hint: "Abonnements, hébergements et licences payés chaque mois ou chaque année.", action: link_to("+ Frais fixe", new_fixed_cost_path, class: "button button--ghost") %><% end %>

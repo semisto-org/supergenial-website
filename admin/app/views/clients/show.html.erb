@@ -3,12 +3,10 @@
   <%= link_to "Modifier", edit_client_path(@client), class: "button button--ghost" %>
 <% end %>
 
-<p class="lead">
-  <%= badge @client.status_label, @client.status %>
-  <%= @client.kind_label %>
-  <% if @client.vat_number.present? %> · TVA <%= @client.vat_number %><% end %>
-  · <%= eur(@client.rate) %>/h
-</p>
+<%= properties "Statut" => badge(@client.status_label, @client.status),
+               "Type" => @client.kind_label,
+               "N° de TVA" => @client.vat_number,
+               "Taux horaire" => safe_join([ "#{eur(@client.rate)}/h", (tag.span(" · standard", class: "muted") if @client.hourly_rate.blank?) ].compact) %>
 
 <section class="grid-2">
   <div class="card">
@@ -23,7 +21,7 @@
         </li>
       <% end %>
     </ul>
-    <% if @client.contacts.empty? %><p class="muted">Aucun contact.</p><% end %>
+    <% if @client.contacts.empty? %><%= empty_state "Aucun contact." %><% end %>
     <% if @client.invoicing_address_complete? %>
       <p class="muted"><%= @client.street %>, <%= @client.postal_code %> <%= @client.city %>, <%= Country.name(@client.country) %></p>
     <% elsif @client.address.present? %>
@@ -62,7 +60,7 @@
         <% end %>
       </tbody>
     </table>
-    <% if @client.contracts.empty? %><p class="muted">Aucun contrat.</p><% end %>
+    <% if @client.contracts.empty? %><%= empty_state "Aucun contrat." %><% end %>
   </div>
 
   <div class="card">
@@ -77,7 +75,7 @@
         <% end %>
       </tbody>
     </table>
-    <% if @client.projects.empty? %><p class="muted">Aucun projet.</p><% end %>
+    <% if @client.projects.empty? %><%= empty_state "Aucun projet." %><% end %>
   </div>
 
   <div class="card">
@@ -87,7 +85,7 @@
         <li><%= link_to pack.label, pack %> : <%= hours(pack.used_hours) %> / <%= hours(pack.hours) %>, reste <strong><%= hours(pack.remaining_hours) %></strong></li>
       <% end %>
     </ul>
-    <% if @client.packs.empty? %><p class="muted">Aucun pack.</p><% end %>
+    <% if @client.packs.empty? %><%= empty_state "Aucun pack." %><% end %>
   </div>
 </section>
 
@@ -113,7 +111,7 @@
       <% end %>
     </tbody>
   </table>
-  <% if @client.invoices.empty? %><p class="muted">Aucune facture.</p><% end %>
+  <% if @client.invoices.empty? %><%= empty_state "Aucune facture." %><% end %>
 </div>
 
 <% if @client.notes.present? %>

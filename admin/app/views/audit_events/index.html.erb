@@ -31,7 +31,7 @@
       <% end %>
     </tbody>
   </table>
-  <% if @events.empty? %><p class="muted">Aucune modification.</p><% end %>
+  <% if @events.empty? %><%= empty_state "Aucune modification." %><% end %>
   <footer class="card-footer">
     <% if @page > 1 %><%= link_to "← Plus récent", request.query_parameters.merge(page: @page - 1) %><% end %>
     <% if @next_page %><%= link_to "Plus ancien →", request.query_parameters.merge(page: @page + 1) %><% end %>

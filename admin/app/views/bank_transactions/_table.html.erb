@@ -17,5 +17,5 @@
       <% end %>
     </tbody>
   </table>
-  <% if bank_transactions.empty? %><p class="muted">Aucun mouvement.</p><% end %>
+  <% if bank_transactions.empty? %><%= empty_state "Aucun mouvement." %><% end %>
 </div>

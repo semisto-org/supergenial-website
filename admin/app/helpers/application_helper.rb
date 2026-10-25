@@ -103,6 +103,22 @@ module ApplicationHelper
     end
   end
 
+  # Placeholder for an empty list: a quiet line, or a box with a hint and an action.
+  def empty_state(message, hint: nil, action: nil)
+    tag.div(class: [ "empty-state", ("empty-state--block" if hint || action) ]) do
+      safe_join([ tag.p(message, class: "empty-state__title"), (tag.p(hint, class: "empty-state__hint") if hint), action ].compact)
+    end
+  end
+
+  # Notion-like page properties: label => value, blank values read "Vide".
+  def properties(pairs)
+    tag.dl(class: "props") do
+      safe_join(pairs.map do |label, value|
+        safe_join([ tag.dt(label), tag.dd(value.presence || tag.span("Vide", class: "props__empty")) ])
+      end)
+    end
+  end
+
   def page_header(title, &actions)
     content_for(:title, title)
     page_icon = PAGE_ICONS[controller_name]

@@ -52,7 +52,7 @@
     <h2>Heures à facturer</h2>
     <% rows = @dashboard.unbilled_by_client %>
     <% if rows.empty? %>
-      <p class="muted">Rien en attente.</p>
+      <%= empty_state "Rien en attente." %>
     <% else %>
       <table>
         <thead><tr><th>Client</th><th>Depuis</th><th class="num">Heures</th><th class="num">Montant</th></tr></thead>
@@ -74,7 +74,7 @@
     <h2>Échéances de contrats (30 jours)</h2>
     <% contracts = @dashboard.due_contracts %>
     <% if contracts.empty? %>
-      <p class="muted">Aucune échéance proche.</p>
+      <%= empty_state "Aucune échéance proche." %>
     <% else %>
       <table>
         <thead><tr><th>Contrat</th><th>Échéance</th><th class="num">Montant</th><th></th></tr></thead>
@@ -96,7 +96,7 @@
     <h2>Factures non payées</h2>
     <% invoices = @dashboard.unpaid_invoices %>
     <% if invoices.empty? %>
-      <p class="muted">Tout est payé.</p>
+      <%= empty_state "Tout est payé." %>
     <% else %>
       <table>
         <tbody>
@@ -123,7 +123,7 @@
     <% tax = @dashboard.tax_projection if @dashboard.year == Date.current.year %>
     <% remuneration_alert = tax&.year_end_alert? %>
     <% if packs.empty? && renewals.empty? && to_review.zero? && missing.empty? && to_match.zero? && vat_due.nil? && !remuneration_alert %>
-      <p class="muted">Rien à signaler.</p>
+      <%= empty_state "Rien à signaler." %>
     <% end %>
     <ul class="plain">
       <% if remuneration_alert %>
