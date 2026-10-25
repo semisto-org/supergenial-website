@@ -176,6 +176,7 @@ input[type="checkbox"] { width: 16px; min-height: 16px; height: 16px; accent-col
 .button:hover { background: var(--accent-hover); color: var(--on-accent); }
 .button--ghost { background: transparent; color: var(--text); border-color: var(--line-strong); }
 .button--ghost:hover { background: var(--hover); color: var(--text); }
+input.button { width: auto; min-height: 0; }
 .button--small { height: 26px; padding: 0 8px; font-size: 13px; }
 button.danger, a.danger { color: var(--danger); }
 
