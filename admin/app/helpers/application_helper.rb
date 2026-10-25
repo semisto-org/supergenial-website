@@ -71,6 +71,12 @@ module ApplicationHelper
     ]
   }.freeze
 
+  # "G then <key>" keyboard shortcuts, by sidebar section.
+  SHORTCUTS = {
+    "dashboard" => "d", "clients" => "c", "projects" => "p", "time_entries" => "h", "contracts" => "o",
+    "invoices" => "f", "purchase_invoices" => "a", "bank_transactions" => "b", "vat_returns" => "t"
+  }.freeze
+
   # Page icons shown above the title, by controller.
   PAGE_ICONS = {
     "dashboard" => "🧭", "clients" => "🤝", "contacts" => "🤝", "projects" => "📁", "time_entries" => "⏱️",
@@ -98,7 +104,7 @@ module ApplicationHelper
 
   def nav_link(label, path, section, icon: nil)
     active = NESTED_SECTIONS.fetch(controller_name, controller_name) == section.to_s
-    link_to path, class: "nav-item", "aria-current": ("page" if active) do
+    link_to path, class: "nav-item", "aria-current": ("page" if active), data: { shortcut: SHORTCUTS[section.to_s] } do
       safe_join([ (icon(icon) if icon), tag.span(label) ].compact)
     end
   end

@@ -4,6 +4,9 @@
     <span class="workspace__name">Super <em>Génial</em></span>
   <% end %>
 
+  <button type="button" class="nav-item" data-action="command-palette#open">
+    <%= icon "search" %><span>Rechercher</span><kbd class="nav-item__kbd">⌘K</kbd>
+  </button>
   <%= nav_link "Tableau de bord", root_path, :dashboard, icon: "home" %>
 
   <% navigation.each do |group, links| %>
