@@ -1,0 +1,22 @@
+<nav class="sidebar" id="sidebar" aria-label="Navigation principale">
+  <%= link_to root_path, class: "workspace" do %>
+    <span class="workspace__logo" aria-hidden="true">S</span>
+    <span class="workspace__name">Super <em>Génial</em></span>
+  <% end %>
+
+  <%= nav_link "Tableau de bord", root_path, :dashboard, icon: "home" %>
+
+  <% navigation.each do |group, links| %>
+    <div class="sidebar__group"><%= group %></div>
+    <% links.each do |label, path, section, icon_name| %>
+      <%= nav_link label, public_send(path), section, icon: icon_name %>
+    <% end %>
+  <% end %>
+
+  <div class="sidebar__foot">
+    <% unless can_write? %><p class="sidebar__note"><span class="badge badge--info">Lecture seule</span></p><% end %>
+    <%= button_to session_path, method: :delete, class: "nav-item" do %>
+      <%= icon "logout" %><span>Déconnexion</span>
+    <% end %>
+  </div>
+</nav>
