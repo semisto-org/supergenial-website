@@ -28,7 +28,7 @@
         <li><%= cost %> : <%= eur(cost.amount) %> <small class="muted"><%= cost.period_label %></small></li>
       <% end %>
     </ul>
-    <% if @supplier.fixed_costs.empty? %><p class="muted">Aucun frais fixe lié.</p><% end %>
+    <% if @supplier.fixed_costs.empty? %><%= empty_state "Aucun frais fixe lié." %><% end %>
   </div>
 </section>
 

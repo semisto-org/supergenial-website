@@ -48,7 +48,7 @@
         <% end %>
       </tbody>
     </table>
-    <% if @vat_return.grids.empty? %><p class="muted">Aucune opération.</p><% end %>
+    <% if @vat_return.grids.empty? %><%= empty_state "Aucune opération." %><% end %>
     <p class="hint">Notes de crédit reçues en autoliquidation : grilles 84/85, TVA en 63 et 64, à confirmer avec la comptable.</p>
   </div>
 
@@ -61,7 +61,7 @@
         <% end %>
       </tbody>
     </table>
-    <% if @vat_return.intracom_listing.empty? %><p class="muted">Aucun client intracommunautaire : listing « néant ».</p><% end %>
+    <% if @vat_return.intracom_listing.empty? %><%= empty_state "Aucun client intracommunautaire : listing « néant »." %><% end %>
   </div>
 </section>
 

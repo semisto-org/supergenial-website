@@ -1,6 +1,6 @@
 <%# locals: (time_entries:, show_client: true, selectable: false) %>
 <% if time_entries.empty? %>
-  <p class="muted">Aucune prestation.</p>
+  <%= empty_state "Aucune prestation." %>
 <% else %>
   <table>
     <thead>

@@ -41,7 +41,7 @@
           </li>
         <% end %>
       </ul>
-      <% if candidates.empty? %><p class="muted">Aucune <%= @bank_transaction.credit? ? "facture non payée" : "facture d'achat non payée" %>.</p><% end %>
+      <% if candidates.empty? %><%= empty_state(@bank_transaction.credit? ? "Aucune facture non payée." : "Aucune facture d'achat non payée.") %><% end %>
       <%= form_with url: ignore_bank_transaction_path(@bank_transaction), class: "inline-form" do |f| %>
         <%= f.select :category, BankTransaction.category_options, include_blank: "Sans pièce…" %>
         <%= f.submit "Classer", class: "button button--ghost" %>

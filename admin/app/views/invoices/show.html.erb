@@ -79,7 +79,7 @@
         <tr><th colspan="4">Total TVAC</th><th class="num"><%= eur(@invoice.subtotal + @invoice.vat_amount) %></th></tr>
       </tfoot>
     </table>
-    <% if @invoice.lines.empty? %><p class="muted">Aucune ligne.</p><% end %>
+    <% if @invoice.lines.empty? %><%= empty_state "Aucune ligne." %><% end %>
     <% if (mention = @invoice.regime[:mention]) %><p class="hint"><%= mention %></p><% end %>
   </div>
 <% else %>

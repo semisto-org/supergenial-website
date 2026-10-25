@@ -53,7 +53,7 @@
       <% end %>
     </tbody>
   </table>
-  <% if @contracts.empty? %><p class="muted">Aucun contrat.</p><% end %>
+  <% if @contracts.empty? %><%= empty_state "Aucun contrat." %><% end %>
 </div>
 
 <p><%= link_to "Supprimer cette formule", @plan, data: { turbo_method: :delete, turbo_confirm: "Supprimer #{@plan} ?" }, class: "danger" %></p>

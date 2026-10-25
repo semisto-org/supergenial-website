@@ -26,5 +26,5 @@
       <% end %>
     </tbody>
   </table>
-  <% if @suppliers.empty? %><p class="muted">Aucun fournisseur.</p><% end %>
+  <% if @suppliers.empty? %><%= empty_state "Aucun fournisseur.", action: link_to("+ Fournisseur", new_supplier_path, class: "button button--ghost") %><% end %>
 </div>

@@ -115,6 +115,22 @@ ul.plain { list-style: none; display: grid; gap: 0.5rem; }
 .details dt, .details dd { padding: 6px 8px; min-height: 34px; }
 .details dt { color: var(--text-2); padding-left: 0; }
 
+/* Page properties */
+.props { display: grid; grid-template-columns: minmax(120px, 180px) minmax(0, 1fr); margin: -0.5rem 0 2rem; }
+.props dt, .props dd { display: flex; align-items: center; gap: 6px; min-height: 34px; padding: 4px 8px; }
+.props dt { color: var(--text-2); padding-left: 0; }
+.props dd a { font-weight: 500; text-decoration: none; }
+.props dd a:hover { text-decoration: underline; }
+.props__empty { color: var(--text-3); }
+
+/* Empty states */
+.empty-state { padding: 10px 2px; color: var(--text-3); }
+.empty-state--block { display: grid; justify-items: center; gap: 6px; text-align: center; padding: 32px 16px; margin: 12px 0; border: 1px dashed var(--line-strong); border-radius: var(--r-lg); color: var(--text-2); }
+.empty-state--block .empty-state__title { color: var(--text); font-weight: 500; }
+.empty-state__hint { font-size: 13px; max-width: 46ch; }
+.empty-state--block .button { margin-top: 6px; }
+.card > table:has(+ .empty-state) { display: none; }
+
 /* Tables, database style */
 table { width: 100%; border-collapse: collapse; }
 th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }

@@ -25,5 +25,5 @@
       <% end %>
     </tbody>
   </table>
-  <% if @projects.empty? %><p class="muted">Aucun projet.</p><% end %>
+  <% if @projects.empty? %><%= empty_state "Aucun projet.", action: link_to("+ Projet", new_project_path, class: "button button--ghost") %><% end %>
 </div>

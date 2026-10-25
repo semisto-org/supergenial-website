@@ -45,5 +45,5 @@
       <% end %>
     </tbody>
   </table>
-  <% if @import_runs.empty? %><p class="muted">Aucun import.</p><% end %>
+  <% if @import_runs.empty? %><%= empty_state "Aucun import." %><% end %>
 </div>

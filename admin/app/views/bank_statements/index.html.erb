@@ -29,5 +29,5 @@
       <% end %>
     </tbody>
   </table>
-  <% if @bank_statements.empty? %><p class="muted">Aucun extrait importé.</p><% end %>
+  <% if @bank_statements.empty? %><%= empty_state "Aucun extrait importé." %><% end %>
 </div>

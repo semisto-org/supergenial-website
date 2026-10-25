@@ -44,5 +44,5 @@
       <% end %>
     </tbody>
   </table>
-  <% if @purchase_invoices.empty? %><p class="muted">Aucun achat.</p><% end %>
+  <% if @purchase_invoices.empty? %><%= empty_state "Aucun achat." %><% end %>
 </div>
