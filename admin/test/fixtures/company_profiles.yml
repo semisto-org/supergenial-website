@@ -1,0 +1,12 @@
+main:
+  legal_name: Société fictive SRL
+  trade_name: Super Génial
+  vat_number: BE0999999999
+  street: Rue fictive 1
+  postal_code: "5530"
+  city: Yvoir
+  country: BE
+  iban: BE00000000000000
+  payment_terms_days: 30
+  last_external_number: 2026-042
+  vat_tracked_since: 2026-07-01

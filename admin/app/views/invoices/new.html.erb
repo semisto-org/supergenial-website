@@ -1,2 +1,2 @@
-<%= page_header "Nouvelle facture" %>
-<div class="card form-card"><%= render "form", invoice: @invoice %></div>
+<%= page_header(@invoice.admin? ? "Nouvelle facture" : "Référencer une facture OkiOki") %>
+<div class="card form-card form-card--wide"><%= render "form", invoice: @invoice %></div>

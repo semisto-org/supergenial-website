@@ -1,0 +1,16 @@
+<%= page_header @bank_statement.to_s do %>
+  <%= link_to "Fichier CODA", file_bank_statement_path(@bank_statement), class: "button button--ghost" if @bank_statement.file.attached? %>
+<% end %>
+
+<p class="lead">
+  <%= @bank_statement.iban %> · solde <%= eur(@bank_statement.opening_balance) %> → <%= eur(@bank_statement.closing_balance) %>
+  <%= @bank_statement.balanced? ? badge("équilibré", "actif") : badge("écart de #{eur(@bank_statement.closing_balance - @bank_statement.opening_balance - @bank_statement.movements_total)}", "suspendu") %>
+</p>
+
+<%= render "bank_transactions/table", bank_transactions: @bank_statement.transactions.includes(:invoice, :purchase_invoice) %>
+
+<%= render "shared/comments", commentable: @bank_statement %>
+
+<% if can_write? %>
+  <p><%= link_to "Supprimer cet extrait", @bank_statement, class: "danger", data: { turbo_method: :delete, turbo_confirm: "Supprimer #{@bank_statement} et ses rapprochements ?" } %></p>
+<% end %>

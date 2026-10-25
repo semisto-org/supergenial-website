@@ -26,9 +26,7 @@
     <footer class="card-footer">
       <span>À facturer ici : <strong><%= hours(unbilled.sum(&:hours)) %></strong> soit <strong><%= eur(unbilled.sum(&:amount)) %></strong></span>
       <%= form_with url: bill_time_entries_path, id: "bill-form", class: "inline-form" do |f| %>
-        <%= f.text_field :number, placeholder: "N° OkiOki", "aria-label": "Numéro de facture OkiOki" %>
-        <%= f.date_field :issued_on, value: Date.current, "aria-label": "Date de facture" %>
-        <%= f.submit "Facturer la sélection", class: "button" %>
+        <%= f.submit "Préparer la facture de la sélection", class: "button" %>
       <% end %>
     </footer>
   <% end %>

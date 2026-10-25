@@ -215,3 +215,12 @@ body.session main { max-width: 380px; margin: 0 auto; padding: 14vh 16px 4rem; }
 .qr-code img { width: 200px; height: 200px; background: #fff; padding: 8px; border-radius: var(--r-lg); }
 .comments form { margin-top: 0.8rem; }
 details.card > summary { cursor: pointer; font-weight: 600; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+
+/* Invoice lines */
+.form-card--wide { max-width: none; }
+.lines-form { margin-bottom: 0.5rem; }
+.lines-form td { padding: 0.25rem; vertical-align: top; }
+.lines-form input[type="number"] { width: 7rem; }
+.lines-form input[type="date"] { width: 9rem; }
+pre.report { white-space: pre-wrap; font-size: 13px; }
+.document-preview { width: 100%; height: 80vh; border: 1px solid var(--line-strong); border-radius: var(--r); margin-top: 0.75rem; }

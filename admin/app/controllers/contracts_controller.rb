@@ -44,8 +44,8 @@ class ContractsController < ApplicationController
   end
 
   def bill
-    invoice = @contract.bill!(on: params[:issued_on].presence&.to_date || Date.current, number: params[:number].presence)
-    redirect_back_or_to @contract, notice: "#{@contract} : facture de #{helpers.eur(invoice.amount)} enregistrée, prochaine échéance le #{l(@contract.next_billing_on)}."
+    invoice = @contract.bill!(on: params[:issued_on].presence&.to_date || Date.current)
+    redirect_to invoice, notice: "#{@contract} : brouillon de #{helpers.eur(invoice.amount)} créé, prochaine échéance le #{l(@contract.next_billing_on)}."
   end
 
   private

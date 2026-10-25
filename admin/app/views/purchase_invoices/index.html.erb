@@ -1,0 +1,48 @@
+<%= page_header "Achats" do %>
+  <%= link_to "Dépendances", dependence_path, class: "button button--ghost" %>
+  <% if can_write? %>
+    <%= button_to "Relever Peppol et e-mails", collect_purchase_invoices_path, class: "button button--ghost", form_class: "inline-form" if @collectable %>
+    <%= link_to "+ Achat", new_purchase_invoice_path, class: "button" %>
+  <% end %>
+<% end %>
+
+<nav class="filters">
+  <%= link_to "Tous", purchase_invoices_path, class: ("is-active" if @status.nil?) %>
+  <% PurchaseInvoice::STATUSES.each do |status, label| %>
+    <%= link_to "#{label} (#{@counts.fetch(status, 0)})", purchase_invoices_path(status:), class: ("is-active" if @status == status) %>
+  <% end %>
+</nav>
+
+<% if @peppol_reminders.any? %>
+  <div class="card">
+    <h2>Exiger Peppol</h2>
+    <p class="muted">Ces fournisseurs belges envoient encore leurs factures par e-mail ou sur papier. Depuis 2026, ils doivent passer par Peppol (adresse de Super Génial : 0208 suivi du numéro d'entreprise).</p>
+    <ul class="plain">
+      <% @peppol_reminders.each do |supplier| %><li><%= link_to supplier, supplier %></li><% end %>
+    </ul>
+  </div>
+<% end %>
+
+<div class="card">
+  <table>
+    <thead><tr><th>Date</th><th>Fournisseur</th><th>N°</th><th>Catégorie</th><th class="num">HTVA</th><th class="num">TVA</th><th>Reçue par</th><th>Statut</th></tr></thead>
+    <tbody>
+      <% @purchase_invoices.each do |purchase| %>
+        <tr>
+          <td class="nowrap"><%= date(purchase.issued_on) %></td>
+          <td><%= link_to purchase.supplier&.name || purchase.seller_name || purchase.email_subject.presence || "À identifier", purchase %></td>
+          <td class="nowrap"><%= purchase.number.presence || "–" %><% if purchase.credit_note? %> <small class="muted">NC</small><% end %></td>
+          <td><%= purchase.expense_category || "–" %></td>
+          <td class="num"><%= eur(purchase.sign * purchase.amount) %></td>
+          <td class="num"><%= purchase.reverse_charge? ? tag.small("autoliq.", class: "muted") : eur(purchase.sign * purchase.vat_amount) %></td>
+          <td><%= purchase.source_label %><% if purchase.peppol_missing? %> <%= badge("Peppol exigé", "en_attente") %><% end %></td>
+          <td>
+            <% if purchase.extraction_pending? %><%= badge("lecture…", "prospect") %>
+            <% else %><%= badge(purchase.status_label, purchase.booked? ? "facture" : "a_facturer") %><% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <% if @purchase_invoices.empty? %><p class="muted">Aucun achat.</p><% end %>
+</div>

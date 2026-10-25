@@ -54,16 +54,19 @@ class ContractTest < ActiveSupport::TestCase
     assert_equal 20.0, contract.margin_rate
   end
 
-  test "billing records an invoice and moves the due date by one period" do
+  test "billing prepares a draft invoice and moves the due date by one period" do
     contract = contracts(:hosting)
     assert contract.due?(Date.new(2026, 10, 24))
 
     invoice = assert_difference -> { Invoice.count } do
-      contract.bill!(on: Date.new(2026, 10, 24), number: "2026-042")
+      contract.bill!(on: Date.new(2026, 10, 24))
     end
 
     assert_equal 180, invoice.amount
-    assert_equal "2026-042", invoice.number
+    assert invoice.draft?
+    assert_nil invoice.number
+    line = invoice.lines.sole
+    assert_equal [ "year", Date.new(2026, 10, 1), Date.new(2027, 9, 30) ], [ line.unit, line.period_start, line.period_end ]
     assert_equal Date.new(2027, 10, 1), contract.reload.next_billing_on
     assert_equal Date.new(2026, 10, 24), contract.last_billed_on
   end

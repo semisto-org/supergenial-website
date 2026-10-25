@@ -1,0 +1,55 @@
+<%= page_header "#{@bank_transaction.credit? ? 'Entrée' : 'Sortie'} de #{eur(@bank_transaction.amount.abs)}" do %>
+  <%= link_to @bank_transaction.bank_statement, @bank_transaction.bank_statement, class: "button button--ghost" %>
+<% end %>
+
+<p class="lead">
+  <%= badge(@bank_transaction.status_label, { "matched" => "actif", "ignored" => "termine" }.fetch(@bank_transaction.status, "a_facturer")) %>
+  le <%= date(@bank_transaction.booked_on) %>
+</p>
+
+<section class="grid-2">
+  <div class="card">
+    <h2>Mouvement</h2>
+    <dl class="details">
+      <dt>Contrepartie</dt><dd><%= @bank_transaction.counterparty_name.presence || "–" %></dd>
+      <dt>Compte</dt><dd><%= @bank_transaction.counterparty_iban.presence || "–" %></dd>
+      <dt>Communication</dt><dd><%= @bank_transaction.structured_reference ? InvoiceNumbering.format_structured(@bank_transaction.structured_reference) : (@bank_transaction.communication.presence || "–") %></dd>
+      <dt>Date valeur</dt><dd><%= date(@bank_transaction.value_on) %></dd>
+      <dt>Montant</dt><dd><%= eur(@bank_transaction.amount) %></dd>
+    </dl>
+  </div>
+
+  <div class="card">
+    <h2>Pièce</h2>
+    <% if @bank_transaction.matched? %>
+      <p><%= link_to @bank_transaction.reconciled_with, @bank_transaction.reconciled_with %></p>
+      <%= button_to "Annuler le rapprochement", unmatch_bank_transaction_path(@bank_transaction), class: "button button--ghost" if can_write? %>
+    <% elsif @bank_transaction.ignored? %>
+      <p>Sans pièce : <%= @bank_transaction.category_label %></p>
+      <%= button_to "Remettre à rapprocher", unmatch_bank_transaction_path(@bank_transaction), class: "button button--ghost" if can_write? %>
+    <% elsif can_write? %>
+      <% candidates = @bank_transaction.candidates %>
+      <ul class="plain">
+        <% candidates.each do |document| %>
+          <li class="inline-form">
+            <%= button_to "Rapprocher", match_bank_transaction_path(@bank_transaction), params: { document_type: document.class.name, document_id: document.id }, class: "link-button", form_class: "inline-form" %>
+            <% if document.is_a?(Invoice) %>
+              <%= link_to "#{document.number} · #{document.client}", document %> <%= eur(document.total) %> <small class="muted"><%= date(document.issued_on) %></small>
+            <% else %>
+              <%= link_to document, document %> <%= eur(document.sign * document.total) %> <small class="muted"><%= date(document.issued_on) %></small>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+      <% if candidates.empty? %><p class="muted">Aucune <%= @bank_transaction.credit? ? "facture non payée" : "facture d'achat non payée" %>.</p><% end %>
+      <%= form_with url: ignore_bank_transaction_path(@bank_transaction), class: "inline-form" do |f| %>
+        <%= f.select :category, BankTransaction.category_options, include_blank: "Sans pièce…" %>
+        <%= f.submit "Classer", class: "button button--ghost" %>
+      <% end %>
+    <% else %>
+      <p class="muted">Pas encore rapproché.</p>
+    <% end %>
+  </div>
+</section>
+
+<%= render "shared/comments", commentable: @bank_transaction %>

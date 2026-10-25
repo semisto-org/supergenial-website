@@ -24,7 +24,29 @@
       <% end %>
     </ul>
     <% if @client.contacts.empty? %><p class="muted">Aucun contact.</p><% end %>
-    <% if @client.address.present? %><p class="muted"><%= simple_format(@client.address) %></p><% end %>
+    <% if @client.invoicing_address_complete? %>
+      <p class="muted"><%= @client.street %>, <%= @client.postal_code %> <%= @client.city %>, <%= Country.name(@client.country) %></p>
+    <% elsif @client.address.present? %>
+      <p class="muted"><%= simple_format(@client.address) %></p>
+    <% end %>
+  </div>
+
+  <div class="card">
+    <header class="card-header"><h2>Facturation</h2></header>
+    <dl class="details">
+      <dt>Peppol</dt>
+      <dd>
+        <%= @client.suggested_peppol_id || "–" %>
+        <% unless @client.peppol_reachable.nil? %><%= @client.peppol_reachable? ? badge("joignable", "actif") : badge("introuvable", "suspendu") %><% end %>
+        <% if can_write? && @client.suggested_peppol_id %>
+          <%= button_to "Vérifier", verify_peppol_client_path(@client), class: "link-button small", form_class: "inline-form" %>
+        <% end %>
+      </dd>
+      <dt>E-mail</dt><dd><%= @client.invoicing_email || "–" %></dd>
+      <dt>Régime TVA</dt><dd><%= VatRegime.labels[VatRegime.suggest(@client)] %></dd>
+    </dl>
+    <% if @client.belgian_business? %><p class="hint">Entreprise belge : factures par Peppol uniquement.</p><% end %>
+    <% unless @client.invoicing_address_complete? %><p class="hint">Adresse de facturation à compléter (rue, code postal, ville).</p><% end %>
   </div>
 
   <div class="card">
@@ -84,9 +106,9 @@
       <% @client.invoices.recent.each do |invoice| %>
         <tr>
           <td><%= date(invoice.issued_on) %></td>
-          <td><%= link_to invoice, edit_invoice_path(invoice) %></td>
+          <td><%= link_to invoice, invoice %></td>
           <td class="num"><%= eur(invoice.amount) %></td>
-          <td><%= invoice.paid? ? badge("payée", "facture") : badge("à encaisser", "a_facturer") %></td>
+          <td><%= invoice.draft? ? badge("brouillon", "en_attente") : (invoice.paid? ? badge("payée", "facture") : badge("à encaisser", "a_facturer")) %></td>
         </tr>
       <% end %>
     </tbody>

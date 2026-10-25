@@ -1,6 +1,6 @@
 # Comments on any commentable record. Open to the accountant, who cannot edit otherwise.
 class CommentsController < ApplicationController
-  COMMENTABLE_TYPES = [ Client, Project, Contract, Invoice, FixedCost, Plan, Supplier, ExpenseCategory ].index_by(&:name).freeze
+  COMMENTABLE_TYPES = [ Client, Project, Contract, Invoice, FixedCost, Plan, Supplier, ExpenseCategory, PurchaseInvoice, BankStatement, BankTransaction, VatPeriod ].index_by(&:name).freeze
 
   allow_read_only_writes
 

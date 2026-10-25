@@ -4,6 +4,7 @@ class ExpenseCategory < ApplicationRecord
   include Commentable
 
   has_many :suppliers, dependent: :restrict_with_error
+  has_many :purchase_invoices, dependent: :restrict_with_error
 
   validates :key, :name, presence: true
   validates :key, uniqueness: true

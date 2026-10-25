@@ -1,0 +1,36 @@
+<%= page_header "Modifier la société" %>
+<div class="card form-card">
+  <%= form_with model: @company_profile, url: company_profile_path do |f| %>
+    <%= render "shared/errors", object: @company_profile %>
+    <div class="row">
+      <%= field f, :legal_name, required: true, hint: "Avec la forme juridique : Marco & Vespucci SRL" %>
+      <%= field f, :trade_name %>
+    </div>
+    <div class="row">
+      <%= field f, :vat_number, placeholder: "BE0123456789" %>
+      <%= field f, :email, :email_field %>
+      <%= field f, :phone %>
+    </div>
+    <div class="row">
+      <%= field f, :street %>
+      <%= field f, :postal_code %>
+      <%= field f, :city %>
+      <%= field f, :country, :select, Country.options %>
+    </div>
+    <div class="row">
+      <%= field f, :iban %>
+      <%= field f, :bic %>
+      <%= field f, :website, :url_field %>
+    </div>
+    <div class="row">
+      <%= field f, :payment_terms_days, :number_field %>
+      <%= field f, :last_external_number, placeholder: "2026-042", hint: "La numérotation de l'admin continue après ce numéro" %>
+      <%= field f, :vat_tracked_since, :date_field, hint: "Premier jour du premier trimestre déclaré depuis l'admin ; avant, la TVA a été déclarée ailleurs" %>
+    </div>
+    <%= field f, :invoice_footer, :text_area, rows: 3, hint: "Mentions légales : siège, RPM (tribunal de l'entreprise), etc." %>
+    <div class="form-actions">
+      <%= f.submit "Enregistrer", class: "button" %>
+      <%= link_to "Annuler", company_profile_path, class: "button button--ghost" %>
+    </div>
+  <% end %>
+</div>

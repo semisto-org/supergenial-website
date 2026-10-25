@@ -1,0 +1,53 @@
+isoc_standard_rate:
+  key: isoc_standard_rate
+  label: isoc_standard_rate
+  value: 25
+  valid_from: 2026-01-01
+
+isoc_reduced_rate:
+  key: isoc_reduced_rate
+  label: isoc_reduced_rate
+  value: 20
+  valid_from: 2026-01-01
+
+isoc_reduced_ceiling:
+  key: isoc_reduced_ceiling
+  label: isoc_reduced_ceiling
+  value: 100000
+  valid_from: 2026-01-01
+
+director_min_remuneration:
+  key: director_min_remuneration
+  label: director_min_remuneration
+  value: 45000
+  valid_from: 2026-01-01
+
+advance_payment_surcharge_rate:
+  key: advance_payment_surcharge_rate
+  label: advance_payment_surcharge_rate
+  value: 9
+  valid_from: 2026-01-01
+
+social_contribution_rate:
+  key: social_contribution_rate
+  label: social_contribution_rate
+  value: 20.5
+  valid_from: 2026-01-01
+
+social_contribution_ceiling:
+  key: social_contribution_ceiling
+  label: social_contribution_ceiling
+  value: 72810
+  valid_from: 2026-01-01
+
+plci_rate:
+  key: plci_rate
+  label: plci_rate
+  value: 8.17
+  valid_from: 2026-01-01
+
+plci_ceiling:
+  key: plci_ceiling
+  label: plci_ceiling
+  value: 3915
+  valid_from: 2026-01-01

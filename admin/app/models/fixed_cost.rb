@@ -7,6 +7,7 @@ class FixedCost < ApplicationRecord
 
   belongs_to :supplier, optional: true
   has_many :contracts, dependent: :nullify
+  has_many :purchase_invoices, dependent: :nullify
 
   choices :category, ia: "IA", outils: "Outils", hebergement: "Hébergement", serveurs: "Serveurs",
                      telecom: "Télécom", autre: "Autre"

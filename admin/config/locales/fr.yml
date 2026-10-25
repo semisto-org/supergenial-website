@@ -13,15 +13,60 @@ fr:
       contract: Contrat
       fixed_cost: Frais fixe
       invoice: Facture
+      invoice_line: Ligne de facture
+      company_profile: Société
       plan: Formule
       plan_price: Prix
       hourly_rate: Taux horaire
       supplier: Fournisseur
+      purchase_invoice: Achat
+      tax_parameter: Paramètre fiscal
+      fiscal_plan: Plan fiscal
+      bank_statement: Extrait bancaire
+      bank_transaction: Mouvement bancaire
       expense_category: Catégorie de dépenses
       user: Compte
       comment: Commentaire
       audit_event: Événement du journal
     attributes:
+      tax_parameter:
+        key: Clé
+        label: Libellé
+        value: Valeur
+        valid_from: Valable depuis
+        source: Source
+        notes: Notes
+      fiscal_plan:
+        monthly_remuneration: Rémunération mensuelle
+        year_end_remuneration: Versement de fin d'année
+        plci_amount: PLCI
+        notes: Notes
+      bank_transaction:
+        category: Catégorie
+      bank_statement:
+        digest: Extrait
+      purchase_invoice:
+        document: Document
+        supplier: Fournisseur
+        supplier_id: Fournisseur
+        expense_category: Catégorie
+        expense_category_id: Catégorie
+        fixed_cost_id: Frais fixe
+        kind: Type
+        number: N° de facture
+        issued_on: Date de facture
+        due_on: Échéance
+        paid_on: Payée le
+        currency: Devise
+        original_amount: Montant en devise
+        exchange_rate: Taux de change
+        amount: HTVA (€)
+        vat_amount: TVA (€)
+        vat_regime: Régime de TVA
+        vat_rate: Taux de TVA
+        base_grid: Grille
+        vat_deductible_percent: TVA déductible (%)
+        notes: Notes
       supplier:
         name: Nom
         vat_number: N° de TVA
@@ -73,7 +118,13 @@ fr:
         kind: Type
         status: Statut
         vat_number: N° de TVA
-        address: Adresse
+        address: Adresse libre
+        street: Rue et numéro
+        postal_code: Code postal
+        city: Ville
+        country: Pays
+        billing_email: E-mail de facturation
+        peppol_id: Identifiant Peppol
         hourly_rate: Taux horaire
         notes: Notes
       contact:
@@ -143,9 +194,42 @@ fr:
       invoice:
         client: Client
         project: Projet
-        number: N° OkiOki
+        number: Numéro
         label: Libellé
         issued_on: Date
         amount: Montant HTVA
         paid_on: Payée le
         notes: Notes
+        kind: Type
+        status: Statut
+        source: Origine
+        vat_regime: Régime TVA
+        due_on: Échéance
+        vat_amount: TVA
+        lines: Lignes
+        credited_invoice: Facture créditée
+      invoice_line:
+        description: Description
+        quantity: Quantité
+        unit: Unité
+        unit_price: Prix unitaire HTVA
+        vat_rate: TVA (%)
+        period_start: Début de période
+        period_end: Fin de période
+      company_profile:
+        vat_tracked_since: TVA suivie depuis le
+        legal_name: Dénomination
+        trade_name: Nom commercial
+        vat_number: N° de TVA
+        street: Rue et numéro
+        postal_code: Code postal
+        city: Ville
+        country: Pays
+        email: E-mail
+        phone: Téléphone
+        website: Site web
+        iban: IBAN
+        bic: BIC
+        payment_terms_days: Délai de paiement (jours)
+        last_external_number: Dernier numéro OkiOki
+        invoice_footer: Pied de facture

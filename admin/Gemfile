@@ -66,3 +66,10 @@ gem "rotp", "~> 6.3"
 gem "rqrcode", "~> 3.2"
 
 gem "aws-sdk-s3", "~> 1.235", require: false
+
+gem "prawn", "~> 2.5"
+gem "prawn-table", "~> 0.2.2"
+
+gem "anthropic", "~> 2.3"
+
+gem "rubyzip", "~> 3.7"

@@ -1,0 +1,21 @@
+<div class="card">
+  <table>
+    <thead><tr><th>Date</th><th>Contrepartie</th><th>Communication</th><th class="num">Montant</th><th>Pièce</th></tr></thead>
+    <tbody>
+      <% bank_transactions.each do |transaction| %>
+        <tr>
+          <td class="nowrap"><%= date(transaction.booked_on) %></td>
+          <td><%= link_to transaction.label, transaction %></td>
+          <td><small class="muted"><%= transaction.structured_reference ? InvoiceNumbering.format_structured(transaction.structured_reference) : transaction.communication.to_s.truncate(70) %></small></td>
+          <td class="num <%= 'danger' unless transaction.credit? %>"><%= eur(transaction.amount) %></td>
+          <td>
+            <% if transaction.matched? %><%= link_to transaction.reconciled_with.to_s.truncate(40), transaction.reconciled_with %>
+            <% elsif transaction.ignored? %><%= badge(transaction.category_label, "termine") %>
+            <% else %><%= badge("à rapprocher", "a_facturer") %><% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <% if bank_transactions.empty? %><p class="muted">Aucun mouvement.</p><% end %>
+</div>

@@ -23,4 +23,11 @@ class DashboardTest < ActiveSupport::TestCase
   test "low packs" do
     assert_equal [ packs(:silvea_10h) ], @dashboard.low_packs
   end
+
+  test "monthly fixed costs whose invoice did not arrive last month" do
+    fixed_costs(:anthropic).update!(supplier: suppliers(:ai_company))
+    fixed_costs(:hatchbox).update!(supplier: suppliers(:hoster))
+    assert_equal [ fixed_costs(:anthropic) ], @dashboard.missing_purchase_invoices(Date.new(2026, 11, 3)).to_a
+    assert_equal [ fixed_costs(:hatchbox) ], @dashboard.missing_purchase_invoices(Date.new(2026, 10, 3)).to_a
+  end
 end

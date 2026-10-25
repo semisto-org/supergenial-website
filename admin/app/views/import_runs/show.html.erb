@@ -1,0 +1,16 @@
+<%= page_header @import_run.to_s do %>
+  <%= link_to "Retour", import_runs_path, class: "button button--ghost" %>
+<% end %>
+
+<% if @import_run.pending? || @import_run.running? %>
+  <meta http-equiv="refresh" content="5">
+<% end %>
+
+<p class="lead">
+  <%= badge @import_run.status_label, { "done" => "actif", "failed" => "suspendu", "running" => "en_cours" }.fetch(@import_run.status, "en_attente") %>
+  <%= @import_run.dry_run? ? "Simulation" : "Import réel" %><%= " · #{@import_run.filename}" if @import_run.filename %>
+</p>
+
+<% if @import_run.error.present? %><div class="flash flash--alert"><%= @import_run.error %></div><% end %>
+<% if @import_run.report.present? %><div class="card"><pre class="report"><%= @import_run.report %></pre></div><% end %>
+<% if @import_run.pending? || @import_run.running? %><p class="muted">En cours… la page se recharge toute seule.</p><% end %>

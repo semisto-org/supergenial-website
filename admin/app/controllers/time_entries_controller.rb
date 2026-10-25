@@ -50,11 +50,13 @@ class TimeEntriesController < ApplicationController
     client = entries.first.client
     invoice = TimeEntry.transaction do
       client.invoices.create!(
-        number: params[:number].presence, issued_on: params[:issued_on].presence || Date.current,
-        amount: entries.sum(&:amount), label: "Prestations en régie (#{helpers.hours(entries.sum(&:hours))})"
+        source: "admin", status: "draft", issued_on: Date.current, vat_regime: VatRegime.suggest(client),
+        project: entries.map(&:project).uniq.one? ? entries.first.project : nil,
+        label: "Prestations en régie (#{helpers.hours(entries.sum(&:hours))})",
+        lines_attributes: entries.sort_by(&:performed_on).each_with_index.map { |entry, index| entry.invoice_line_attributes(index) }
       ).tap { |created| entries.each { |entry| entry.update!(status: "facture", invoice: created) } }
     end
-    redirect_to time_entries_path(client_id: client.id), notice: "Facture de #{helpers.eur(invoice.amount)} enregistrée pour #{client}."
+    redirect_to invoice, notice: "Brouillon de #{helpers.eur(invoice.amount)} créé pour #{client} : vérifie-le, puis émets-le."
   end
 
   private

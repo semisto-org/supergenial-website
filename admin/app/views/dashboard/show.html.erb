@@ -28,6 +28,25 @@
   </div>
 </section>
 
+<% deadlines = @dashboard.billing_deadlines %>
+<% drafts = @dashboard.draft_invoices %>
+<% if deadlines.any? || drafts.any? %>
+  <div class="card">
+    <h2>À facturer</h2>
+    <ul class="plain">
+      <% deadlines.each do |row| %>
+        <li class="<%= 'danger' if row[:late] %>">
+          <strong><%= eur(row[:amount]) %></strong> de prestations à facturer <%= row[:late] ? "depuis le" : "au plus tard le" %> <%= date(row[:deadline]) %> :
+          <%= safe_join(row[:clients].map { |client| link_to(client, time_entries_path(client_id: client.id)) }, ", ") %>
+        </li>
+      <% end %>
+      <% drafts.each do |invoice| %>
+        <li>Brouillon à émettre : <%= link_to "#{invoice.client} · #{invoice.label}", invoice %> (<%= eur(invoice.amount) %>)</li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
 <section class="grid-2">
   <div class="card">
     <h2>Heures à facturer</h2>
@@ -65,7 +84,7 @@
               <td><%= link_to contract, contract %><br><small class="muted"><%= contract.client %></small></td>
               <td><%= date(contract.next_billing_on) %></td>
               <td class="num"><%= eur(contract.amount_on(contract.next_billing_on)) %></td>
-              <td><%= button_to "Facturé", bill_contract_path(contract), class: "button button--small", form: { data: { turbo_confirm: "Enregistrer la facture de #{contract} ?" } } %></td>
+              <td><%= button_to "Facturer", bill_contract_path(contract), class: "button button--small", form: { data: { turbo_confirm: "Préparer la facture de #{contract} ?" } } %></td>
             </tr>
           <% end %>
         </tbody>
@@ -83,7 +102,7 @@
         <tbody>
           <% invoices.each do |invoice| %>
             <tr>
-              <td><%= link_to invoice.client, invoice.client %><br><small class="muted"><%= invoice %></small></td>
+              <td><%= link_to invoice.client, invoice.client %><br><small class="muted"><%= link_to invoice, invoice %></small></td>
               <td><%= date(invoice.issued_on) %></td>
               <td class="num"><%= eur(invoice.amount) %></td>
             </tr>
@@ -97,10 +116,31 @@
     <h2>À surveiller</h2>
     <% packs = @dashboard.low_packs %>
     <% renewals = @dashboard.renewals %>
-    <% if packs.empty? && renewals.empty? %>
+    <% to_review = @dashboard.purchases_to_review %>
+    <% missing = @dashboard.missing_purchase_invoices %>
+    <% to_match = @dashboard.bank_transactions_to_match %>
+    <% vat_due = @dashboard.vat_return_due %>
+    <% tax = @dashboard.tax_projection if @dashboard.year == Date.current.year %>
+    <% remuneration_alert = tax&.year_end_alert? %>
+    <% if packs.empty? && renewals.empty? && to_review.zero? && missing.empty? && to_match.zero? && vat_due.nil? && !remuneration_alert %>
       <p class="muted">Rien à signaler.</p>
     <% end %>
     <ul class="plain">
+      <% if remuneration_alert %>
+        <li class="danger"><%= link_to "Verser #{eur(tax.remuneration_needed, precision: 0)} de rémunération avant le 31/12", tax_projection_path %> pour garder le taux réduit de l'impôt des sociétés</li>
+      <% end %>
+      <% if vat_due %>
+        <li class="<%= 'danger' if vat_due.quarter.deadline < Date.current %>"><%= link_to "TVA #{vat_due.quarter.label} à déclarer", vat_return_path(vat_due.quarter.to_param) %> au plus tard le <%= date(vat_due.quarter.deadline) %></li>
+      <% end %>
+      <% if to_review.positive? %>
+        <li><%= link_to "#{to_review} achat#{'s' if to_review > 1} à vérifier", purchase_invoices_path(status: "to_review") %></li>
+      <% end %>
+      <% if to_match.positive? %>
+        <li><%= link_to "#{to_match} mouvement#{'s' if to_match > 1} bancaire#{'s' if to_match > 1} à rapprocher", bank_transactions_path(status: "unmatched") %></li>
+      <% end %>
+      <% missing.each do |cost| %>
+        <li>Facture de <%= link_to cost.supplier, cost.supplier %> (<%= cost %>) pas reçue pour <%= l(Date.current.prev_month, format: "%B %Y") %></li>
+      <% end %>
       <% packs.each do |pack| %>
         <li><%= link_to pack.client, pack %> : <%= pack.label %>, reste <strong><%= hours(pack.remaining_hours) %></strong></li>
       <% end %>
