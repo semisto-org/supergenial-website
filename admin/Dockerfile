@@ -6,7 +6,7 @@
 # docker run -d -p 80:80 -e SECRET_KEY_BASE=… -v supergenial-admin:/rails/storage supergenial-admin
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version
-ARG RUBY_VERSION=3.3.6
+ARG RUBY_VERSION=3.3.13
 # Image tirée via mirror.gcr.io : Docker Hub rate-limite les pulls anonymes sur l'IP partagée du VPS Semisto.
 FROM mirror.gcr.io/library/ruby:$RUBY_VERSION-slim AS base
 

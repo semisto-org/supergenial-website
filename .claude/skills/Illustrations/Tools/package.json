@@ -8,6 +8,6 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "sharp": "^0.35.3"
+    "sharp": "^0.35.5"
   }
 }
