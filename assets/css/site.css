@@ -965,7 +965,7 @@ body::before { opacity: 0.035; }
 .principle p.sub { font-family: var(--font-sans); font-size: 15px; line-height: 1.5; color: var(--text-secondary); letter-spacing: 0; }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   Super Génial 2026 : service IT de Semisto
+   Super Génial 2026
    Charte Semisto (papier beige, EB Garamond, Inter) avec le mauve de Super Génial
    en couleur principale. Pages larges (main.wide) : accueil, diagnostic, tarifs,
    reprise. Les articles et études de cas gardent la colonne de lecture.
@@ -1214,17 +1214,6 @@ main:not(.wide) .site-head { margin-bottom: 2.5rem; }
 .trust-card li::before { content: "✓"; position: absolute; left: 0; color: var(--sg); font-weight: 700; }
 .trust-card li b { color: var(--text-primary); font-weight: 600; }
 
-/* Semisto, c'est quoi ? */
-.semisto { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(32px, 6vw, 96px); align-items: start; }
-.semisto .quote { font-family: var(--font-serif); font-weight: 500; font-size: clamp(32px, 3.6vw, 50px); line-height: 1.06; letter-spacing: -.02em; color: var(--sg-ink); margin: 0 0 1.4rem; }
-.semisto .quote em { font-style: italic; color: var(--sg); }
-.poles { list-style: none; border-top: 1px solid var(--card-border); }
-.poles li { display: grid; grid-template-columns: minmax(150px, .7fr) 1.3fr; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid var(--card-border); font-size: 15.5px; align-items: baseline; }
-.poles b { font-family: var(--font-serif); font-weight: 500; font-size: 22px; color: var(--sg-ink); }
-.poles span { color: var(--text-secondary); }
-.money { margin-top: 1.8rem; border-radius: 18px; padding: 1.3rem 1.4rem; background: var(--sg-50); font-size: 16px; line-height: 1.55; }
-.money b { color: var(--sg-ink); }
-
 /* Contact */
 .contact-band { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: clamp(32px, 6vw, 96px); align-items: start; }
 .contact-band .h-sec { font-size: clamp(44px, 5.6vw, 88px); }
@@ -1307,7 +1296,7 @@ main:not(.wide) .site-foot { margin: 5rem calc(50% - 50vw) 0; }
   .timeline { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 900px) {
-  .hero-grid, .page-hero-grid, .split, .semisto, .contact-band, .builder, .manifesto-grid, .cols-2 { grid-template-columns: 1fr; }
+  .hero-grid, .page-hero-grid, .split, .contact-band, .builder, .manifesto-grid, .cols-2 { grid-template-columns: 1fr; }
   .pains, .trust, .offer, .proofs, .tiers, .faq, .timeline--3, .timeline--4 { grid-template-columns: 1fr; }
   .door { grid-template-columns: 1fr; }
   .door .door-k { display: none; }
@@ -1316,7 +1305,6 @@ main:not(.wide) .site-foot { margin: 5rem calc(50% - 50vw) 0; }
 @media (max-width: 560px) {
   .missions, .timeline, .tiles { grid-template-columns: 1fr; }
   .btn { white-space: normal; }
-  .poles li { grid-template-columns: 1fr; gap: .2rem; }
   .chip { white-space: normal; }
 }
 
@@ -1364,11 +1352,9 @@ main:not(.wide) .site-foot { margin: 5rem calc(50% - 50vw) 0; }
   .page-hero .illu-side { max-width: 260px; margin: 1.5rem auto 0; }
 }
 /* En-tête mobile : marque, langue et menu sur une seule ligne */
-.site-nav .brand-by { font-weight: 500; color: var(--text-secondary); }
 @media (max-width: 560px) {
   .site-nav { gap: .5rem; }
   .site-nav .brand { gap: .4rem; }
-  .site-nav .brand-by { font-size: 13px; }
 }
 @media (max-width: 560px) {
   .eol-row { grid-template-columns: 1fr; gap: .35rem; }
@@ -1379,28 +1365,7 @@ main:not(.wide) .site-foot { margin: 5rem calc(50% - 50vw) 0; }
   .site-nav .lang-switch { padding: 3px; }
   .site-nav .lang-switch .lang-globe { display: none; }
   .site-nav .lang-switch a { padding: .28rem .55rem; }
-  .site-nav .brand-by { font-size: 12px; }
 }
-@media (max-width: 350px) {
-  .site-nav .brand-by { display: none; }
-}
-/* Carrousel photos Semisto (accueil) */
-.sg-carousel { position: relative; margin-bottom: clamp(40px, 7vh, 72px); border-radius: var(--r-card, 22px); overflow: hidden; background: var(--sg-ink); aspect-ratio: 3 / 2; max-height: 620px; width: 100%; }
-.sg-slides, .sg-slide { position: absolute; inset: 0; margin: 0; }
-.sg-slide { opacity: 0; transition: opacity .9s ease; }
-.sg-slide.is-active { opacity: 1; }
-.sg-slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.sg-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 999px; border: 0; background: rgba(255,255,255,.88); color: var(--sg-ink); font-size: 18px; line-height: 1; cursor: pointer; display: grid; place-items: center; box-shadow: 0 6px 18px -8px rgba(0,0,0,.4); transition: background .2s ease; }
-.sg-nav:hover { background: #fff; }
-.sg-prev { left: 16px; }
-.sg-next { right: 16px; }
-.sg-dots { position: absolute; left: 0; right: 0; bottom: 14px; display: flex; justify-content: center; gap: 8px; }
-.sg-dots button { width: 9px; height: 9px; padding: 0; border-radius: 999px; border: 0; background: rgba(255,255,255,.55); cursor: pointer; transition: width .3s ease, background .3s ease; }
-.sg-dots button.is-active { width: 26px; background: #fff; }
-.sg-nav:focus-visible, .sg-dots button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
-@media (min-width: 900px) { .sg-carousel { aspect-ratio: 21 / 9; } }
-@media (max-width: 560px) { .sg-nav { width: 36px; height: 36px; font-size: 15px; } .sg-prev { left: 10px; } .sg-next { right: 10px; } }
-@media (prefers-reduced-motion: reduce) { .sg-slide { transition: none; } }
 /* Un visage et un lieu */
 .hero-sign { display: inline-flex; align-items: center; gap: .8rem; margin-top: 1.6rem; color: var(--text-secondary); font-size: 14.5px; line-height: 1.3; text-decoration: none; }
 .hero-sign img { width: 52px; height: 52px; border-radius: 999px; object-fit: cover; box-shadow: 0 0 0 3px var(--bg), 0 0 0 4.5px var(--sg); }

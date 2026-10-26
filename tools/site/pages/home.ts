@@ -26,40 +26,6 @@ const proofs = (l: Lang) => PROOFS[l].map(([href, src, alt, k, h, who]) => `
                         <div class="body"><div class="k">${k}</div><h3>${h}</h3><div class="who">${who}</div></div>
                     </a>`).join("");
 
-const PHOTOS = {
-  fr: [
-    "Chantier participatif dans un jardin clos : le collectif creuse les baissières d'un futur jardin-forêt",
-    "Le groupe d'un chantier de plantation hivernal, bras levés autour d'un jeune arbre",
-    "Chantier de plantation : outils posés sur la terre fraîchement travaillée",
-    "Plantation de jeunes arbres à travers une toile de paillage naturel",
-    "Vue aérienne des cercles concentriques d'un jardin-forêt Semisto",
-  ],
-  en: [
-    "Community work day in a walled garden: the group digs the swales of a future food forest",
-    "A winter planting crew, arms raised around a young tree",
-    "Planting day: tools resting on freshly worked soil",
-    "Young trees planted through a natural mulch cloth",
-    "Aerial view of the concentric circles of a Semisto food forest",
-  ],
-};
-const UI = {
-  fr: { label: "Photos de Semisto", prev: "Photo précédente", next: "Photo suivante", go: "Voir la photo" },
-  en: { label: "Photos of Semisto", prev: "Previous photo", next: "Next photo", go: "Show photo" },
-};
-
-const photos = (l: Lang) => `
-            <div class="wrap">
-                <div class="sg-carousel" role="region" aria-roledescription="carousel" aria-label="${UI[l].label}">
-                    <div class="sg-slides">${PHOTOS[l].map((alt, i) => `
-                        <figure class="sg-slide${i === 0 ? " is-active" : ""}"${i === 0 ? "" : ' aria-hidden="true"'}><img src="/assets/semisto/semisto-${i + 1}-1600.webp" srcset="/assets/semisto/semisto-${i + 1}-800.webp 800w, /assets/semisto/semisto-${i + 1}-1600.webp 1600w" sizes="(max-width: 1180px) 100vw, 1100px" alt="${alt}" width="1600" height="1067"${i === 0 ? "" : ' loading="lazy"'} decoding="async"></figure>`).join("")}
-                    </div>
-                    <button class="sg-nav sg-prev plain" type="button" aria-label="${UI[l].prev}">←</button>
-                    <button class="sg-nav sg-next plain" type="button" aria-label="${UI[l].next}">→</button>
-                    <div class="sg-dots">${PHOTOS[l].map((_, i) => `<button type="button" class="plain${i === 0 ? " is-active" : ""}" aria-label="${UI[l].go} ${i + 1}"></button>`).join("")}</div>
-                </div>
-            </div>
-            <script>(function(){var c=document.currentScript.previousElementSibling.querySelector(".sg-carousel"),s=c.querySelectorAll(".sg-slide"),d=c.querySelectorAll(".sg-dots button"),i=0,t;function go(n){s[i].classList.remove("is-active");s[i].setAttribute("aria-hidden","true");d[i].classList.remove("is-active");i=(n+s.length)%s.length;s[i].classList.add("is-active");s[i].removeAttribute("aria-hidden");d[i].classList.add("is-active")}function play(){stop();if(!matchMedia("(prefers-reduced-motion: reduce)").matches)t=setInterval(function(){go(i+1)},5000)}function stop(){clearInterval(t)}c.querySelector(".sg-prev").onclick=function(){go(i-1);play()};c.querySelector(".sg-next").onclick=function(){go(i+1);play()};d.forEach(function(b,k){b.onclick=function(){go(k);play()}});c.addEventListener("mouseenter",stop);c.addEventListener("mouseleave",play);c.addEventListener("focusin",stop);c.addEventListener("focusout",play);var x;c.addEventListener("touchstart",function(e){x=e.touches[0].clientX;stop()},{passive:true});c.addEventListener("touchend",function(e){var dx=e.changedTouches[0].clientX-x;if(Math.abs(dx)>40)go(i+(dx<0?1:-1));play()});play()})();</script>`;
-
 const REFS = `<a class="plain" href="https://www.d-ici.be" target="_blank" rel="noopener noreferrer"><img class="sq" src="/assets/logos/dici.webp" alt="d'ici" width="120" height="120" loading="lazy"></a>
                     <a class="plain" href="https://www.silvea.org" target="_blank" rel="noopener noreferrer"><img src="/assets/logos/silvea.webp" alt="Silvéa" width="322" height="120" loading="lazy"></a>
                     <a class="plain" href="https://www.upcyclinarium.com" target="_blank" rel="noopener noreferrer"><img class="sq" src="/assets/logos/upcyclinarium.svg" alt="Upcyclinarium" width="400" height="400" loading="lazy"></a>
@@ -75,8 +41,8 @@ const FR = `
             <div class="wrap hero-grid">
                 <div>
                     <p class="eyebrow">Outils internes et agents IA sur mesure</p>
-                    <h1 class="display">Vos outils sur mesure, <em>qui financent des forêts comestibles.</em></h1>
-                    <p class="lede">Je remplace vos tableurs, vos tâches répétitives et vos abonnements empilés par <strong>des outils internes et des agents IA construits pour votre entreprise</strong>. Le code vous appartient, et chaque euro facturé finance la mission de Semisto.</p>
+                    <h1 class="display">Vos outils sur mesure, <em>qui travaillent à votre place.</em></h1>
+                    <p class="lede">Je remplace vos tableurs, vos tâches répétitives et vos abonnements empilés par <strong>des outils internes et des agents IA construits pour votre entreprise</strong>. Le code vous appartient, et votre équipe retrouve du temps pour sa mission.</p>
                     <div class="actions">
                         <a ${BK("fr")} class="btn btn-primary plain">Réserver un call de 30 minutes <span class="arr">→</span></a>
                         <a href="/diagnostic-ia/" class="btn btn-line plain">Le Diagnostic IA</a>
@@ -97,8 +63,8 @@ const FR = `
                     <p class="eyebrow">Un mot avant de commencer</p>
                     <p class="letter-hello">Bonjour, je m'appelle Michael.</p>
                     <p>Je code en freelance depuis 2004. Ce qui m'a appris à construire des outils utiles, c'est d'en être régulièrement l'un des utilisateurs&nbsp;: un magasin, un lieu d'accueil avec gîtes et salles, un e-commerce, une association. Je connais la caisse qui ne croise pas le stock, le planning de réservations qui déborde, les inscriptions gérées à la main.</p>
-                    <p>Depuis 2023, je construis avec des agents IA les outils dont nos propres structures ont besoin. <em>Claudy</em> fait tourner le tiers-lieu qui héberge Semisto, Les 4 Sources à Yvoir. <em>My Semisto</em> développe la dynamique collective de l'association et <em>Terranova</em> est un puissant outil de cartographie pour nos équipes. Ce qui a fait ses preuves chez nous, je le propose aux entreprises qui portent elles aussi une mission durable.</p>
-                    <p>Et chaque euro que vous me confiez va à Semisto, dont la mission est de transformer l'Europe en un maillage de forêts comestibles.</p>
+                    <p>Depuis 2023, je construis avec des agents IA les outils dont mes propres structures ont besoin. <em>Claudy</em> fait tourner Les 4 Sources, le tiers-lieu où je vis à Yvoir. Pour l'association Semisto, <em>My Semisto</em> porte la dynamique collective et <em>Terranova</em> cartographie les projets des équipes. Ce qui a fait ses preuves chez nous, je le propose aux entreprises qui portent elles aussi une mission durable.</p>
+                    <p>Avec Super Génial, vous avez un seul interlocuteur, un code qui vous appartient et des outils pensés pour durer.</p>
                     <p class="letter-sign">Michael</p>
                 </div>
             </div>
@@ -289,24 +255,6 @@ const FR = `
             </div>
         </section>
 
-        <section class="sec" id="semisto">${photos("fr")}
-            <div class="wrap semisto">
-                <div>
-                    <p class="eyebrow">Semisto, c'est quoi&nbsp;?</p>
-                    <p class="quote">Transformer l'Europe en un maillage <em>de forêts comestibles.</em></p>
-                    <p class="prose">C'est la mission de <a href="https://www.semisto.org" target="_blank" rel="noopener noreferrer">Semisto</a>, l'association que j'ai fondée. Elle conçoit, plante et transmet des jardins-forêts&nbsp;: des écosystèmes nourriciers qui régénèrent le sol, la biodiversité et les liens entre les gens. Super Génial est son service IT.</p>
-                    <div class="money"><b>Chaque euro facturé va à Semisto ASBL, sans actionnaire.</b> Il rémunère mon travail et finance la mission. Votre budget IT devient aussi un soutien, que vous pouvez citer dans votre rapport d'impact.</div>
-                </div>
-                <ul class="poles">
-                    <li><b>Design Labs</b><span>le bureau d'études qui dessine les jardins-forêts</span></li>
-                    <li><b>Mycorrhiza</b><span>la réalisation, avec un réseau de pros du jardin</span></li>
-                    <li><b>Semisto Designer</b><span>l'outil en ligne pour concevoir son jardin-forêt</span></li>
-                    <li><b>Academy</b><span>les formations, d'un jour à trente jours</span></li>
-                    <li><b>Pépinière-école</b><span>des plants résilients, et un lieu pour apprendre à les multiplier</span></li>
-                    <li><b>Food Forest Heroes</b><span>les bénévoles qui plantent, en musique</span></li>
-                </ul>
-            </div>
-        </section>
 
         <section class="sec band" id="contact">
             <div class="wrap contact-band">
@@ -322,7 +270,7 @@ const FR = `
                         <li>Quelle tâche aimeriez-vous ne plus jamais faire à la main&nbsp;?</li>
                     </ol>
                     <a ${BK("fr")} class="btn btn-light plain">Réserver un call de 30 minutes <span class="arr">→</span></a>
-                    <div class="contact-alt"><a href="mailto:supergenial@semisto.org">supergenial@semisto.org</a><a href="https://www.linkedin.com/in/michaelhulet/" target="_blank" rel="noopener noreferrer">LinkedIn</a><a href="https://t.me/supergenialdotbe" target="_blank" rel="noopener noreferrer">Telegram</a></div>
+                    <div class="contact-alt"><a href="mailto:team@supergenial.be">team@supergenial.be</a><a href="https://www.linkedin.com/in/michaelhulet/" target="_blank" rel="noopener noreferrer">LinkedIn</a><a href="https://t.me/supergenialdotbe" target="_blank" rel="noopener noreferrer">Telegram</a></div>
                 </div>
             </div>
         </section>
@@ -334,8 +282,8 @@ const EN = `
             <div class="wrap hero-grid">
                 <div>
                     <p class="eyebrow">Custom internal tools and AI agents</p>
-                    <h1 class="display">Your custom tools, <em>funding edible forests.</em></h1>
-                    <p class="lede">I replace your spreadsheets, your repetitive tasks and your pile of software subscriptions with <strong>internal tools and AI agents built for your company</strong>. You own the code, and every euro invoiced funds Semisto's mission.</p>
+                    <h1 class="display">Your custom tools, <em>doing the work for you.</em></h1>
+                    <p class="lede">I replace your spreadsheets, your repetitive tasks and your pile of software subscriptions with <strong>internal tools and AI agents built for your company</strong>. You own the code, and your team gets its time back for its mission.</p>
                     <div class="actions">
                         <a ${BK("en")} class="btn btn-primary plain">Book a 30-minute call <span class="arr">→</span></a>
                         <a href="/en/ai-assessment/" class="btn btn-line plain">The AI Assessment</a>
@@ -356,8 +304,8 @@ const EN = `
                     <p class="eyebrow">A word before we start</p>
                     <p class="letter-hello">Hello, I'm Michael.</p>
                     <p>I have been coding as a freelancer since 2004. What taught me to build useful tools is being one of their users, again and again: a shop, a guest house with venues, an online shop, an association. I know the till that never matches the stock, the booking schedule that overflows, the registrations handled by hand.</p>
-                    <p>Since 2023, I have been building with AI agents the tools our own organisations need. <em>Claudy</em> runs the community estate that hosts Semisto, Les 4 Sources in Yvoir. <em>My Semisto</em> drives the association's collective dynamics and <em>Terranova</em> is a powerful mapping tool for our teams. What has proven itself at home, I offer to companies that also carry a sustainable mission.</p>
-                    <p>And every euro you entrust me with goes to Semisto, whose mission is to turn Europe into a network of edible forests.</p>
+                    <p>Since 2023, I have been building with AI agents the tools my own organisations need. <em>Claudy</em> runs Les 4 Sources, the community estate where I live in Yvoir. For the Semisto association, <em>My Semisto</em> drives collective work and <em>Terranova</em> maps the teams' projects. What has proven itself at home, I offer to companies that also carry a sustainable mission.</p>
+                    <p>With Super Génial, you get a single point of contact, code you own and tools built to last.</p>
                     <p class="letter-sign">Michael</p>
                 </div>
             </div>
@@ -548,24 +496,6 @@ const EN = `
             </div>
         </section>
 
-        <section class="sec" id="semisto">${photos("en")}
-            <div class="wrap semisto">
-                <div>
-                    <p class="eyebrow">What is Semisto?</p>
-                    <p class="quote">Turning Europe into a network <em>of edible forests.</em></p>
-                    <p class="prose">That is the mission of <a href="https://www.semisto.org" target="_blank" rel="noopener noreferrer">Semisto</a>, the association I founded. It designs, plants and teaches food forests: food-producing ecosystems that regenerate soil, biodiversity and the bonds between people. Super Génial is its IT service.</p>
-                    <div class="money"><b>Every euro invoiced goes to Semisto ASBL, with no shareholders.</b> It pays for my work and funds the mission. Your IT budget also becomes support you can cite in your impact report.</div>
-                </div>
-                <ul class="poles">
-                    <li><b>Design Labs</b><span>the design studio that draws food forests</span></li>
-                    <li><b>Mycorrhiza</b><span>the planting, with a network of garden professionals</span></li>
-                    <li><b>Semisto Designer</b><span>the online tool to design your own food forest</span></li>
-                    <li><b>Academy</b><span>training, from one day to thirty</span></li>
-                    <li><b>Nursery school</b><span>resilient plants, and a place to learn how to propagate them</span></li>
-                    <li><b>Food Forest Heroes</b><span>the volunteers who plant, to music</span></li>
-                </ul>
-            </div>
-        </section>
 
         <section class="sec band" id="contact">
             <div class="wrap contact-band">
@@ -581,7 +511,7 @@ const EN = `
                         <li>Which task would you love to never do by hand again?</li>
                     </ol>
                     <a ${BK("en")} class="btn btn-light plain">Book a 30-minute call <span class="arr">→</span></a>
-                    <div class="contact-alt"><a href="mailto:supergenial@semisto.org">supergenial@semisto.org</a><a href="https://www.linkedin.com/in/michaelhulet/" target="_blank" rel="noopener noreferrer">LinkedIn</a><a href="https://t.me/supergenialdotbe" target="_blank" rel="noopener noreferrer">Telegram</a></div>
+                    <div class="contact-alt"><a href="mailto:team@supergenial.be">team@supergenial.be</a><a href="https://www.linkedin.com/in/michaelhulet/" target="_blank" rel="noopener noreferrer">LinkedIn</a><a href="https://t.me/supergenialdotbe" target="_blank" rel="noopener noreferrer">Telegram</a></div>
                 </div>
             </div>
         </section>
@@ -592,9 +522,9 @@ export const home = (lang: Lang) => page({
   lang, path: ALT[lang], alt: ALT, wide: true, bodyClass: "page-home",
   title: lang === "fr" ? "Super Génial · Outils internes et agents IA sur mesure" : "Super Génial · Custom internal tools and AI agents",
   description: lang === "fr"
-    ? "Le service IT de Semisto remplace vos tableurs et vos abonnements empilés par des outils internes et des agents IA sur mesure, pour les entreprises à impact."
-    : "Semisto's IT service replaces your spreadsheets and stacked subscriptions with custom internal tools and AI agents, for impact-driven companies.",
-  og: "home", ogAlt: lang === "fr" ? "Super Génial by Semisto : votre équipe est là pour la mission, pas pour recopier des tableurs" : "Super Génial by Semisto: your team is here for the mission, not to copy spreadsheets",
+    ? "Super Génial remplace vos tableurs et vos abonnements empilés par des outils internes et des agents IA sur mesure, pour les entreprises à impact."
+    : "Super Génial replaces your spreadsheets and stacked subscriptions with custom internal tools and AI agents, for impact-driven companies.",
+  og: "home", ogAlt: lang === "fr" ? "Super Génial : votre équipe est là pour la mission, pas pour recopier des tableurs" : "Super Génial: your team is here for the mission, not to copy spreadsheets",
   jsonld: [orgLd(lang)],
   body: lang === "fr" ? FR : EN,
 });

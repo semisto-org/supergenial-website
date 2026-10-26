@@ -118,7 +118,7 @@ const FR = `
                 <div>
                     <p>Trente minutes pour voir si un diagnostic a du sens chez vous. Si ce n'est pas le cas, je vous le dirai.</p>
                     <div class="actions"><a ${BK("fr")} class="btn btn-light plain">Réserver un call de 30 minutes <span class="arr">→</span></a></div>
-                    <div class="contact-alt"><a href="mailto:supergenial@semisto.org">supergenial@semisto.org</a><a href="/tarifs/">Voir tous les tarifs</a></div>
+                    <div class="contact-alt"><a href="mailto:team@supergenial.be">team@supergenial.be</a><a href="/tarifs/">Voir tous les tarifs</a></div>
                 </div>
             </div>
         </section>
@@ -219,7 +219,7 @@ const EN = `
                 <div>
                     <p>Thirty minutes to see whether an assessment makes sense for you. If it doesn't, I will tell you.</p>
                     <div class="actions"><a ${BK("en")} class="btn btn-light plain">Book a 30-minute call <span class="arr">→</span></a></div>
-                    <div class="contact-alt"><a href="mailto:supergenial@semisto.org">supergenial@semisto.org</a><a href="/en/pricing/">See all pricing</a></div>
+                    <div class="contact-alt"><a href="mailto:team@supergenial.be">team@supergenial.be</a><a href="/en/pricing/">See all pricing</a></div>
                 </div>
             </div>
         </section>

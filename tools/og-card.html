@@ -26,10 +26,10 @@ p { font-size:26px; color:#595959; margin-top:26px; line-height:1.4; text-wrap:p
 .illu { position:absolute; right:52px; top:50%; transform:translateY(-50%); width:420px; height:420px }
 </style></head><body>
 <div class="bar"></div>
-<div class="txt"><div class="brand"><span class="mark"></span>Super Génial<span class="by">by Semisto</span></div>
+<div class="txt"><div class="brand"><span class="mark"></span>Super Génial</div>
 <h1 id="t"></h1><p id="s"></p></div>
 <img class="illu" id="i" alt="">
-<div class="url" id="u">supergenial.be <b>·</b> le service IT de Semisto</div>
+<div class="url" id="u">supergenial.be <b>·</b> outils internes et agents IA sur mesure</div>
 <script>
 const p=new URLSearchParams(location.search);
 document.getElementById('t').innerHTML=(p.get('t')||'').replace(/[<>&]/g,'').replace(/\*([^*]+)\*/g,'<em>$1</em>');

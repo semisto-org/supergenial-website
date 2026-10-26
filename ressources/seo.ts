@@ -158,9 +158,9 @@ const guides = entries.filter((e) => e.isArticle && !e.fresh && !e.fr.startsWith
 const line = (e: any) => `- [${e.titleFr}](${BASE}${e.fr}) : ${e.descFr}`;
 const llms = `# Super Génial
 
-> Super Génial est le service IT de Semisto ASBL. Michael Hulet, fondateur de Semisto, y construit seul, en orchestrant des agents IA, des outils internes et des agents IA sur mesure pour les entreprises à impact de 5 à 100 personnes (B Corp, coopératives, PME durables, producteurs établis) en Wallonie et à Bruxelles. Il remplace les tableurs, les tâches répétitives et les abonnements logiciels empilés. Chaque euro facturé va à Semisto ASBL, sans actionnaire.
+> Super Génial est une marque de Marco & Vespucci SRL. Michael Hulet y construit seul, en orchestrant des agents IA, des outils internes et des agents IA sur mesure pour les entreprises à impact de 5 à 100 personnes (B Corp, coopératives, PME durables, producteurs établis) en Wallonie et à Bruxelles. Il remplace les tableurs, les tâches répétitives et les abonnements logiciels empilés.
 
-Le code source est remis au client (GitHub) ; les applications sont hébergées chez Infomaniak (Suisse) ; le modèle IA utilisé est Claude (Anthropic). Contact : supergenial@semisto.org. Réserver un call de 30 minutes : https://calendar.notion.so/meet/michaelhulet/supergenial
+Le code source est remis au client (GitHub) ; les applications sont hébergées chez Infomaniak (Suisse) ; le modèle IA utilisé est Claude (Anthropic). Contact : team@supergenial.be. Réserver un call de 30 minutes : https://calendar.notion.so/meet/michaelhulet/supergenial
 
 ## Offre
 - [Diagnostic IA](${BASE}/diagnostic-ia/) : deux semaines, prix fixe 3 500 € HTVA, interviews, inventaire des tableurs et des abonnements, top 3 des opportunités chiffrées sur cinq ans ; déduit si une construction suit dans les 90 jours.
@@ -175,10 +175,9 @@ ${articles.map(line).join("\n")}
 ${guides.map(line).join("\n")}
 
 ## À propos
-- Entité : Semisto ASBL (BCE et TVA BE 0790.631.657), Fonds d'Ahinvaux 1, 5530 Yvoir, Belgique.
-- Mission de Semisto : transformer l'Europe en un maillage de forêts comestibles (https://www.semisto.org).
+- Entité : Marco & Vespucci SRL (BCE et TVA BE 0523.920.556), rue Ernest Feron 64, 5310 Eghezée, Belgique.
 - Site : ${BASE}/ · Version anglaise : ${BASE}/en/
-- Contact : supergenial@semisto.org · LinkedIn : https://www.linkedin.com/in/michaelhulet/
+- Contact : team@supergenial.be · LinkedIn : https://www.linkedin.com/in/michaelhulet/
 `;
 writeFileSync(join(ROOT, "llms.txt"), llms);
 console.log("✓ llms.txt");
