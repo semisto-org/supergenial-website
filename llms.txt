@@ -1,8 +1,8 @@
 # Super Génial
 
-> Super Génial est le service IT de Semisto ASBL. Michael Hulet, fondateur de Semisto, y construit seul, en orchestrant des agents IA, des outils internes et des agents IA sur mesure pour les entreprises à impact de 5 à 100 personnes (B Corp, coopératives, PME durables, producteurs établis) en Wallonie et à Bruxelles. Il remplace les tableurs, les tâches répétitives et les abonnements logiciels empilés. Chaque euro facturé va à Semisto ASBL, sans actionnaire.
+> Super Génial est une marque de Marco & Vespucci SRL. Michael Hulet y construit seul, en orchestrant des agents IA, des outils internes et des agents IA sur mesure pour les entreprises à impact de 5 à 100 personnes (B Corp, coopératives, PME durables, producteurs établis) en Wallonie et à Bruxelles. Il remplace les tableurs, les tâches répétitives et les abonnements logiciels empilés.
 
-Le code source est remis au client (GitHub) ; les applications sont hébergées chez Infomaniak (Suisse) ; le modèle IA utilisé est Claude (Anthropic). Contact : supergenial@semisto.org. Réserver un call de 30 minutes : https://calendar.notion.so/meet/michaelhulet/supergenial
+Le code source est remis au client (GitHub) ; les applications sont hébergées chez Infomaniak (Suisse) ; le modèle IA utilisé est Claude (Anthropic). Contact : team@supergenial.be. Réserver un call de 30 minutes : https://calendar.notion.so/meet/michaelhulet/supergenial
 
 ## Offre
 - [Diagnostic IA](https://www.supergenial.be/diagnostic-ia/) : deux semaines, prix fixe 3 500 € HTVA, interviews, inventaire des tableurs et des abonnements, top 3 des opportunités chiffrées sur cinq ans ; déduit si une construction suit dans les 90 jours.
@@ -29,7 +29,6 @@ Le code source est remis au client (GitHub) ; les applications sont hébergées 
 - [Rails 8 : quoi de neuf et pourquoi ça vaut la mise à niveau](https://www.supergenial.be/ressources/rails-8-nouveautes/) : Rails 8 supprime des dépendances (Redis) et simplifie le déploiement. Les nouveautés qui comptent pour le propriétaire d'une application, et quand migrer.
 
 ## À propos
-- Entité : Semisto ASBL (BCE et TVA BE 0790.631.657), Fonds d'Ahinvaux 1, 5530 Yvoir, Belgique.
-- Mission de Semisto : transformer l'Europe en un maillage de forêts comestibles (https://www.semisto.org).
+- Entité : Marco & Vespucci SRL (BCE et TVA BE 0523.920.556), rue Ernest Feron 64, 5310 Eghezée, Belgique.
 - Site : https://www.supergenial.be/ · Version anglaise : https://www.supergenial.be/en/
-- Contact : supergenial@semisto.org · LinkedIn : https://www.linkedin.com/in/michaelhulet/
+- Contact : team@supergenial.be · LinkedIn : https://www.linkedin.com/in/michaelhulet/

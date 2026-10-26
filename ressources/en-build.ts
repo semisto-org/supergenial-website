@@ -96,7 +96,7 @@ function enIndexPage(articles: BiArticle[]): string {
         <div class="article-list animate delay-3">
 ${items}
         </div>
-        <p class="footnote">New articles regularly. A specific question? <a href="mailto:supergenial@semisto.org">supergenial@semisto.org</a></p>
+        <p class="footnote">New articles regularly. A specific question? <a href="mailto:team@supergenial.be">team@supergenial.be</a></p>
     </main>
 </body>
 </html>

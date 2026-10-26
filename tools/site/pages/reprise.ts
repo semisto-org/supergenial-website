@@ -138,7 +138,7 @@ const FR = `
                 <div>
                     <p>Dites-moi ce qu'elle fait, sur quoi elle tourne et ce qui vous inquiète. En trente minutes, on sait si un audit a du sens.</p>
                     <div class="actions"><a ${BK("fr")} class="btn btn-light plain">Réserver un call de 30 minutes <span class="arr">→</span></a></div>
-                    <div class="contact-alt"><a href="mailto:supergenial@semisto.org">supergenial@semisto.org</a></div>
+                    <div class="contact-alt"><a href="mailto:team@supergenial.be">team@supergenial.be</a></div>
                 </div>
             </div>
         </section>
@@ -231,7 +231,7 @@ const EN = `
                 <div>
                     <p>Tell me what it does, what it runs on and what worries you. In thirty minutes we know whether an audit makes sense.</p>
                     <div class="actions"><a ${BK("en")} class="btn btn-light plain">Book a 30-minute call <span class="arr">→</span></a></div>
-                    <div class="contact-alt"><a href="mailto:supergenial@semisto.org">supergenial@semisto.org</a></div>
+                    <div class="contact-alt"><a href="mailto:team@supergenial.be">team@supergenial.be</a></div>
                 </div>
             </div>
         </section>

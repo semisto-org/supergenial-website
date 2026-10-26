@@ -11,7 +11,7 @@ const FAQ: Record<Lang, [string, string][]> = {
     ["C'est quoi un « point » ?", "L'unité des petites évolutions incluses dans l'abonnement, à la place des heures. 1 point : un petit ajustement (un champ, un libellé). 2 points : une petite évolution (un filtre, un e-mail automatique). Environ 5 points : un écran complet. Au-delà du quota, l'évolution est chiffrée à part, d'avance."],
     ["Les points non utilisés sont-ils reportés ?", "Le quota se renouvelle chaque mois et n'est pas cumulable. Si vos besoins grandissent durablement, on ajuste le palier plutôt que d'accumuler."],
     ["Puis-je changer de palier ou résilier ?", "Oui. L'abonnement est sans engagement, modifiable ou résiliable d'un mois à l'autre. Et le code reste à vous dans tous les cas."],
-    ["Pourquoi une ASBL facture-t-elle de l'informatique ?", "Super Génial est le service IT de Semisto ASBL. L'association facture ses prestations avec son numéro de TVA, comme n'importe quel prestataire, et chaque euro reste dans l'association : il rémunère le travail et finance sa mission, sans actionnaire à rémunérer."],
+    ["Qui facture ?", "Super Génial est une marque de Marco & Vespucci SRL, société de droit belge (TVA BE 0523.920.556). Les factures sont émises par la SRL et envoyées par Peppol aux entreprises belges."],
   ],
   en: [
     ["How much does a custom project cost?", "It depends on what it replaces. As a rough guide, a tool focused on a single process starts around €5,000, and a complete back-office replacing several subscriptions runs into tens of thousands of euros. The exact fixed-price quote comes out of the AI Assessment."],
@@ -19,7 +19,7 @@ const FAQ: Record<Lang, [string, string][]> = {
     ["What is a “point”?", "The unit for the small improvements included in the subscription, instead of hours. 1 point: a small tweak (a field, a label). 2 points: a small improvement (a filter, an automatic e-mail). About 5 points: a full screen. Beyond the quota, the change is priced separately, upfront."],
     ["Do unused points roll over?", "The quota renews every month and does not accumulate. If your needs grow for good, we adjust the tier rather than stockpile."],
     ["Can I change tier or cancel?", "Yes. The subscription has no lock-in and can be changed or cancelled from one month to the next. And the code stays yours in every case."],
-    ["Why does a non-profit invoice IT work?", "Super Génial is the IT service of Semisto ASBL. The association invoices its services with its VAT number, like any provider, and every euro stays in the association: it pays for the work and funds its mission, with no shareholders to pay."],
+    ["Who sends the invoices?", "Super Génial is a brand of Marco & Vespucci SRL, a Belgian company (VAT BE 0523.920.556). Invoices are issued by the company and sent over Peppol to Belgian businesses."],
   ],
 };
 
@@ -130,7 +130,7 @@ const FR = `
                 <div>
                     <p>En trente minutes, je vous dis si le diagnostic a du sens chez vous et dans quel ordre de grandeur se situerait une construction.</p>
                     <div class="actions"><a ${BK("fr")} class="btn btn-light plain">Réserver un call de 30 minutes <span class="arr">→</span></a></div>
-                    <div class="contact-alt"><a href="mailto:supergenial@semisto.org">supergenial@semisto.org</a></div>
+                    <div class="contact-alt"><a href="mailto:team@supergenial.be">team@supergenial.be</a></div>
                 </div>
             </div>
         </section>
@@ -223,7 +223,7 @@ const EN = `
                 <div>
                     <p>In thirty minutes I will tell you whether the assessment makes sense for you, and the rough budget a build would need.</p>
                     <div class="actions"><a ${BK("en")} class="btn btn-light plain">Book a 30-minute call <span class="arr">→</span></a></div>
-                    <div class="contact-alt"><a href="mailto:supergenial@semisto.org">supergenial@semisto.org</a></div>
+                    <div class="contact-alt"><a href="mailto:team@supergenial.be">team@supergenial.be</a></div>
                 </div>
             </div>
         </section>

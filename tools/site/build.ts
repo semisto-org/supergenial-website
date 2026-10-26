@@ -38,7 +38,7 @@ const notFound = page({
   lang: "fr", path: "/404.html", alt: { fr: "/", en: "/en/" }, wide: true,
   title: "Page introuvable · Super Génial",
   description: "Cette adresse ne mène nulle part. Les liens de cette page vous ramènent vers l'accueil, le Diagnostic IA, les tarifs et les réalisations.",
-  og: "home", ogAlt: "Super Génial by Semisto",
+  og: "home", ogAlt: "Super Génial",
   body: `
         <section class="page-hero">
             <div class="wrap page-hero-grid">

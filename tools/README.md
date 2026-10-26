@@ -13,7 +13,7 @@ sips -z 630 1200 assets/og/nom.png
 sips -s format jpeg -s formatOptions 82 assets/og/nom.png --out assets/og/nom.jpg && rm assets/og/nom.png
 ```
 
-Paramètres optionnels : `u` remplace la ligne de pied (défaut « supergenial.be · le service IT de Semisto ») ; dans `t`, `*mot*` passe en italique mauve.
+Paramètres optionnels : `u` remplace la ligne de pied (défaut « supergenial.be · outils internes et agents IA sur mesure ») ; dans `t`, `*mot*` passe en italique mauve.
 
 ## Générer le site
 

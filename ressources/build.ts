@@ -193,7 +193,7 @@ function indexPage(articles: Article[]): string {
         <div class="article-list animate delay-3">
 ${items}
         </div>
-        <p class="footnote">Nouveaux articles régulièrement. Une question précise ? <a href="mailto:supergenial@semisto.org">supergenial@semisto.org</a></p>
+        <p class="footnote">Nouveaux articles régulièrement. Une question précise ? <a href="mailto:team@supergenial.be">team@supergenial.be</a></p>
     </main>
 </body>
 </html>
