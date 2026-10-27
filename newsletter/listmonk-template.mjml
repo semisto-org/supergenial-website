@@ -1,0 +1,144 @@
+<mjml lang="fr">
+  <!--
+    Template de campagne Listmonk : « La lettre de Super Génial by Semisto ».
+    Source MJML ; le fichier à coller dans Listmonk (Campagnes → Modèles) est
+    listmonk-template.html, compilé avec :
+      bunx mjml newsletter/listmonk-template.mjml -o newsletter/listmonk-template.html --config.minify=true --config.validationLevel=strict
+    Les balises {{ … }} sont la syntaxe Go de Listmonk : ne pas les traduire.
+    Le contenu de chaque campagne est injecté par {{ template "content" . }} et
+    stylé par le <mj-style> non inline ci-dessous (h1, h2, p, a, img, blockquote,
+    a.button…), car il n'existe pas au moment de la compilation.
+  -->
+  <mj-head>
+    <mj-title>{{ .Campaign.Subject }}</mj-title>
+    <mj-raw>
+      <meta name="color-scheme" content="light only">
+      <meta name="supported-color-schemes" content="light only">
+    </mj-raw>
+    <mj-font name="EB Garamond" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,500;1,500&amp;display=swap" />
+    <mj-font name="Inter" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" />
+    <mj-attributes>
+      <mj-all font-family="Inter, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" />
+      <mj-text color="#1a1a1a" font-size="16px" line-height="1.65" padding="0" />
+      <mj-section padding="0" />
+      <mj-column padding="0" />
+      <mj-class name="serif" font-family="'EB Garamond', Georgia, 'Times New Roman', serif" />
+      <mj-class name="meta" font-size="12px" line-height="1.6" color="#6b6478" />
+    </mj-attributes>
+    <mj-style>
+      :root { color-scheme: light only; supported-color-schemes: light only; }
+      /* Contenu de la campagne (éditeur Listmonk) */
+      .content h1, .content h2, .content h3 { font-family: 'EB Garamond', Georgia, 'Times New Roman', serif; font-weight: 500; color: #2a1a48; letter-spacing: -0.015em; margin: 0 0 14px; }
+      .content h1 { font-size: 36px; line-height: 1.08; }
+      .content h2 { font-size: 27px; line-height: 1.15; margin-top: 34px; }
+      .content h3 { font-size: 21px; line-height: 1.2; margin-top: 26px; }
+      .content p { margin: 0 0 16px; }
+      .content ul, .content ol { margin: 0 0 16px; padding-left: 22px; }
+      .content li { margin: 0 0 6px; }
+      .content a { color: #6638b8; text-decoration: underline; }
+      .content strong, .content b { color: #2a1a48; }
+      .content img { max-width: 100%; height: auto; border-radius: 12px; }
+      .content blockquote { margin: 22px 0; padding: 4px 0 4px 18px; border-left: 3px solid #a77bdb; font-family: 'EB Garamond', Georgia, serif; font-style: italic; font-size: 21px; line-height: 1.35; color: #2a1a48; }
+      .content hr { border: 0; border-top: 1px solid #e4dccb; margin: 28px 0; }
+      .content .kicker { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #7b4fc9; margin: 0 0 10px; }
+      .content a.button { display: inline-block; background: #7b4fc9; color: #ffffff !important; text-decoration: none; font-weight: 600; font-size: 15px; padding: 13px 24px; border-radius: 999px; }
+      .card-pad > table { border-collapse: separate !important; }
+      .card-pad > table > tbody > tr > td { border-radius: 16px; }
+      .footer a { color: #4d2a8f; }
+      @media only screen and (max-width: 480px) {
+        .content h1 { font-size: 30px !important; }
+        .card-pad { padding-left: 22px !important; padding-right: 22px !important; }
+      }
+    </mj-style>
+  </mj-head>
+
+  <mj-body background-color="#f7f3ea" width="600px">
+    <!-- Lien navigateur -->
+    <mj-section padding="18px 0 6px">
+      <mj-column>
+        <mj-text mj-class="meta" align="right" padding="0 24px">
+          <a href="{{ MessageURL }}" style="color:#6b6478;text-decoration:underline;">Voir dans le navigateur</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- En-tête : avatar + marque -->
+    <mj-section padding="6px 16px 18px">
+      <mj-group>
+        <mj-column width="64px" vertical-align="middle">
+          <mj-image src="https://www.supergenial.be/assets/email/avatar-112.png" alt="Super Génial by Semisto" width="56px" height="56px" href="https://www.supergenial.be/" padding="0 8px 0 0" />
+        </mj-column>
+        <mj-column width="504px" vertical-align="middle">
+          <mj-text padding="0 0 0 6px" font-size="20px" font-weight="700" color="#2a1a48" line-height="1.2">
+            <a href="https://www.supergenial.be/" style="color:#2a1a48;text-decoration:none;">Super Génial</a><span style="font-weight:500;font-size:13px;color:#7b4fc9;padding-left:8px;">by Semisto</span>
+          </mj-text>
+          <mj-text padding="2px 0 0 6px" mj-class="meta">La lettre du service IT de Semisto</mj-text>
+        </mj-column>
+      </mj-group>
+    </mj-section>
+
+    <!-- Carte : contenu de la campagne + signature -->
+    <mj-wrapper padding="0 12px">
+      <mj-section background-color="#fffdf8" border="1px solid #e4dccb" border-radius="16px" padding="40px 38px 30px" css-class="card-pad">
+        <mj-column>
+          <mj-text css-class="content" font-size="16.5px">
+            {{ template "content" . }}
+          </mj-text>
+          <mj-divider border-color="#e4dccb" border-width="1px" padding="22px 0 20px" />
+          <mj-text padding="0">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td width="68" valign="middle" style="width:68px;"><img src="https://www.supergenial.be/assets/email/michael-128.jpg" alt="Michael Hulet" width="56" height="56" style="display:block;width:56px;height:56px;border-radius:28px;border:0;" /></td>
+                <td valign="middle">
+                  <div style="font-family:'EB Garamond',Georgia,'Times New Roman',serif;font-size:20px;font-style:italic;color:#2a1a48;line-height:1.2;">Michael Hulet</div>
+                  <div style="font-size:13px;color:#595959;line-height:1.5;padding-top:2px;">Fondateur de Semisto. J'orchestre une équipe d'agents IA qui travaille avec moi.</div>
+                </td>
+              </tr>
+            </table>
+          </mj-text>
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
+
+    <!-- Bande d'appel : réserver un call -->
+    <mj-wrapper padding="28px 12px 0">
+      <mj-section background-color="#1f1433" border-radius="16px" padding="34px 32px 32px">
+        <mj-column>
+          <mj-text mj-class="serif" font-size="30px" line-height="1.1" color="#ffffff" align="center" padding="0 0 8px">
+            Moins de tableurs, <em style="color:#cdb5ef;">plus de mission.</em>
+          </mj-text>
+          <mj-text font-size="14.5px" color="#c9bedb" align="center" line-height="1.55" padding="0 10px 22px">
+            Outils internes et agents IA sur mesure pour les entreprises à impact.
+          </mj-text>
+          <mj-button href="https://calendar.notion.so/meet/michaelhulet/supergenial" background-color="#7b4fc9" color="#ffffff" font-size="15px" font-weight="600" border-radius="999px" inner-padding="14px 26px" padding="0">
+            Réserver un call de 30 minutes →
+          </mj-button>
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
+
+    <!-- Pied de page -->
+    <mj-section padding="30px 24px 8px">
+      <mj-column>
+        <mj-text mj-class="meta" align="center" css-class="footer" color="#595959">
+          <strong style="color:#2a1a48;">Super Génial</strong> est le service IT de <a href="https://www.semisto.org" style="color:#4d2a8f;">Semisto ASBL</a>&nbsp;: chaque euro facturé va à l'association, sans actionnaire, et finance sa mission, transformer l'Europe en un maillage de forêts comestibles.
+        </mj-text>
+        <mj-text mj-class="meta" align="center" css-class="footer" padding="12px 0 0">
+          <a href="https://www.supergenial.be/" style="color:#4d2a8f;">supergenial.be</a>&nbsp;·&nbsp;<a href="mailto:supergenial@semisto.org" style="color:#4d2a8f;">supergenial@semisto.org</a>&nbsp;·&nbsp;<a href="https://www.linkedin.com/in/michaelhulet/" style="color:#4d2a8f;">LinkedIn</a>
+        </mj-text>
+        <mj-text mj-class="meta" align="center" css-class="footer" padding="12px 0 0">
+          Semisto ASBL · BE&nbsp;0790.631.657 · Fonds d'Ahinvaux 1, 5530 Yvoir, Belgique
+        </mj-text>
+        <mj-text mj-class="meta" align="center" css-class="footer" padding="14px 0 0">
+          Vous recevez cette lettre car vous vous êtes inscrit·e à la lettre de Super Génial.<br />
+          <a href="{{ UnsubscribeURL }}" style="color:#4d2a8f;">Se désinscrire</a>&nbsp;·&nbsp;<a href="{{ ManageURL }}" style="color:#4d2a8f;">Gérer mes préférences</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section padding="0 0 24px">
+      <mj-column>
+        <mj-raw>{{ TrackView }}</mj-raw>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
