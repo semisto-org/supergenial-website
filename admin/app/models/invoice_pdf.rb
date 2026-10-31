@@ -7,7 +7,6 @@ require "rqrcode"
 class InvoicePdf
   # Black ink only, as CMYK tints of K, so that printing never uses colour cartridges.
   INK = [ 0, 0, 0, 100 ]
-  ACCENT = [ 0, 0, 0, 100 ]
   TEXT = [ 0, 0, 0, 92 ]
   MUTED = [ 0, 0, 0, 58 ]
   RULE = [ 0, 0, 0, 18 ]
@@ -16,6 +15,8 @@ class InvoicePdf
   PAPER = [ 0, 0, 0, 0 ]
   FONTS = Rails.root.join("vendor/fonts")
   ROBOT = Rails.root.join("vendor/images/invoice-robot.png")
+  LOGO = Rails.root.join("vendor/images/supergenial-logo.svg")
+  LOGO_HEIGHT = 30
   ROBOT_WIDTH = 104
   QR_SIZE = 72
   MARGIN = [ 60, 56, 86, 56 ].freeze
@@ -111,6 +112,47 @@ class InvoicePdf
 
     def font_file(name) = FONTS.join("#{name}.ttf").to_s
 
+    # The brand lettering is a single filled SVG path (absolute M, L, H, V, Q and Z commands, with implicit repeats), drawn as
+    # vector shapes in black ink so that it prints as sharply as the text.
+    def logo(pdf, at:, height:)
+      svg = File.read(LOGO)
+      min_x, min_y, _width, view_height = svg[/viewBox="([^"]+)"/, 1].split.map(&:to_f)
+      scale = height / view_height
+      left, top = at
+      point = ->(x, y) { [ left + (x - min_x) * scale, top - (y - min_y) * scale ] }
+
+      pdf.fill_color INK
+      current = start = [ 0.0, 0.0 ]
+      svg[/ d="([^"]+)"/, 1].scan(/([MLHVQZ])([^MLHVQZ]*)/) do |command, args|
+        numbers = args.scan(/-?\d*\.?\d+(?:e-?\d+)?/i).map(&:to_f)
+        case command
+        when "M", "L"
+          numbers.each_slice(2).with_index do |target, index|
+            current = target
+            if command == "M" && index.zero?
+              start = target
+              pdf.move_to(*point.(*target))
+            else
+              pdf.line_to(*point.(*target))
+            end
+          end
+        when "H" then numbers.each { |x| current = [ x, current[1] ]; pdf.line_to(*point.(*current)) }
+        when "V" then numbers.each { |y| current = [ current[0], y ]; pdf.line_to(*point.(*current)) }
+        when "Q"
+          numbers.each_slice(4) do |cx, cy, x, y|
+            control, target = [ cx, cy ], [ x, y ]
+            first = current.zip(control).map { |from, via| from + 2.0 / 3 * (via - from) }
+            second = target.zip(control).map { |to, via| to + 2.0 / 3 * (via - to) }
+            pdf.curve_to(point.(*target), bounds: [ point.(*first), point.(*second) ])
+            current = target
+          end
+        when "Z" then pdf.close_path; current = start
+        end
+      end
+      pdf.fill
+      pdf.fill_color TEXT
+    end
+
     # A draft must never pass for the real thing: a large pale word sits behind the content of every page.
     def watermark(pdf)
       pdf.canvas do
@@ -126,8 +168,7 @@ class InvoicePdf
 
     def header(pdf)
       top = pdf.cursor
-      pdf.formatted_text [ { text: "Super ", font: "Garamond", styles: [ :bold ], size: 34, color: INK },
-                           { text: "Génial", font: "Garamond", styles: [ :bold, :italic ], size: 34, color: ACCENT } ]
+      logo(pdf, at: [ 0, top - 8 ], height: LOGO_HEIGHT)
       pdf.bounding_box([ pdf.bounds.width - 240, top ], width: 240) do
         pdf.font("Garamond", style: :italic, size: 34) { pdf.text @invoice.kind_label, color: INK, align: :right }
       end

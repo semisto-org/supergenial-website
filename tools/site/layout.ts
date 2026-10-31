@@ -62,7 +62,7 @@ export function nav(lang: Lang, active: Section, pill: string): string {
     : { nav: "Main navigation", menu: "Open menu", cta: "Book a call" };
   return (
     `<!--mainnav--><header class="site-head"><nav class="site-nav" aria-label="${t.nav}">` +
-    `<a href="${home}" class="brand plain"><span class="brand-mark" aria-hidden="true"></span>Super Génial</a>` +
+    `<a href="${home}" class="brand plain" aria-label="Super Génial"><span class="brand-logo" aria-hidden="true"></span></a>` +
     `<button class="nav-toggle plain" type="button" aria-expanded="false" aria-controls="site-menu" aria-label="${t.menu}">${BURGER}</button>` +
     `<div class="nav-menu" id="site-menu">${links}</div>` +
     pill +
@@ -127,7 +127,7 @@ export function head(o: HeadOpts): string {
     <meta name="description" content="${o.description}">
     <meta name="author" content="Michael Hulet">
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/assets/favicon.svg">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
     <meta property="og:type" content="${o.type ?? "website"}">
     <meta property="og:title" content="${o.title}">
     <meta property="og:description" content="${o.description}">
