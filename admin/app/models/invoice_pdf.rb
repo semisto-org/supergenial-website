@@ -5,17 +5,20 @@ require "rqrcode"
 # Readable copy of a sales document, set in the typefaces of the Super Génial website (EB Garamond and Inter),
 # with the robot of the site watering the total. The Peppol UBL stays the legal original.
 class InvoicePdf
-  INK = "2A1A48"
-  ACCENT = "7B4FC9"
-  TEXT = "2E2A38"
-  MUTED = "7A7489"
-  RULE = "E3DCEF"
-  TINT = "F6F2FC"
-  WATERMARK = "F1EBFA"
+  # Black ink only, as CMYK tints of K, so that printing never uses colour cartridges.
+  INK = [ 0, 0, 0, 100 ]
+  ACCENT = [ 0, 0, 0, 100 ]
+  TEXT = [ 0, 0, 0, 92 ]
+  MUTED = [ 0, 0, 0, 58 ]
+  RULE = [ 0, 0, 0, 18 ]
+  TINT = [ 0, 0, 0, 5 ]
+  WATERMARK = [ 0, 0, 0, 6 ]
+  PAPER = [ 0, 0, 0, 0 ]
   FONTS = Rails.root.join("vendor/fonts")
   ROBOT = Rails.root.join("vendor/images/invoice-robot.png")
   ROBOT_WIDTH = 104
   QR_SIZE = 72
+  MARGIN = [ 60, 56, 86, 56 ].freeze
   FIELD_HEIGHT = 28
   FIELD_GAP = 10
 
@@ -28,7 +31,7 @@ class InvoicePdf
   def filename = "#{@invoice.credit_note? ? 'note-de-credit' : 'facture'}-#{@invoice.number || 'brouillon'}.pdf"
 
   def render
-    Prawn::Document.new(page_size: "A4", margin: [ 60, 56, 86, 56 ], info: { Title: title, Author: @seller["legal_name"].to_s, Creator: "Admin Super Génial" }) do |pdf|
+    Prawn::Document.new(page_size: "A4", margin: MARGIN, info: { Title: title, Author: @seller["legal_name"].to_s, Creator: "Admin Super Génial" }) do |pdf|
       register_fonts(pdf)
       pdf.font "Inter", size: 9.5
       pdf.default_leading 1.5
@@ -43,6 +46,7 @@ class InvoicePdf
       lines(pdf)
       totals(pdf)
       payment(pdf)
+      general_terms(pdf)
       footer(pdf)
     end.render
   end
@@ -66,7 +70,10 @@ class InvoicePdf
     def escape(text) = text.to_s.gsub("&", "&amp;").gsub("<", "&lt;").gsub(">", "&gt;")
 
     # A small spaced-out uppercase label, as inline format markup.
-    def caps(text, color: MUTED) = "<font name='Inter Medium' size='6.5' character_spacing='1.2'><color rgb='#{color}'>#{escape(text.upcase)}</color></font>"
+    # Opening inline-format tag for a black tint; closed by </color>.
+    def ink(color) = "<color c='0' m='0' y='0' k='#{color.last}'>"
+
+    def caps(text, color: MUTED) = "<font name='Inter Medium' size='6.5' character_spacing='1.2'>#{ink(color)}#{escape(text.upcase)}</color></font>"
 
     def register_fonts(pdf)
       pdf.font_families.update(
@@ -81,7 +88,7 @@ class InvoicePdf
     def field_rows(pdf, fields, width:, size:, font:, min_width: 0)
       pack_fields(pdf, fields, width:, size:, font:, min_width:).each_with_index do |row, index|
         pdf.move_down FIELD_GAP if index.positive?
-        cells = row.map { |(label, value), _| "#{caps(label)}\n<font name='#{font}' size='#{size}'><color rgb='#{INK}'>#{escape(value)}</color></font>" }
+        cells = row.map { |(label, value), _| "#{caps(label)}\n<font name='#{font}' size='#{size}'>#{ink(INK)}#{escape(value)}</color></font>" }
         pdf.table([ cells ], column_widths: row.map { |_, column| [ column, width ].min }, cell_style: { borders: [], padding: 0, inline_format: true, leading: 3 })
       end
     end
@@ -152,7 +159,7 @@ class InvoicePdf
       buyer = [ @buyer["street"], [ @buyer["postal_code"], @buyer["city"] ].compact_blank.join(" "),
                 Country.name(@buyer["country"]), ("TVA #{@buyer['vat_number']}" if @buyer["vat_number"].present?) ].compact_blank
       cells = [ [ "De", @seller["legal_name"], seller ], [ "Pour", @buyer["name"], buyer ] ].map do |label, name, address|
-        "#{caps(label)}\n<font name='Garamond' size='16'><b><color rgb='#{INK}'>#{escape(name)}</color></b></font>\n" \
+        "#{caps(label)}\n<font name='Garamond' size='16'><b>#{ink(INK)}#{escape(name)}</color></b></font>\n" \
           "<font size='9'>#{address.map { |line| escape(line) }.join("\n")}</font>"
       end
       half = pdf.bounds.width / 2
@@ -163,14 +170,14 @@ class InvoicePdf
     def lines(pdf)
       header = [ "Description", "Quantité", "Prix unitaire", "TVA", "Total HTVA" ].map { |label| caps(label, color: INK) }
       rows = @invoice.lines.map do |line|
-        period = line.period_start && line.period_end ? "\n<font size='8'><color rgb='#{MUTED}'>#{date(line.period_start)} – #{date(line.period_end)}</color></font>" : ""
+        period = line.period_start && line.period_end ? "\n<font size='8'>#{ink(MUTED)}#{date(line.period_start)} – #{date(line.period_end)}</color></font>" : ""
         [ "#{escape(line.description)}#{period}", "#{number(line.quantity)} #{escape(line.unit_label)}", money(line.unit_price),
           @invoice.standard? ? "#{number(line.vat_rate)} %" : "–", money(line.net_amount) ]
       end
       pdf.table([ header, *rows ], header: true, width: pdf.bounds.width, column_widths: { 1 => 66, 2 => 78, 3 => 40, 4 => 80 },
-                cell_style: { size: 9.5, padding: [ 9, 6 ], borders: [ :bottom ], border_width: 0.5, border_color: RULE, inline_format: true, leading: 2 }) do |table|
+                cell_style: { size: 9.5, padding: [ 9, 6 ], borders: [ :bottom ], border_width: 0.5, border_color: [ RULE ] * 4, inline_format: true, leading: 2 }) do |table|
         table.row(0).padding = [ 0, 6, 7, 6 ]
-        table.row(0).border_color = INK
+        table.row(0).border_color = [ INK ] * 4
         table.row(0).border_width = 0.75
         table.columns(1..4).align = :right
         table.column(0).padding_left = 0
@@ -259,13 +266,62 @@ class InvoicePdf
     def draw_qr(pdf, qr, (left, top))
       modules = qr.modules
       cell = QR_SIZE.to_f / modules.size
-      pdf.fill_color "FFFFFF"
+      pdf.fill_color PAPER
       pdf.fill_rounded_rectangle [ left - 6, top + 6 ], QR_SIZE + 12, QR_SIZE + 12, 4
       pdf.fill_color INK
       modules.each_with_index do |row, y|
         row.each_with_index { |dark, x| pdf.fill_rectangle [ left + x * cell, top - y * cell ], cell + 0.05, cell + 0.05 if dark }
       end
       pdf.fill_color TEXT
+    end
+
+    # The general terms on a page of their own, in two columns, from the text frozen with the seller at issuing:
+    # a "## N. Title" line starts an article, the other lines are its paragraphs. The type shrinks until they fit one page.
+    def general_terms(pdf)
+      blocks = terms_blocks
+      return if blocks.empty?
+      size = TERMS_SIZES.find { |candidate| terms_fit?(blocks, candidate) } || TERMS_SIZES.last
+      pdf.start_new_page
+      draw_terms(pdf, blocks, size)
+    end
+
+    TERMS_SIZES = [ 7.2, 7, 6.8, 6.6, 6.4, 6.2, 6, 5.8, 5.6 ].freeze
+
+    def terms_blocks
+      text = @seller["general_terms"].to_s.split(/^---NOTES---$/).first.to_s
+      text.each_line.map(&:strip).reject { |line| line.blank? || line.start_with?("# ") || line == "Conditions générales" }
+        .map { |line| line.start_with?("## ") ? [ :heading, line.delete_prefix("## ") ] : [ :paragraph, line ] }
+    end
+
+    # Typesets the terms on a scratch document of the same geometry and checks they stay on its first page.
+    def terms_fit?(blocks, size)
+      scratch = Prawn::Document.new(page_size: "A4", margin: MARGIN)
+      register_fonts(scratch)
+      scratch.default_leading 1.5
+      draw_terms(scratch, blocks, size)
+      scratch.page_count == 1
+    end
+
+    def draw_terms(pdf, blocks, size)
+      pdf.font("Garamond", style: :italic, size: 24) { pdf.text "Conditions générales", color: INK }
+      pdf.text caps("#{@seller['legal_name']} · applicables à tous nos devis, commandes et factures"), inline_format: true
+      pdf.move_down 8
+      pdf.stroke_color INK
+      pdf.line_width 0.75
+      pdf.stroke_horizontal_rule
+      pdf.move_down 12
+      pdf.column_box([ 0, pdf.cursor ], columns: 2, spacer: 20, width: pdf.bounds.width) do
+        blocks.each_with_index do |(kind, line), index|
+          if kind == :heading
+            pdf.move_down size * 0.7 if index.positive?
+            pdf.font("Inter", style: :bold, size: size + 0.3) { pdf.text line, color: INK }
+            pdf.move_down 1.5
+          else
+            pdf.font("Inter", size:) { pdf.text line, color: TEXT, leading: size * 0.18 }
+            pdf.move_down size * 0.35
+          end
+        end
+      end
     end
 
     def footer(pdf)

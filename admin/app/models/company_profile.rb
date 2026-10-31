@@ -22,9 +22,14 @@ class CompanyProfile < ApplicationRecord
 
   def ready_for_invoicing? = missing_for_invoicing.empty?
 
+  # Printed on a page of their own after every invoice, and frozen with it at issuing like the rest of the seller.
+  DEFAULT_GENERAL_TERMS = Rails.root.join("config/general_terms.md")
+
+  def effective_general_terms = general_terms.presence || (DEFAULT_GENERAL_TERMS.read if DEFAULT_GENERAL_TERMS.exist?)
+
   def snapshot
     slice(:legal_name, :trade_name, :vat_number, :street, :postal_code, :city, :country, :email, :phone, :website, :iban, :bic, :invoice_footer)
-      .merge("enterprise_number" => formatted_enterprise_number)
+      .merge("enterprise_number" => formatted_enterprise_number, "general_terms" => effective_general_terms)
   end
 
   def to_s = trade_name.presence || legal_name

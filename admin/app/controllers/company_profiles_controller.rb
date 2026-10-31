@@ -22,6 +22,6 @@ class CompanyProfilesController < ApplicationController
 
     def company_profile_params
       params.expect(company_profile: %i[ legal_name trade_name vat_number street postal_code city country email phone website
-                                         iban bic payment_terms_days last_external_number vat_tracked_since invoice_footer ])
+                                         iban bic payment_terms_days last_external_number vat_tracked_since invoice_footer general_terms ])
     end
 end

@@ -112,6 +112,29 @@ class InvoiceTest < ActiveSupport::TestCase
     assert_kind_of RQRCode::QRCode, pdf.send(:payment_qr)
   end
 
+  test "the general terms are printed on a page of their own, frozen with the seller at issuing" do
+    CompanyProfile.current.update!(general_terms: "## 1. Objet\nUn paragraphe.\n\n## 2. Paiement\nÀ 30 jours.")
+    invoice = draft
+    invoice.issue!
+    assert_equal "## 1. Objet\nUn paragraphe.\n\n## 2. Paiement\nÀ 30 jours.", invoice.seller["general_terms"]
+    assert_equal [ [ :heading, "1. Objet" ], [ :paragraph, "Un paragraphe." ], [ :heading, "2. Paiement" ], [ :paragraph, "À 30 jours." ] ],
+                 InvoicePdf.new(invoice).send(:terms_blocks)
+  end
+
+  test "the default general terms fit on one page" do
+    invoice = draft
+    pdf = InvoicePdf.new(invoice)
+    assert pdf.send(:terms_blocks).any?
+    assert InvoicePdf::TERMS_SIZES.any? { |size| pdf.send(:terms_fit?, pdf.send(:terms_blocks), size) }
+  end
+
+  test "an invoice issued before the general terms existed gets no terms page" do
+    invoice = draft
+    invoice.issue!
+    invoice.update_column(:seller, invoice.seller.except("general_terms"))
+    assert_empty InvoicePdf.new(invoice.reload).send(:terms_blocks)
+  end
+
   test "a credit note pdf renders without payment details" do
     invoice = draft
     invoice.issue!
