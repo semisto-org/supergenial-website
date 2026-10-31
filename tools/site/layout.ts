@@ -16,6 +16,8 @@ export const SITE_URL = "https://www.supergenial.be";
 const fingerprint = (path: string): string =>
   createHash("sha256").update(readFileSync(new URL(`../../${path}`, import.meta.url))).digest("hex").slice(0, 10);
 export const asset = (path: string): string => `/${path}?v=${fingerprint(path)}`;
+// Geist for text, Geist Mono for labels, amounts and code (Super Génial design system).
+export const FONTS_HREF = "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap";
 export const CSS_HREF = asset("assets/css/site.css");
 export const FAVICON_HREF = asset("assets/favicon.svg");
 export const TOUCH_ICON_HREF = asset("assets/apple-touch-icon.png");
@@ -25,7 +27,8 @@ export function fingerprintAssets(html: string): string {
   return html
     .replace(/href="\/assets\/css\/site\.css(\?v=[^"]*)?"/g, `href="${CSS_HREF}"`)
     .replace(/href="\/assets\/favicon\.svg(\?v=[^"]*)?"/g, `href="${FAVICON_HREF}"`)
-    .replace(/href="\/assets\/apple-touch-icon\.png(\?v=[^"]*)?"/g, `href="${TOUCH_ICON_HREF}"`);
+    .replace(/href="\/assets\/apple-touch-icon\.png(\?v=[^"]*)?"/g, `href="${TOUCH_ICON_HREF}"`)
+    .replace(/href="https:\/\/fonts\.googleapis\.com\/css2\?[^"]*"/g, `href="${FONTS_HREF}"`);
 }
 
 // Lien « Réserver un call de 30 minutes » : la page de réservation Notion Calendar
@@ -102,15 +105,12 @@ export function footer(lang: Lang): string {
   const links = fr
     ? [["/", "Accueil"], ["/diagnostic-ia/", "Diagnostic IA"], ["/tarifs/", "Tarifs"], ["/maintenance/", "Reprise d'application"], ["/realisations/", "Réalisations"], ["/ressources/", "Ressources"], ["/mentions-legales/", "Mentions légales"]]
     : [["/en/", "Home"], ["/en/ai-assessment/", "AI Assessment"], ["/en/pricing/", "Pricing"], ["/en/maintenance/", "Application take-over"], ["/en/case-studies/", "Case studies"], ["/en/resources/", "Resources"], ["/en/legal/", "Legal notice"]];
-  const brand = fr
-    ? `Moins de tableurs, <em>plus de mission.</em>`
-    : `Fewer spreadsheets, <em>more mission.</em>`;
-  const cta = fr ? "Réserver un call de 30 minutes" : "Book a 30-minute call";
+  const brand = fr ? "Moins de tableurs, plus de mission." : "Fewer spreadsheets, more mission.";
   const legal = fr
     ? `Super Génial est une marque de <strong>Marco &amp; Vespucci SRL</strong>, société à responsabilité limitée de droit belge. Numéro d'entreprise et de TVA&nbsp;: BE&nbsp;0523.920.556. Siège&nbsp;: rue Ernest Feron 64, 5310 Eghezée, Belgique. Contact&nbsp;: <a href="mailto:team@supergenial.be">team@supergenial.be</a>. Éditeur responsable&nbsp;: Michael Hulet.`
     : `Super Génial is a brand of <strong>Marco &amp; Vespucci SRL</strong>, a Belgian private limited company. Company and VAT number: BE&nbsp;0523.920.556. Registered office: rue Ernest Feron 64, 5310 Eghezée, Belgium. Contact: <a href="mailto:team@supergenial.be">team@supergenial.be</a>. Publisher: Michael Hulet.`;
   return `<!--sitefoot--><footer class="site-foot">
-            <div class="foot-top"><p class="foot-brand">${brand}</p><a href="${BOOKING[lang]}" class="btn btn-primary plain" data-booking target="_blank" rel="noopener noreferrer">${cta} <span class="arr">→</span></a></div>
+            <div class="foot-top"><a href="${fr ? "/" : "/en/"}" class="foot-logo plain" aria-label="Super Génial"></a><p class="foot-brand">${brand}</p></div>
             <nav class="foot-nav" aria-label="${fr ? "Pied de page" : "Footer"}">
                 ${links.map(([h, l]) => `<a href="${h}" class="plain">${l}</a>`).join("\n                ")}
             </nav>
@@ -166,7 +166,7 @@ export function head(o: HeadOpts): string {
     <link rel="alternate" hreflang="x-default" href="${SITE_URL}${o.alt.fr}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..600;1,400..600&family=Inter:wght@400..700&display=swap" rel="stylesheet">
+    <link href="${FONTS_HREF}" rel="stylesheet">
     <link rel="stylesheet" href="${CSS_HREF}">
     ${PLAUSIBLE}${ld}
 </head>`;

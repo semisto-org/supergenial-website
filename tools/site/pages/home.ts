@@ -47,12 +47,11 @@ const FR = `
                         <a ${BK("fr")} class="btn btn-primary plain">Réserver un call de 30 minutes <span class="arr">→</span></a>
                         <a href="/diagnostic-ia/" class="btn btn-line plain">Le Diagnostic IA</a>
                     </div>
-                    <a href="#lettre" class="hero-sign plain"><img src="/assets/lieu/michael-hulet.webp" alt="Portrait de Michael Hulet" width="400" height="400"><span><b>Michael Hulet</b>depuis Les 4 Sources, à Yvoir</span></a>
                     <div class="hero-for" aria-label="Pour qui">
                         <span>Pour les entreprises à impact</span><span>5 à 100 personnes</span>
                     </div>
                 </div>
-                <img class="hero-illu" src="/assets/illustrations/sg-accueil.webp" decoding="async" alt="Illustration au trait : d'une pile de tableurs pousse une plante qui porte une application, arrosée par un petit robot" width="1200" height="800">
+                <figure class="hero-avatar"><img src="/assets/brand/supergenial-avatar.svg" alt="L'avatar de Super Génial : un bloc noir qui sourit" width="512" height="512"><figcaption><a href="#lettre">Michael Hulet, depuis Les 4 Sources, à Yvoir</a></figcaption></figure>
             </div>
         </section>
 
@@ -71,7 +70,7 @@ const FR = `
             <script>(function(){var w=document.querySelectorAll(".letter-photo-wrap");if(!("IntersectionObserver" in window)){w.forEach(function(e){e.classList.add("in")});return}var o=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");o.unobserve(e.target)}})},{threshold:.35});w.forEach(function(e){o.observe(e)})})();</script>
         </section>
 
-        <section class="sec band">
+        <section class="sec">
             <div class="wrap">
                 <p class="eyebrow">Ce qui coûte cher sans se voir</p>
                 <h2 class="h-sec">Deux fuites silencieuses <em>dans votre budget.</em></h2>
@@ -288,12 +287,11 @@ const EN = `
                         <a ${BK("en")} class="btn btn-primary plain">Book a 30-minute call <span class="arr">→</span></a>
                         <a href="/en/ai-assessment/" class="btn btn-line plain">The AI Assessment</a>
                     </div>
-                    <a href="#letter" class="hero-sign plain"><img src="/assets/lieu/michael-hulet.webp" alt="Portrait of Michael Hulet" width="400" height="400"><span><b>Michael Hulet</b>from Les 4 Sources, in Yvoir, Belgium</span></a>
                     <div class="hero-for" aria-label="Who it is for">
                         <span>For impact-driven companies</span><span>5 to 100 people</span>
                     </div>
                 </div>
-                <img class="hero-illu" src="/assets/illustrations/sg-accueil.webp" decoding="async" alt="Line drawing: a plant grows out of a pile of spreadsheets and carries an app, watered by a small robot" width="1200" height="800">
+                <figure class="hero-avatar"><img src="/assets/brand/supergenial-avatar.svg" alt="The Super Génial avatar: a smiling black block" width="512" height="512"><figcaption><a href="#letter">Michael Hulet, from Les 4 Sources, in Yvoir</a></figcaption></figure>
             </div>
         </section>
 
@@ -312,7 +310,7 @@ const EN = `
             <script>(function(){var w=document.querySelectorAll(".letter-photo-wrap");if(!("IntersectionObserver" in window)){w.forEach(function(e){e.classList.add("in")});return}var o=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");o.unobserve(e.target)}})},{threshold:.35});w.forEach(function(e){o.observe(e)})})();</script>
         </section>
 
-        <section class="sec band">
+        <section class="sec">
             <div class="wrap">
                 <p class="eyebrow">What costs a lot without showing</p>
                 <h2 class="h-sec">Two silent leaks <em>in your budget.</em></h2>
