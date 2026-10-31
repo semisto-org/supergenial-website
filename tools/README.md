@@ -23,6 +23,8 @@ Les pages principales, les articles de Ressources et les redirections sont écri
 bun realisations/build.ts && bun realisations/en-build.ts && bun tools/site/build.ts && bun ressources/langswitch.ts && bun ressources/mainnav.ts && bun ressources/seo.ts
 ```
 
+Cloudflare garde `/assets/*` en cache 7 jours : `site.css`, la favicon et l'icône iPhone sont liés avec une empreinte de leur contenu (`?v=…`, calculée dans `tools/site/layout.ts`). Après une modification de ces fichiers, relancer le pipeline pour que les pages pointent vers la nouvelle version.
+
 Pour changer le lien « Réserver un call », modifier `BOOKING` dans `tools/site/layout.ts` puis relancer le pipeline.
 
 ## Déploiement sur le serveur Semisto (Coolify)

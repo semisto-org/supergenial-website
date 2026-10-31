@@ -3,10 +3,30 @@
 // realisations/build.ts pour les études de cas, ressources/mainnav.ts pour
 // remettre le menu et le pied de page à jour sur toutes les autres pages.
 
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
+
 export type Lang = "fr" | "en";
 export type Section = "diagnostic" | "pricing" | "cases" | "resources" | "reprise" | "legal" | null;
 
 export const SITE_URL = "https://www.supergenial.be";
+
+// Cloudflare keeps /assets/* for 7 days: every page links the stylesheet and the icons with a
+// fingerprint of their content, so a changed file gets a new URL and is never served stale.
+const fingerprint = (path: string): string =>
+  createHash("sha256").update(readFileSync(new URL(`../../${path}`, import.meta.url))).digest("hex").slice(0, 10);
+export const asset = (path: string): string => `/${path}?v=${fingerprint(path)}`;
+export const CSS_HREF = asset("assets/css/site.css");
+export const FAVICON_HREF = asset("assets/favicon.svg");
+export const TOUCH_ICON_HREF = asset("assets/apple-touch-icon.png");
+
+// Rewrites the stylesheet and icon links of an already built page to their current fingerprinted URLs.
+export function fingerprintAssets(html: string): string {
+  return html
+    .replace(/href="\/assets\/css\/site\.css(\?v=[^"]*)?"/g, `href="${CSS_HREF}"`)
+    .replace(/href="\/assets\/favicon\.svg(\?v=[^"]*)?"/g, `href="${FAVICON_HREF}"`)
+    .replace(/href="\/assets\/apple-touch-icon\.png(\?v=[^"]*)?"/g, `href="${TOUCH_ICON_HREF}"`);
+}
 
 // Lien « Réserver un call de 30 minutes » : la page de réservation Notion Calendar
 // de Michael. Tous les boutons data-booking du site pointent ici.
@@ -126,8 +146,8 @@ export function head(o: HeadOpts): string {
     <title>${o.title}</title>
     <meta name="description" content="${o.description}">
     <meta name="author" content="Michael Hulet">
-    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <link rel="icon" href="${FAVICON_HREF}" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="${TOUCH_ICON_HREF}">
     <meta property="og:type" content="${o.type ?? "website"}">
     <meta property="og:title" content="${o.title}">
     <meta property="og:description" content="${o.description}">
@@ -147,7 +167,7 @@ export function head(o: HeadOpts): string {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..600;1,400..600&family=Inter:wght@400..700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/css/site.css">
+    <link rel="stylesheet" href="${CSS_HREF}">
     ${PLAUSIBLE}${ld}
 </head>`;
 }

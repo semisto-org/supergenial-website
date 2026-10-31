@@ -8,7 +8,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { execSync } from "node:child_process";
-import { nav, footer, sectionOf, NAV_JS, PLAUSIBLE } from "../tools/site/layout.ts";
+import { nav, footer, sectionOf, NAV_JS, PLAUSIBLE, fingerprintAssets } from "../tools/site/layout.ts";
 
 const ROOT = dirname(dirname(new URL(import.meta.url).pathname)); // repo root
 
@@ -60,6 +60,7 @@ for (const rel of files) {
 
   if (!html.includes("stats.semisto.org")) html = html.replace("</head>", `    ${PLAUSIBLE}\n</head>`);
   html = html.replace(FONTS_OLD, FONTS_NEW);
+  html = fingerprintAssets(html);
 
   writeFileSync(file, html);
   done++;
