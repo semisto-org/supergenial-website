@@ -1,26 +1,44 @@
 <%= form_with model: client do |f| %>
   <%= render "shared/errors", object: client %>
-  <%= field f, :name, autofocus: true, required: true %>
-  <div class="row">
-    <%= field f, :kind, :select, Client.kind_options %>
-    <%= field f, :status, :select, Client.status_options %>
-  </div>
-  <div class="row">
-    <%= field f, :vat_number %>
-    <%= field f, :hourly_rate, :number_field, step: "0.01", hint: "Vide = taux standard (#{eur(HourlyRate.on)}/h aujourd'hui)" %>
-  </div>
-  <div class="row">
-    <%= field f, :street, hint: "Adresse de facturation" %>
-    <%= field f, :postal_code %>
-    <%= field f, :city %>
-    <%= field f, :country, :select, Country.options %>
-  </div>
-  <div class="row">
-    <%= field f, :billing_email, :email_field, hint: "Vide = e-mail du contact principal" %>
-    <%= field f, :peppol_id, placeholder: client.suggested_peppol_id || "0208:0123456789", hint: "Vide = deviné depuis le n° de TVA belge" %>
-  </div>
-  <%= field f, :address, :text_area, rows: 2, hint: "Ancienne adresse libre, pour mémoire" %>
-  <%= field f, :notes, :text_area, rows: 3 %>
+
+  <fieldset class="form-section">
+    <legend>Identité</legend>
+    <%= field f, :name, autofocus: true, required: true %>
+    <div class="row">
+      <%= field f, :kind, :select, Client.kind_options %>
+      <%= field f, :status, :select, Client.status_options %>
+    </div>
+  </fieldset>
+
+  <fieldset class="form-section">
+    <legend>Adresse de facturation</legend>
+    <div class="row row--address">
+      <%= field f, :street %>
+      <%= field f, :postal_code %>
+      <%= field f, :city %>
+      <%= field f, :country, :select, Country.options %>
+    </div>
+    <% if client.address.present? %>
+      <%= field f, :address, :text_area, rows: 2, hint: "Ancienne adresse libre, pour mémoire. Videz-la une fois l'adresse ci-dessus complétée." %>
+    <% end %>
+  </fieldset>
+
+  <fieldset class="form-section">
+    <legend>Facturation</legend>
+    <div class="row">
+      <%= field f, :vat_number, placeholder: "BE0123456789" %>
+      <%= field f, :peppol_id, placeholder: client.suggested_peppol_id || "0208:0123456789", hint: "Vide = deviné depuis le n° de TVA belge" %>
+    </div>
+    <div class="row">
+      <%= field f, :billing_email, :email_field, hint: "Vide = e-mail du contact principal" %>
+      <%= field f, :hourly_rate, :number_field, step: "0.01", hint: "Vide = taux standard (#{eur(HourlyRate.on)}/h aujourd'hui)" %>
+    </div>
+  </fieldset>
+
+  <fieldset class="form-section">
+    <%= field f, :notes, :text_area, rows: 3 %>
+  </fieldset>
+
   <div class="form-actions">
     <%= f.submit "Enregistrer", class: "button" %>
     <%= link_to "Annuler", client.persisted? ? client : clients_path, class: "button button--ghost" %>

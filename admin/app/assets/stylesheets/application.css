@@ -170,13 +170,21 @@ input:hover, select:hover, textarea:hover { border-color: var(--text-3); }
 input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); background: var(--bg); }
 input::placeholder, textarea::placeholder { color: var(--text-3); }
 input[type="checkbox"] { width: 16px; min-height: 16px; height: 16px; accent-color: var(--accent); vertical-align: middle; }
-.field { display: grid; gap: 4px; margin-bottom: 14px; flex: 1; min-width: 160px; }
+.field { display: grid; gap: 4px; align-content: start; margin-bottom: 14px; flex: 1; min-width: 160px; }
 .field label { font-size: 13px; color: var(--text-2); }
 .field--check { display: flex; flex-direction: row-reverse; justify-content: flex-end; align-items: center; gap: 0.5rem; }
 .field--check label { color: var(--text); font-size: 14px; }
 .field--error input, .field--error select, .field--error textarea { border-color: var(--danger); }
 .field .error { color: var(--danger); }
 .row { display: flex; gap: 0 1rem; flex-wrap: wrap; }
+.field .hint { margin-top: 0; }
+.row--address { display: grid; grid-template-columns: minmax(0, 2.4fr) minmax(0, 0.8fr) minmax(0, 1.4fr) minmax(0, 1.2fr); }
+.row--address .field { min-width: 0; }
+@media (max-width: 720px) { .row--address { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); } .row--address .field:first-child { grid-column: 1 / -1; } }
+.form-section { border: 0; padding: 0; margin: 0 0 10px; min-width: 0; }
+.form-section + .form-section { padding-top: 18px; border-top: 1px solid var(--line); }
+.form-section legend { float: left; width: 100%; padding: 0; margin-bottom: 12px; font-size: 14px; font-weight: 600; color: var(--text); }
+.form-section legend + * { clear: left; }
 .form-actions { display: flex; gap: 6px; align-items: center; margin-top: 8px; }
 .form-actions .danger { margin-left: auto; }
 .quick-entry, .inline-form { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
