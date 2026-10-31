@@ -63,9 +63,16 @@ au document Peppol. Variables **runtime** : `RECOMMAND_API_KEY`, `RECOMMAND_API_
 
 ### Reprise de l'historique (OkiOki, Harvest)
 
-Page « Comptes » → « Reprise de l'historique » (admins). OkiOki : envoyer le CSV exporté (colonnes reconnues par
-leur en-tête) ; les références sans numéro reprises de la Google Sheet sont remplacées, et le dernier numéro de
-l'année devient le point de départ de la numérotation. Harvest : variables **runtime** `HARVEST_ACCESS_TOKEN` et
+Page « Comptes » → « Reprise de l'historique » (admins). OkiOki : envoyer de préférence l'archive ZIP complète
+(`OkiokiArchiveImport`, en arrière-plan, le ZIP reste joint à l'import) : ventes UBL par numéro, avec leur PDF et
+leur UBL ; achats UBL par identifiant OkiOki (source « Reprise OkiOki »), avec PDF, fournisseurs créés au besoin,
+date de paiement et taux de change tirés des `transactions.xlsx` mensuels (taux moyen du mois si aucun paiement
+n'est lié). Les achats datés d'avant « TVA suivie depuis » arrivent comptabilisés (déjà passés par la comptable, la
+catégorie n'est pas exigée), les suivants « à vérifier ». Les extraits de compte rangés comme documents
+(`<IBAN>_<date>_<n°>`) et les PDF sans UBL sont ignorés. Relancé, l'import garde les corrections faites sur les
+achats. Le CSV de la liste des factures reste accepté (colonnes reconnues par leur en-tête). Dans les deux cas, les
+références sans numéro reprises de la Google Sheet sont remplacées, et le dernier numéro de l'année devient le point
+de départ de la numérotation. Harvest : variables **runtime** `HARVEST_ACCESS_TOKEN` et
 `HARVEST_ACCOUNT_ID` ; clients, factures et, jusqu'à une date choisie, les heures (les heures jamais facturées
 passent en « offert »). Chaque import peut d'abord tourner en simulation ; relancé, il met à jour sans dupliquer.
 

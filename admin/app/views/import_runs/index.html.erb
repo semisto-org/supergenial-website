@@ -5,10 +5,10 @@
 <section class="grid-2">
   <div class="card">
     <h2>OkiOki</h2>
-    <p class="small">Exporte la liste des factures et notes de crédit d'OkiOki en CSV. Colonnes reconnues : numéro, date, client, type, objet, montant HTVA, TVA, total, échéance, statut, date de paiement.</p>
+    <p class="small">Le mieux : l'archive ZIP complète d'OkiOki (ventes et achats en UBL avec leurs PDF, transactions bancaires mensuelles). Les ventes sont reprises par numéro, les achats par identifiant OkiOki, avec leur date de paiement et, en dollars, le montant réellement débité. Les achats datés d'avant « TVA suivie depuis » arrivent comptabilisés, les suivants à vérifier. Un CSV de la liste des factures reste accepté.</p>
     <%= form_with url: import_runs_path, multipart: true do |f| %>
       <%= f.hidden_field :kind, value: "okioki" %>
-      <div class="field"><%= f.file_field :file, accept: ".csv,text/csv", required: true %></div>
+      <div class="field"><%= f.file_field :file, accept: ".zip,application/zip,.csv,text/csv", required: true %></div>
       <div class="field field--check"><%= f.check_box :replace_unnumbered, { checked: true }, "1", "0" %><%= f.label :replace_unnumbered, "Remplacer les références sans numéro reprises de la Google Sheet" %></div>
       <div class="field field--check"><%= f.check_box :dry_run, { checked: true }, "1", "0" %><%= f.label :dry_run, "Simulation" %></div>
       <%= f.submit "Importer", class: "button" %>

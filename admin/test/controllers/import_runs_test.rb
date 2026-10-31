@@ -1,6 +1,8 @@
 require "test_helper"
 
 class ImportRunsTest < ActionDispatch::IntegrationTest
+  include ActiveJob::TestHelper
+
   setup { sign_in_as users(:one) }
 
   test "upload an OkiOki export" do
@@ -16,6 +18,18 @@ class ImportRunsTest < ActionDispatch::IntegrationTest
 
     get import_run_path(run)
     assert_response :success
+  end
+
+  test "upload the OkiOki archive" do
+    file = Rack::Test::UploadedFile.new(StringIO.new(OkiokiArchiveFixture.archive), "application/zip", original_filename: "okioki.zip")
+    perform_enqueued_jobs do
+      post import_runs_path, params: { kind: "okioki", file:, dry_run: "0", replace_unnumbered: "1" }
+    end
+    run = ImportRun.last
+    assert_redirected_to import_run_path(run)
+    assert run.reload.done?, run.error
+    assert run.file.attached?
+    assert PurchaseInvoice.exists?(source: "okioki", external_id: "900002")
   end
 
   test "harvest needs its variables" do

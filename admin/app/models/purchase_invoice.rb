@@ -12,7 +12,7 @@ class PurchaseInvoice < ApplicationRecord
 
   choices :kind, invoice: "Facture", credit_note: "Note de crédit"
   choices :status, to_review: "À vérifier", booked: "Comptabilisée"
-  choices :source, peppol: "Peppol", email: "E-mail", manual: "Ajout manuel"
+  choices :source, peppol: "Peppol", email: "E-mail", manual: "Ajout manuel", okioki: "Reprise OkiOki"
   choices :vat_regime, **PurchaseVatRegime.labels.symbolize_keys
 
   belongs_to :supplier, optional: true
@@ -33,7 +33,8 @@ class PurchaseInvoice < ApplicationRecord
   validates :vat_rate, numericality: { greater_than_or_equal_to: 0 }
   validates :vat_deductible_percent, numericality: { in: 0..100 }
   validates :base_grid, inclusion: { in: PurchaseVatRegime::BASE_GRIDS.keys }
-  validates :supplier, :expense_category, :number, :issued_on, presence: true, if: :booked?
+  # OkiOki history was booked by the accountant already: it comes in booked, as it is.
+  validates :supplier, :expense_category, :number, :issued_on, presence: true, if: -> { booked? && !okioki? }
   validate :document_is_acceptable
 
   scope :recent, -> { order(Arel.sql("issued_on IS NULL DESC"), issued_on: :desc, id: :desc) }

@@ -1,5 +1,5 @@
 <%= page_header "#{@invoice.kind_label} #{@invoice.number || '(brouillon)'}" do %>
-  <%= link_to "PDF", pdf_invoice_path(@invoice), class: "button button--ghost", target: "_blank" if @invoice.admin? %>
+  <%= link_to "PDF", pdf_invoice_path(@invoice), class: "button button--ghost", target: "_blank" if @invoice.admin? || @invoice.document.attached? %>
   <% if can_write? %>
     <%= link_to "Modifier", edit_invoice_path(@invoice), class: "button button--ghost" unless @invoice.locked? %>
     <% if @invoice.draft? %>
