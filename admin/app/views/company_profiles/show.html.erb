@@ -20,6 +20,7 @@
     <dt>TVA suivie depuis</dt><dd><%= date(@company_profile.vat_tracked_since) %></dd>
     <dt>Dernier n° OkiOki</dt><dd><%= @company_profile.last_external_number.presence || "–" %> <small class="muted">· prochain numéro : <%= InvoiceNumbering.next(Date.current.year) %></small></dd>
     <dt>Pied de facture</dt><dd><%= simple_format(@company_profile.invoice_footer.presence || "–") %></dd>
+    <dt>Conditions générales</dt><dd><%= @company_profile.general_terms.present? ? "Personnalisées" : "Texte par défaut" %> <small class="muted">· imprimées sur une page à part de chaque facture</small></dd>
   </dl>
 </div>
 

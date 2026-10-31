@@ -16,6 +16,7 @@ class InvoicePdf
   ROBOT = Rails.root.join("vendor/images/invoice-robot.png")
   ROBOT_WIDTH = 104
   QR_SIZE = 72
+  MARGIN = [ 60, 56, 86, 56 ].freeze
   FIELD_HEIGHT = 28
   FIELD_GAP = 10
 
@@ -28,7 +29,7 @@ class InvoicePdf
   def filename = "#{@invoice.credit_note? ? 'note-de-credit' : 'facture'}-#{@invoice.number || 'brouillon'}.pdf"
 
   def render
-    Prawn::Document.new(page_size: "A4", margin: [ 60, 56, 86, 56 ], info: { Title: title, Author: @seller["legal_name"].to_s, Creator: "Admin Super Génial" }) do |pdf|
+    Prawn::Document.new(page_size: "A4", margin: MARGIN, info: { Title: title, Author: @seller["legal_name"].to_s, Creator: "Admin Super Génial" }) do |pdf|
       register_fonts(pdf)
       pdf.font "Inter", size: 9.5
       pdf.default_leading 1.5
@@ -43,6 +44,7 @@ class InvoicePdf
       lines(pdf)
       totals(pdf)
       payment(pdf)
+      general_terms(pdf)
       footer(pdf)
     end.render
   end
@@ -266,6 +268,55 @@ class InvoicePdf
         row.each_with_index { |dark, x| pdf.fill_rectangle [ left + x * cell, top - y * cell ], cell + 0.05, cell + 0.05 if dark }
       end
       pdf.fill_color TEXT
+    end
+
+    # The general terms on a page of their own, in two columns, from the text frozen with the seller at issuing:
+    # a "## N. Title" line starts an article, the other lines are its paragraphs. The type shrinks until they fit one page.
+    def general_terms(pdf)
+      blocks = terms_blocks
+      return if blocks.empty?
+      size = TERMS_SIZES.find { |candidate| terms_fit?(blocks, candidate) } || TERMS_SIZES.last
+      pdf.start_new_page
+      draw_terms(pdf, blocks, size)
+    end
+
+    TERMS_SIZES = [ 7.2, 7, 6.8, 6.6, 6.4, 6.2, 6, 5.8, 5.6 ].freeze
+
+    def terms_blocks
+      text = @seller["general_terms"].to_s.split(/^---NOTES---$/).first.to_s
+      text.each_line.map(&:strip).reject { |line| line.blank? || line.start_with?("# ") || line == "Conditions générales" }
+        .map { |line| line.start_with?("## ") ? [ :heading, line.delete_prefix("## ") ] : [ :paragraph, line ] }
+    end
+
+    # Typesets the terms on a scratch document of the same geometry and checks they stay on its first page.
+    def terms_fit?(blocks, size)
+      scratch = Prawn::Document.new(page_size: "A4", margin: MARGIN)
+      register_fonts(scratch)
+      scratch.default_leading 1.5
+      draw_terms(scratch, blocks, size)
+      scratch.page_count == 1
+    end
+
+    def draw_terms(pdf, blocks, size)
+      pdf.font("Garamond", style: :italic, size: 24) { pdf.text "Conditions générales", color: INK }
+      pdf.text caps("#{@seller['legal_name']} · applicables à tous nos devis, commandes et factures"), inline_format: true
+      pdf.move_down 8
+      pdf.stroke_color INK
+      pdf.line_width 0.75
+      pdf.stroke_horizontal_rule
+      pdf.move_down 12
+      pdf.column_box([ 0, pdf.cursor ], columns: 2, spacer: 20, width: pdf.bounds.width) do
+        blocks.each_with_index do |(kind, line), index|
+          if kind == :heading
+            pdf.move_down size * 0.7 if index.positive?
+            pdf.font("Inter", style: :bold, size: size + 0.3) { pdf.text line, color: INK }
+            pdf.move_down 1.5
+          else
+            pdf.font("Inter", size:) { pdf.text line, color: TEXT, leading: size * 0.18 }
+            pdf.move_down size * 0.35
+          end
+        end
+      end
     end
 
     def footer(pdf)

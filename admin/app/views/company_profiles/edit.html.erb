@@ -28,6 +28,7 @@
       <%= field f, :vat_tracked_since, :date_field, hint: "Premier jour du premier trimestre déclaré depuis l'admin ; avant, la TVA a été déclarée ailleurs" %>
     </div>
     <%= field f, :invoice_footer, :text_area, rows: 3, hint: "Mentions légales : siège, RPM (tribunal de l'entreprise), etc." %>
+    <%= field f, :general_terms, :text_area, rows: 16, hint: "Imprimées sur une page à part de chaque facture. Un article par bloc « ## 1. Titre », puis ses paragraphes. Vide : le texte par défaut s'applique. Une facture émise garde les conditions du jour de son émission." %>
     <div class="form-actions">
       <%= f.submit "Enregistrer", class: "button" %>
       <%= link_to "Annuler", company_profile_path, class: "button button--ghost" %>
