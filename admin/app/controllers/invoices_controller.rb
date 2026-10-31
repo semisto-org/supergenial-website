@@ -1,5 +1,5 @@
 class InvoicesController < ApplicationController
-  EXTRA_BLANK_LINES = 3
+  EXTRA_BLANK_LINES = 1
 
   before_action :set_invoice, only: %i[ show edit update destroy issue deliver credit_note pdf ubl ]
 
@@ -96,6 +96,7 @@ class InvoicesController < ApplicationController
 
     def add_blank_lines
       return unless @invoice.admin?
+      return if @invoice.lines.any?(&:new_record?)
       EXTRA_BLANK_LINES.times { @invoice.lines.build(vat_rate: 21, quantity: 1, position: @invoice.lines.size) }
     end
 
