@@ -102,6 +102,14 @@ montant exact avec le numéro de facture (ou l'IBAN du fournisseur) pour un acha
 parmi les pièces non payées les plus proches, ou se classe « sans pièce » (rémunération, impôts, TVA, frais
 bancaires, transfert…). Rapprocher une pièce la marque payée à la date du mouvement.
 
+Connexion directe (« Banque » → « Connexion bancaire », admins) : via Enable Banking (PSD2, lecture seule, gratuit
+en mode restreint pour ses propres comptes, reliés d'abord dans leur portail). Variables **runtime**
+`ENABLE_BANKING_APPLICATION_ID` et `ENABLE_BANKING_PRIVATE_KEY` (contenu du .pem). URL de retour à déclarer :
+`https://admin.supergenial.be/bank_connections/callback`. `BankSyncJob` lit chaque matin (6 h) les mouvements
+comptabilisés de chaque compte (89 jours au premier passage, puis depuis la dernière lecture moins 10 jours), les
+déduplique (identifiant de la banque, ou même date et montant déjà lus d'un CODA) et les rapproche comme un CODA.
+L'accord bancaire expire (180 jours au plus) : le tableau de bord prévient 14 jours avant.
+
 ### TVA trimestrielle et pack comptable
 
 « TVA » calcule chaque trimestre depuis la date « TVA suivie depuis » (« Société ») : grilles de la déclaration

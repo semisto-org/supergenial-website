@@ -1,6 +1,7 @@
 # A movement on the bank account. It is reconciled with what it pays (a sales invoice, a purchase invoice),
 # or put in a category when no invoice explains it (salary, taxes, internal transfer…).
 # amount is signed: positive for money in, negative for money out.
+# It comes from a CODA statement or, read every day, from a bank connection (Enable Banking).
 class BankTransaction < ApplicationRecord
   include Commentable
   include Choices
@@ -11,7 +12,8 @@ class BankTransaction < ApplicationRecord
           vat: "TVA (paiement ou remboursement)", bank_fees: "Frais bancaires", transfer: "Transfert interne",
           capital: "Capital, prêt, compte courant", other: "Autre"
 
-  belongs_to :bank_statement
+  belongs_to :bank_statement, optional: true
+  belongs_to :bank_connection, optional: true
   belongs_to :invoice, optional: true
   belongs_to :purchase_invoice, optional: true
 

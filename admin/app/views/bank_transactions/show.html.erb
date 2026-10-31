@@ -1,5 +1,5 @@
 <%= page_header "#{@bank_transaction.credit? ? 'Entrée' : 'Sortie'} de #{eur(@bank_transaction.amount.abs)}" do %>
-  <%= link_to @bank_transaction.bank_statement, @bank_transaction.bank_statement, class: "button button--ghost" %>
+  <%= link_to @bank_transaction.bank_statement, @bank_transaction.bank_statement, class: "button button--ghost" if @bank_transaction.bank_statement %>
 <% end %>
 
 <p class="lead">

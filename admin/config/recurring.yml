@@ -13,6 +13,9 @@ production:
   nightly_backup:
     class: BackupJob
     schedule: every day at 3am Europe/Brussels
+  bank_sync:
+    class: BankSyncJob
+    schedule: every day at 6am Europe/Brussels
   purchase_inbox:
     class: PurchaseInboxJob
     schedule: every 30 minutes
