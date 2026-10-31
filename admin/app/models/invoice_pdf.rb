@@ -5,13 +5,15 @@ require "rqrcode"
 # Readable copy of a sales document, set in the typefaces of the Super Génial website (EB Garamond and Inter),
 # with the robot of the site watering the total. The Peppol UBL stays the legal original.
 class InvoicePdf
-  INK = "2A1A48"
-  ACCENT = "7B4FC9"
-  TEXT = "2E2A38"
-  MUTED = "7A7489"
-  RULE = "E3DCEF"
-  TINT = "F6F2FC"
-  WATERMARK = "F1EBFA"
+  # Black ink only, as CMYK tints of K, so that printing never uses colour cartridges.
+  INK = [ 0, 0, 0, 100 ]
+  ACCENT = [ 0, 0, 0, 100 ]
+  TEXT = [ 0, 0, 0, 92 ]
+  MUTED = [ 0, 0, 0, 58 ]
+  RULE = [ 0, 0, 0, 18 ]
+  TINT = [ 0, 0, 0, 5 ]
+  WATERMARK = [ 0, 0, 0, 6 ]
+  PAPER = [ 0, 0, 0, 0 ]
   FONTS = Rails.root.join("vendor/fonts")
   ROBOT = Rails.root.join("vendor/images/invoice-robot.png")
   ROBOT_WIDTH = 104
@@ -68,7 +70,10 @@ class InvoicePdf
     def escape(text) = text.to_s.gsub("&", "&amp;").gsub("<", "&lt;").gsub(">", "&gt;")
 
     # A small spaced-out uppercase label, as inline format markup.
-    def caps(text, color: MUTED) = "<font name='Inter Medium' size='6.5' character_spacing='1.2'><color rgb='#{color}'>#{escape(text.upcase)}</color></font>"
+    # Opening inline-format tag for a black tint; closed by </color>.
+    def ink(color) = "<color c='0' m='0' y='0' k='#{color.last}'>"
+
+    def caps(text, color: MUTED) = "<font name='Inter Medium' size='6.5' character_spacing='1.2'>#{ink(color)}#{escape(text.upcase)}</color></font>"
 
     def register_fonts(pdf)
       pdf.font_families.update(
@@ -83,7 +88,7 @@ class InvoicePdf
     def field_rows(pdf, fields, width:, size:, font:, min_width: 0)
       pack_fields(pdf, fields, width:, size:, font:, min_width:).each_with_index do |row, index|
         pdf.move_down FIELD_GAP if index.positive?
-        cells = row.map { |(label, value), _| "#{caps(label)}\n<font name='#{font}' size='#{size}'><color rgb='#{INK}'>#{escape(value)}</color></font>" }
+        cells = row.map { |(label, value), _| "#{caps(label)}\n<font name='#{font}' size='#{size}'>#{ink(INK)}#{escape(value)}</color></font>" }
         pdf.table([ cells ], column_widths: row.map { |_, column| [ column, width ].min }, cell_style: { borders: [], padding: 0, inline_format: true, leading: 3 })
       end
     end
@@ -154,7 +159,7 @@ class InvoicePdf
       buyer = [ @buyer["street"], [ @buyer["postal_code"], @buyer["city"] ].compact_blank.join(" "),
                 Country.name(@buyer["country"]), ("TVA #{@buyer['vat_number']}" if @buyer["vat_number"].present?) ].compact_blank
       cells = [ [ "De", @seller["legal_name"], seller ], [ "Pour", @buyer["name"], buyer ] ].map do |label, name, address|
-        "#{caps(label)}\n<font name='Garamond' size='16'><b><color rgb='#{INK}'>#{escape(name)}</color></b></font>\n" \
+        "#{caps(label)}\n<font name='Garamond' size='16'><b>#{ink(INK)}#{escape(name)}</color></b></font>\n" \
           "<font size='9'>#{address.map { |line| escape(line) }.join("\n")}</font>"
       end
       half = pdf.bounds.width / 2
@@ -165,14 +170,14 @@ class InvoicePdf
     def lines(pdf)
       header = [ "Description", "Quantité", "Prix unitaire", "TVA", "Total HTVA" ].map { |label| caps(label, color: INK) }
       rows = @invoice.lines.map do |line|
-        period = line.period_start && line.period_end ? "\n<font size='8'><color rgb='#{MUTED}'>#{date(line.period_start)} – #{date(line.period_end)}</color></font>" : ""
+        period = line.period_start && line.period_end ? "\n<font size='8'>#{ink(MUTED)}#{date(line.period_start)} – #{date(line.period_end)}</color></font>" : ""
         [ "#{escape(line.description)}#{period}", "#{number(line.quantity)} #{escape(line.unit_label)}", money(line.unit_price),
           @invoice.standard? ? "#{number(line.vat_rate)} %" : "–", money(line.net_amount) ]
       end
       pdf.table([ header, *rows ], header: true, width: pdf.bounds.width, column_widths: { 1 => 66, 2 => 78, 3 => 40, 4 => 80 },
-                cell_style: { size: 9.5, padding: [ 9, 6 ], borders: [ :bottom ], border_width: 0.5, border_color: RULE, inline_format: true, leading: 2 }) do |table|
+                cell_style: { size: 9.5, padding: [ 9, 6 ], borders: [ :bottom ], border_width: 0.5, border_color: [ RULE ] * 4, inline_format: true, leading: 2 }) do |table|
         table.row(0).padding = [ 0, 6, 7, 6 ]
-        table.row(0).border_color = INK
+        table.row(0).border_color = [ INK ] * 4
         table.row(0).border_width = 0.75
         table.columns(1..4).align = :right
         table.column(0).padding_left = 0
@@ -261,7 +266,7 @@ class InvoicePdf
     def draw_qr(pdf, qr, (left, top))
       modules = qr.modules
       cell = QR_SIZE.to_f / modules.size
-      pdf.fill_color "FFFFFF"
+      pdf.fill_color PAPER
       pdf.fill_rounded_rectangle [ left - 6, top + 6 ], QR_SIZE + 12, QR_SIZE + 12, 4
       pdf.fill_color INK
       modules.each_with_index do |row, y|
