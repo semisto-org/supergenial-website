@@ -1,3 +1,5 @@
-Liberation Sans (Regular, Bold, Italic), SIL Open Font License 1.1.
-Used to render invoice PDFs with full UTF-8 support.
-https://github.com/liberationfonts/liberation-fonts
+EB Garamond (Regular, Italic, Medium, Medium Italic) and Inter (Regular, Italic, Medium, SemiBold),
+both under the SIL Open Font License 1.1, the typefaces of the Super Génial website.
+Used to render invoice PDFs with full UTF-8 support (Prawn needs static TrueType files).
+https://github.com/octaviopardo/EBGaramond12
+https://github.com/rsms/inter
