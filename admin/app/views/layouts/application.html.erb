@@ -23,7 +23,7 @@
       <div class="app__main">
         <div class="mobilebar">
           <button type="button" class="icon-button" aria-label="Ouvrir le menu" aria-controls="sidebar" aria-expanded="false" data-sidebar-target="toggle" data-action="sidebar#toggle"><%= icon "menu" %></button>
-          <%= link_to root_path, class: "workspace__name" do %>Super <em>Génial</em><% end %>
+          <%= link_to root_path, class: "workspace__home", "aria-label": "Super Génial" do %><span class="brand-logo" aria-hidden="true"></span><% end %>
           <button type="button" class="icon-button mobilebar__search" aria-label="Rechercher" data-action="command-palette#open"><%= icon "search" %></button>
         </div>
 

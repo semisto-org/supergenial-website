@@ -142,7 +142,7 @@ a:hover { color: var(--link-hover); }
 .site-nav{display:flex;align-items:center;gap:0.9rem;flex-wrap:wrap}
 .site-nav a::after{display:none!important}
 .site-nav .brand{display:inline-flex;align-items:center;gap:.5rem;font-weight:600;font-size:15px;letter-spacing:-.01em;margin-right:auto;white-space:nowrap;color:var(--text-primary)}
-.site-nav .brand-mark{width:11px;height:11px;border-radius:3.5px;background:linear-gradient(135deg,var(--accent-1),var(--accent-2));flex-shrink:0}
+.site-nav .brand-logo{display:block;height:24px;aspect-ratio:92.32/13.29;background:currentColor;-webkit-mask:url(/assets/brand/supergenial-logo.svg) center/contain no-repeat;mask:url(/assets/brand/supergenial-logo.svg) center/contain no-repeat;flex-shrink:0}
 .nav-menu{display:flex;align-items:center;gap:1rem}
 .nav-menu a{font-size:13.5px;color:var(--text-secondary);white-space:nowrap;padding-bottom:4px;transition:color .2s ease}
 .nav-menu a:hover{color:var(--text-primary)}
@@ -993,7 +993,6 @@ main.wide { max-width: none; margin: 0; padding: 0; }
 .site-head { padding: 1rem max(var(--gutter), calc(50vw - 600px)); margin-bottom: 0; border-bottom-color: rgba(42, 26, 72, 0.1); }
 main:not(.wide) .site-head { margin-bottom: 2.5rem; }
 .site-nav .brand { font-size: 16px; }
-.site-nav .brand-mark { width: 13px; height: 13px; border-radius: 4px; background: var(--sg); }
 .nav-menu { gap: 1.6rem; margin-right: .6rem; }
 .nav-menu a { font-size: 14.5px; font-weight: 500; color: var(--text-primary); opacity: .78; }
 .nav-menu a:hover, .nav-menu a[aria-current] { opacity: 1; }

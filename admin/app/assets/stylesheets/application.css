@@ -67,9 +67,11 @@ ul.plain { list-style: none; display: grid; gap: 0.5rem; }
 .sidebar { background: var(--sidebar-bg); border-right: 1px solid var(--line); padding: 8px 6px 12px; display: flex; flex-direction: column; gap: 1px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
 .workspace { display: flex; align-items: center; gap: 8px; padding: 6px 8px; margin-bottom: 6px; border-radius: var(--r); text-decoration: none; }
 .workspace:hover { background: var(--hover); color: inherit; }
-.workspace__logo { width: 22px; height: 22px; border-radius: 5px; background: var(--accent); color: var(--on-accent); display: grid; place-items: center; font: 600 14px/1 var(--font-serif); }
-.workspace__name { font-weight: 600; text-decoration: none; }
-.workspace__name em { font-family: var(--font-serif); font-size: 17px; color: var(--accent-text); }
+/* Brand lettering, painted in the current text colour so it follows the light and dark themes. */
+.brand-logo { display: block; height: 18px; aspect-ratio: 92.32 / 13.29; background: currentColor; -webkit-mask: url("/supergenial-logo.svg") center / contain no-repeat; mask: url("/supergenial-logo.svg") center / contain no-repeat; }
+.brand-logo--stacked { height: 64px; aspect-ratio: 51.17 / 23; -webkit-mask-image: url("/supergenial-logo-stacked.svg"); mask-image: url("/supergenial-logo-stacked.svg"); }
+.workspace { color: var(--text); }
+.workspace__home { color: var(--text); text-decoration: none; }
 .nav-item { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 30px; padding: 4px 8px; border-radius: var(--r); border: 0; background: none; color: var(--text-2); font: inherit; text-align: left; text-decoration: none; cursor: pointer; }
 .nav-item:hover { background: var(--hover); color: var(--text); }
 .nav-item[aria-current="page"] { background: var(--press); color: var(--text); font-weight: 500; }
@@ -213,7 +215,7 @@ body.session { background: var(--sidebar-bg); }
 body.session main { max-width: 380px; margin: 0 auto; padding: 14vh 16px 4rem; }
 .session-card { background: var(--bg); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 2rem; box-shadow: var(--shadow-pop); }
 .session-card h1 { font-size: 26px; margin-bottom: 0.25rem; }
-.session-card h1 em { font-family: var(--font-serif); color: var(--accent-text); font-size: 30px; }
+.session-card h1 { margin-bottom: 0.75rem; }
 .session-card form { margin-top: 1.5rem; }
 .session-card .button { width: 100%; }
 

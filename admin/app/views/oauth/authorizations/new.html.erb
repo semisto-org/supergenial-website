@@ -1,5 +1,5 @@
 <div class="card session-card">
-  <h1>Super <em>Génial</em></h1>
+  <h1><span class="brand-logo brand-logo--stacked" role="img" aria-label="Super Génial"></span></h1>
   <p class="muted">Autoriser l'accès à l'admin</p>
   <p><strong><%= @client.name %></strong> demande à <%= Current.user.can_write? ? "gérer l'admin en ton nom : lire, créer, modifier et supprimer" : "consulter en ton nom" %> clients, projets, heures, contrats, factures…</p>
   <p class="muted">Connecté en tant que <%= Current.user.email_address %>. Retour vers <strong><%= URI.parse(@params[:redirect_uri]).host %></strong>.</p>
