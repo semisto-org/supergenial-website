@@ -68,8 +68,8 @@ ul.plain { list-style: none; display: grid; gap: 0.5rem; }
 .workspace { display: flex; align-items: center; gap: 8px; padding: 6px 8px; margin-bottom: 6px; border-radius: var(--r); text-decoration: none; }
 .workspace:hover { background: var(--hover); color: inherit; }
 /* Brand lettering, painted in the current text colour so it follows the light and dark themes. */
-.brand-logo { display: block; height: 18px; aspect-ratio: 92.32 / 13.29; background: currentColor; -webkit-mask: url("/supergenial-logo.svg") center / contain no-repeat; mask: url("/supergenial-logo.svg") center / contain no-repeat; }
-.brand-logo--stacked { height: 64px; aspect-ratio: 51.17 / 23; -webkit-mask-image: url("/supergenial-logo-stacked.svg"); mask-image: url("/supergenial-logo-stacked.svg"); }
+.brand-logo { display: block; height: 18px; aspect-ratio: 84.93 / 12.34; background: currentColor; -webkit-mask: url("/super-admin-logo.svg") center / contain no-repeat; mask: url("/super-admin-logo.svg") center / contain no-repeat; }
+.brand-logo--stacked { height: 64px; aspect-ratio: 43.78 / 20; -webkit-mask-image: url("/super-admin-logo-stacked.svg"); mask-image: url("/super-admin-logo-stacked.svg"); }
 .workspace { color: var(--text); }
 .workspace__home { color: var(--text); text-decoration: none; }
 .nav-item { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 30px; padding: 4px 8px; border-radius: var(--r); border: 0; background: none; color: var(--text-2); font: inherit; text-align: left; text-decoration: none; cursor: pointer; }
