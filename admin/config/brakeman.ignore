@@ -1,0 +1,13 @@
+{
+  "ignored_warnings": [
+    {
+      "fingerprint": "c1204d5a4925e4499933f9d7fc1cd8604da972754b8c7da8ac27f4caf9d5cbb6",
+      "check_name": "Redirect",
+      "message": "Possible unprotected redirect",
+      "file": "app/controllers/bank_connections_controller.rb",
+      "line": 22,
+      "note": "Redirect to the consent page URL returned by the Enable Banking API (checked to be HTTPS), not to user input."
+    }
+  ],
+  "brakeman_version": "ignored"
+}

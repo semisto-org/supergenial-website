@@ -60,6 +60,10 @@ Rails.application.routes.draw do
   resources :bank_statements, only: %i[ index show create destroy ] do
     get :file, on: :member
   end
+  resources :bank_connections, only: %i[ index create destroy ] do
+    get :callback, on: :collection
+    post :sync, on: :member
+  end
   resources :bank_transactions, only: %i[ index show ] do
     member do
       post :match
