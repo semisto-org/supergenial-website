@@ -223,7 +223,7 @@ class InvoicePdf
       fields = [ [ "IBAN", iban ], ([ "Communication", @invoice.structured_reference ] if @invoice.structured_reference.present?), ([ "BIC", @seller["bic"] ] if @seller["bic"].present?) ].compact
       field_lines = pack_fields(pdf, fields, width: inner, size: 10.5, font: "Inter Medium").size
       sentence_height = pdf.height_of_formatted(Prawn::Text::Formatted::Parser.format(sentence), width: inner)
-      height = [ padding * 2 + 26 + sentence_height + 12 + field_lines * FIELD_HEIGHT + (field_lines - 1) * FIELD_GAP, qr ? QR_SIZE + padding * 2 + 14 : 0 ].max
+      height = [ padding * 2 + 26 + sentence_height + 12 + field_lines * FIELD_HEIGHT + (field_lines - 1) * FIELD_GAP, qr ? QR_SIZE + padding * 2 : 0 ].max
       pdf.move_down 30
       pdf.start_new_page if pdf.cursor < height
       top = pdf.cursor
@@ -266,7 +266,6 @@ class InvoicePdf
         row.each_with_index { |dark, x| pdf.fill_rectangle [ left + x * cell, top - y * cell ], cell + 0.05, cell + 0.05 if dark }
       end
       pdf.fill_color TEXT
-      pdf.text_box caps("Scanner pour payer"), at: [ left - 10, top - QR_SIZE - 12 ], width: QR_SIZE + 20, align: :center, inline_format: true
     end
 
     def footer(pdf)
