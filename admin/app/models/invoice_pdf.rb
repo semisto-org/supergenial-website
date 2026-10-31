@@ -123,10 +123,8 @@ class InvoicePdf
                            { text: "Génial", font: "Garamond", styles: [ :bold, :italic ], size: 34, color: ACCENT } ]
       pdf.bounding_box([ pdf.bounds.width - 240, top ], width: 240) do
         pdf.font("Garamond", style: :italic, size: 34) { pdf.text @invoice.kind_label, color: INK, align: :right }
-        reference = draft? ? caps("Brouillon · non émis", color: ACCENT) : "#{caps('N°')}  <font name='Inter Medium' size='11'><color rgb='#{INK}'>#{escape(@invoice.number)}</color></font>"
-        pdf.text reference, inline_format: true, align: :right
       end
-      pdf.move_down 26
+      pdf.move_down 18
       pdf.stroke_color INK
       pdf.line_width 0.75
       pdf.stroke_horizontal_rule
@@ -134,7 +132,7 @@ class InvoicePdf
     end
 
     def details(pdf)
-      items = [ [ "Date", date(@invoice.issued_on) ] ]
+      items = [ [ "Numéro", @invoice.number.presence || "Brouillon" ], [ "Date", date(@invoice.issued_on) ] ]
       if @invoice.invoice?
         items << [ "Échéance", @invoice.due_on ? date(@invoice.due_on) : "#{CompanyProfile.current.payment_terms_days} jours après émission" ]
       end
