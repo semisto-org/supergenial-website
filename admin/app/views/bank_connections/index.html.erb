@@ -1,0 +1,42 @@
+<%= page_header "Connexion bancaire" do %>
+  <%= link_to "Mouvements", bank_transactions_path, class: "button button--ghost" %>
+<% end %>
+
+<p class="hint">Les mouvements des comptes de la société arrivent chaque matin, via Enable Banking (accès en lecture seule, agréé PSD2), puis sont rapprochés comme ceux d'un fichier CODA. La banque limite l'accord à 180 jours au plus : il faut alors le renouveler ici.</p>
+
+<% if @configured %>
+  <div class="card">
+    <h2>Connecter un compte</h2>
+    <p class="small">Tu seras envoyé chez la banque pour donner ton accord, puis ramené ici. Les comptes doivent d'abord être reliés dans le portail Enable Banking (mode restreint).</p>
+    <%= form_with url: bank_connections_path, class: "inline-form" do |f| %>
+      <%= f.text_field :aspsp_name, value: BankConnection::DEFAULT_BANK, "aria-label": "Banque" %>
+      <%= f.select :psu_type, BankConnection::PSU_TYPES.invert, {}, "aria-label": "Type d'accès" %>
+      <%= f.submit "Connecter", class: "button" %>
+    <% end %>
+  </div>
+<% else %>
+  <div class="card">
+    <p class="muted">Pas encore configuré : ajoute <code>ENABLE_BANKING_APPLICATION_ID</code> et <code>ENABLE_BANKING_PRIVATE_KEY</code> (contenu du fichier .pem) en variables runtime dans Coolify.</p>
+  </div>
+<% end %>
+
+<div class="card">
+  <table>
+    <thead><tr><th>Banque et comptes</th><th>État</th><th>Accord valable jusqu'au</th><th>Dernière lecture</th><th></th></tr></thead>
+    <tbody>
+      <% @bank_connections.each do |connection| %>
+        <tr>
+          <td><%= connection %><% if connection.last_error.present? %><br><span class="small danger"><%= connection.last_error %></span><% end %></td>
+          <td><%= badge connection.expired? ? "Expirée" : connection.status_label, connection.active? && !connection.expired? ? "actif" : "suspendu" %></td>
+          <td><%= connection.valid_until ? l(connection.valid_until.to_date) : "—" %></td>
+          <td><%= connection.last_synced_at ? l(connection.last_synced_at, format: :short) : "—" %></td>
+          <td class="nowrap">
+            <%= button_to "Lire maintenant", sync_bank_connection_path(connection), class: "button button--ghost" if connection.active? && @configured %>
+            <%= button_to "Supprimer", connection, method: :delete, class: "button button--ghost", form: { data: { turbo_confirm: "Supprimer cette connexion ? Les mouvements déjà lus restent." } } %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <% if @bank_connections.empty? %><%= empty_state "Aucune connexion." %><% end %>
+</div>

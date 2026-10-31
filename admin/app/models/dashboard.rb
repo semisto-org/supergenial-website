@@ -66,6 +66,9 @@ class Dashboard
 
   def bank_transactions_to_match = BankTransaction.unmatched.count
 
+  # Bank consents to renew soon, or already lapsed.
+  def bank_connections_to_renew = BankConnection.to_renew
+
   # A monthly fixed cost with a known supplier should bring one invoice a month: the ones missing for last month.
   def missing_purchase_invoices(today = Date.current)
     month = today.prev_month.all_month

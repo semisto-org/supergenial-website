@@ -120,9 +120,10 @@
     <% missing = @dashboard.missing_purchase_invoices %>
     <% to_match = @dashboard.bank_transactions_to_match %>
     <% vat_due = @dashboard.vat_return_due %>
+    <% to_renew = @dashboard.bank_connections_to_renew %>
     <% tax = @dashboard.tax_projection if @dashboard.year == Date.current.year %>
     <% remuneration_alert = tax&.year_end_alert? %>
-    <% if packs.empty? && renewals.empty? && to_review.zero? && missing.empty? && to_match.zero? && vat_due.nil? && !remuneration_alert %>
+    <% if packs.empty? && renewals.empty? && to_review.zero? && missing.empty? && to_match.zero? && to_renew.empty? && vat_due.nil? && !remuneration_alert %>
       <%= empty_state "Rien à signaler." %>
     <% end %>
     <ul class="plain">
@@ -131,6 +132,9 @@
       <% end %>
       <% if vat_due %>
         <li class="<%= 'danger' if vat_due.quarter.deadline < Date.current %>"><%= link_to "TVA #{vat_due.quarter.label} à déclarer", vat_return_path(vat_due.quarter.to_param) %> au plus tard le <%= date(vat_due.quarter.deadline) %></li>
+      <% end %>
+      <% to_renew.each do |connection| %>
+        <li class="<%= 'danger' if connection.expired? %>"><%= link_to "Renouveler l'accès bancaire #{connection.aspsp_name}", bank_connections_path %> : <%= connection.expired? ? "expiré" : "expire le #{date(connection.valid_until.to_date)}" %></li>
       <% end %>
       <% if to_review.positive? %>
         <li><%= link_to "#{to_review} achat#{'s' if to_review > 1} à vérifier", purchase_invoices_path(status: "to_review") %></li>
