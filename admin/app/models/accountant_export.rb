@@ -34,7 +34,11 @@ class AccountantExport
     def add_sale(zip, invoice)
       name = "ventes/#{invoice.number.presence || "sans-numero-#{invoice.id}"}"
       add(zip, "#{name}.xml", invoice.ubl_xml) if invoice.ubl_xml.present?
-      add(zip, "#{name}.pdf", InvoicePdf.new(invoice).render) if invoice.admin?
+      if invoice.admin?
+        add(zip, "#{name}.pdf", InvoicePdf.new(invoice).render)
+      elsif invoice.document.attached?
+        add(zip, "#{name}.pdf", invoice.document.download)
+      end
     end
 
     def add_purchase(zip, purchase)

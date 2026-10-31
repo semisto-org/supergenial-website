@@ -21,6 +21,8 @@ class Invoice < ApplicationRecord
   has_many :lines, -> { order(:position, :id) }, class_name: "InvoiceLine", dependent: :destroy, inverse_of: :invoice
   has_many :time_entries
   has_many :packs, dependent: :nullify
+  # The original PDF of a document issued outside the admin (OkiOki).
+  has_one_attached :document
 
   accepts_nested_attributes_for :lines, allow_destroy: true, reject_if: ->(attributes) { attributes[:description].blank? && attributes[:unit_price].blank? }
 

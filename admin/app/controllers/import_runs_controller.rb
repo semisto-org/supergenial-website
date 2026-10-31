@@ -1,6 +1,8 @@
-# History imports: Harvest through its API (in the background), OkiOki from a CSV export (right away).
+# History imports: Harvest through its API and the OkiOki ZIP archive (in the background),
+# an OkiOki CSV export (right away).
 class ImportRunsController < ApplicationController
   MAX_CSV_SIZE = 5.megabytes
+  MAX_ARCHIVE_SIZE = 200.megabytes
 
   require_admin
 
@@ -33,11 +35,25 @@ class ImportRunsController < ApplicationController
 
     def import_okioki
       file = params[:file]
-      return redirect_to(import_runs_path, alert: "Choisis le fichier CSV exporté d'OkiOki.") unless file.respond_to?(:read)
-      return redirect_to(import_runs_path, alert: "Fichier trop lourd (5 Mo maximum).") if file.size > MAX_CSV_SIZE
+      return redirect_to(import_runs_path, alert: "Choisis le ZIP ou le CSV exporté d'OkiOki.") unless file.respond_to?(:read)
 
-      run = ImportRun.create!(kind: "okioki", dry_run: dry_run?, filename: file.original_filename, options: { replace_unnumbered: params[:replace_unnumbered] == "1" })
-      HistoryImportJob.perform_now(run, file.read)
-      redirect_to run
+      options = { replace_unnumbered: params[:replace_unnumbered] == "1" }
+      if archive?(file)
+        return redirect_to(import_runs_path, alert: "Archive trop lourde (200 Mo maximum).") if file.size > MAX_ARCHIVE_SIZE
+        run = ImportRun.create!(kind: "okioki", dry_run: dry_run?, filename: file.original_filename, options:, file:)
+        HistoryImportJob.perform_later(run)
+        redirect_to run, notice: "Import de l'archive OkiOki lancé : cette page se met à jour quand il est terminé."
+      else
+        return redirect_to(import_runs_path, alert: "Fichier trop lourd (5 Mo maximum).") if file.size > MAX_CSV_SIZE
+        run = ImportRun.create!(kind: "okioki", dry_run: dry_run?, filename: file.original_filename, options:)
+        HistoryImportJob.perform_now(run, file.read)
+        redirect_to run
+      end
+    end
+
+    def archive?(file)
+      signature = file.read(2)
+      file.rewind
+      signature == "PK"
     end
 end

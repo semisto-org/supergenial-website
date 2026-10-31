@@ -77,6 +77,9 @@ class InvoicesController < ApplicationController
   end
 
   def pdf
+    if !@invoice.admin? && @invoice.document.attached?
+      return send_data @invoice.document.download, filename: @invoice.document.filename.to_s, type: "application/pdf", disposition: params[:download] ? "attachment" : "inline"
+    end
     document = InvoicePdf.new(@invoice)
     send_data document.render, filename: document.filename, type: "application/pdf", disposition: params[:download] ? "attachment" : "inline"
   end
