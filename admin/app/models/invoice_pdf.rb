@@ -148,7 +148,7 @@ class InvoicePdf
 
     def parties(pdf)
       seller = [ @seller["street"], [ @seller["postal_code"], @seller["city"] ].compact_blank.join(" "),
-                 ("TVA #{@seller['vat_number']}" if @seller["vat_number"].present?), @seller["email"] ].compact_blank
+                 ("TVA #{@seller['vat_number']}" if @seller["vat_number"].present?) ].compact_blank
       buyer = [ @buyer["street"], [ @buyer["postal_code"], @buyer["city"] ].compact_blank.join(" "),
                 Country.name(@buyer["country"]), ("TVA #{@buyer['vat_number']}" if @buyer["vat_number"].present?) ].compact_blank
       cells = [ [ "De", @seller["legal_name"], seller ], [ "Pour", @buyer["name"], buyer ] ].map do |label, name, address|
