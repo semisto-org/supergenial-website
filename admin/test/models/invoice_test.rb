@@ -81,6 +81,14 @@ class InvoiceTest < ActiveSupport::TestCase
     assert_equal "pdf", document[:attachments].first[:id]
   end
 
+  test "units take the French plural from two on" do
+    assert_equal "an", InvoiceLine.new(unit: "year", quantity: 1.5).unit_label
+    assert_equal "ans", InvoiceLine.new(unit: "year", quantity: 2).unit_label
+    assert_equal "pièces", InvoiceLine.new(unit: "unit", quantity: 3).unit_label
+    assert_equal "mois", InvoiceLine.new(unit: "month", quantity: 6).unit_label
+    assert_equal "h", InvoiceLine.new(unit: "hour", quantity: 7.5).unit_label
+  end
+
   test "pdf renders" do
     invoice = draft
     invoice.issue!

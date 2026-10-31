@@ -12,7 +12,11 @@ class InvoiceLine < ApplicationRecord
 
   def net_amount = (quantity * unit_price).round(2)
 
-  def unit_label = UNITS.dig(unit, 0)
+  # French plural from 2 on: "1 an", "1,5 an", "2 ans". Abbreviations (h, j) and "mois" do not change.
+  def unit_label
+    label = UNITS.dig(unit, 0)
+    quantity.to_d.abs >= 2 && %w[ unit year ].include?(unit) ? "#{label}s" : label
+  end
 
   def unit_code = UNITS.dig(unit, 1)
 
