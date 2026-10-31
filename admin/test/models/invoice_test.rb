@@ -81,9 +81,43 @@ class InvoiceTest < ActiveSupport::TestCase
     assert_equal "pdf", document[:attachments].first[:id]
   end
 
+  test "units take the French plural from two on" do
+    assert_equal "an", InvoiceLine.new(unit: "year", quantity: 1.5).unit_label
+    assert_equal "ans", InvoiceLine.new(unit: "year", quantity: 2).unit_label
+    assert_equal "pièces", InvoiceLine.new(unit: "unit", quantity: 3).unit_label
+    assert_equal "mois", InvoiceLine.new(unit: "month", quantity: 6).unit_label
+    assert_equal "h", InvoiceLine.new(unit: "hour", quantity: 7.5).unit_label
+  end
+
   test "pdf renders" do
     invoice = draft
     invoice.issue!
     assert InvoicePdf.new(invoice).render.start_with?("%PDF")
+  end
+
+  test "a draft pdf renders and announces what issuing will add instead of leaving blanks" do
+    invoice = draft
+    pdf = InvoicePdf.new(invoice)
+    assert pdf.render.start_with?("%PDF")
+    assert_match "seront attribués à l'émission", pdf.send(:payment_sentence)
+    assert_nil pdf.send(:payment_qr)
+  end
+
+  test "an issued invoice pdf gives the due date, the structured communication and a payment QR code" do
+    invoice = draft
+    invoice.issue!(on: Date.new(2026, 10, 24))
+    pdf = InvoicePdf.new(invoice)
+    assert_match "avant le <b>23/11/2026</b>", pdf.send(:payment_sentence)
+    assert_match "communication structurée", pdf.send(:payment_sentence)
+    assert_kind_of RQRCode::QRCode, pdf.send(:payment_qr)
+  end
+
+  test "a credit note pdf renders without payment details" do
+    invoice = draft
+    invoice.issue!
+    credit_note = invoice.build_credit_note
+    credit_note.save!
+    credit_note.issue!
+    assert InvoicePdf.new(credit_note).render.start_with?("%PDF")
   end
 end
