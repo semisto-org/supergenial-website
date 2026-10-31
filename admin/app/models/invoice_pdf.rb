@@ -138,7 +138,6 @@ class InvoicePdf
       if @invoice.invoice?
         items << [ "Échéance", @invoice.due_on ? date(@invoice.due_on) : "#{CompanyProfile.current.payment_terms_days} jours après émission" ]
       end
-      items << [ "Communication", @invoice.structured_reference ] if @invoice.invoice? && @invoice.structured_reference.present?
       items << [ "Facture créditée", "#{@invoice.credited_invoice.number} du #{date(@invoice.credited_invoice.issued_on)}" ] if @invoice.credited_invoice
       items << [ "Projet", @invoice.project.name ] if @invoice.project
       field_rows(pdf, items, width: pdf.bounds.width, size: 10, font: "Inter", min_width: 96)
