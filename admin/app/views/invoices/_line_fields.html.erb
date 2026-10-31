@@ -1,0 +1,12 @@
+<tr data-invoice-lines-target="line">
+  <td><%= line.hidden_field :id if line.object.persisted? %><%= line.hidden_field :position %><%= line.text_field :description, "aria-label": "Description" %></td>
+  <td><%= line.number_field :quantity, step: "0.01", "aria-label": "Quantité" %></td>
+  <td><%= line.select :unit, InvoiceLine::UNITS.map { |key, (label, _)| [ label, key ] }, {}, "aria-label": "Unité" %></td>
+  <td><%= line.number_field :unit_price, step: "0.01", "aria-label": "Prix unitaire" %></td>
+  <td><%= line.select :vat_rate, VatRegime::RATES.map { |rate| [ "#{rate} %", rate ] }, { selected: line.object.vat_rate.to_i }, "aria-label": "Taux de TVA" %></td>
+  <td class="nowrap"><%= line.date_field :period_start, "aria-label": "Début" %> <%= line.date_field :period_end, "aria-label": "Fin" %></td>
+  <td>
+    <%= line.hidden_field :_destroy, value: false, data: { invoice_lines_target: "destroy" } %>
+    <button type="button" class="button button--ghost button--small" data-action="invoice-lines#remove" title="Retirer cette ligne" aria-label="Retirer cette ligne">✕</button>
+  </td>
+</tr>

@@ -216,6 +216,15 @@ fr:
         vat_rate: TVA (%)
         period_start: Début de période
         period_end: Fin de période
+      invoice/lines:
+        description: Description de ligne
+        quantity: Quantité de ligne
+        unit: Unité de ligne
+        unit_price: Prix unitaire de ligne
+        vat_rate: TVA de ligne
+        period_start: Début de période de ligne
+        period_end: Fin de période de ligne
+        base: Ligne
       company_profile:
         vat_tracked_since: TVA suivie depuis le
         legal_name: Dénomination

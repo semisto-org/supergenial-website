@@ -24,7 +24,9 @@ class Invoice < ApplicationRecord
   # The original PDF of a document issued outside the admin (OkiOki).
   has_one_attached :document
 
-  accepts_nested_attributes_for :lines, allow_destroy: true, reject_if: ->(attributes) { attributes[:description].blank? && attributes[:unit_price].blank? }
+  # A new line without description is a blank row of the form: its quantity, price and VAT keep their defaults, so only the
+  # description tells it apart. A saved line emptied by mistake still fails validation instead of silently vanishing.
+  accepts_nested_attributes_for :lines, allow_destroy: true, reject_if: ->(attributes) { attributes[:id].blank? && attributes[:description].blank? }
 
   before_validation :compute_totals, if: -> { admin? && !locked? }
   before_destroy :forbid_destroying_issued, prepend: true
