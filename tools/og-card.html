@@ -1,37 +1,31 @@
 <!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..600;1,400..600&family=Inter:wght@400..700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* Charte Semisto (papier beige, EB Garamond, Inter) avec le mauve de Super Génial
-   en couleur principale. */
+/* Social card in the Super Génial design system: cream paper, black ink,
+   one touch of violet, Geist and Geist Mono, the smiling cursor. */
 * { margin:0; padding:0; box-sizing:border-box }
-body { width:1200px; height:630px; overflow:hidden;
-  font-family:'Inter',-apple-system,sans-serif; background:#f7f3ea; color:#1a1a1a;
-  display:flex; align-items:center; position:relative }
-body::after { content:""; position:absolute; inset:0; pointer-events:none; opacity:.04;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E") }
-.bar { position:absolute; left:0; top:0; bottom:0; width:14px;
-  background:#7b4fc9 }
-.txt { padding:0 0 0 88px; width:680px }
-.brand { display:flex; margin-bottom:34px }
-.brand img { display:block; height:36px; width:auto }
-.by { font-size:18px; font-weight:500; color:#595959 }
-h1 em { font-style:italic; color:#7b4fc9 }
-h1 { font-family:'EB Garamond',Georgia,serif; font-size:76px; font-weight:500; color:#2a1a48;
-  letter-spacing:-.015em; line-height:1.02; text-wrap:balance }
-p { font-size:26px; color:#595959; margin-top:26px; line-height:1.4; text-wrap:pretty }
-.url { position:absolute; left:88px; bottom:54px; font-size:19px; color:#595959; font-weight:500 }
-.url b { color:#7b4fc9; font-weight:600 }
-.illu { position:absolute; right:52px; top:50%; transform:translateY(-50%); width:420px; height:420px }
+body { width:1200px; height:630px; overflow:hidden; position:relative;
+  font-family:'Geist',system-ui,sans-serif; background:#f7f3ea; color:#1a1a1a;
+  -webkit-font-smoothing:antialiased }
+.txt { position:absolute; left:80px; top:72px; width:700px }
+.brand { display:block; height:34px; aspect-ratio:92.32/13.29; background:#1a1a1a;
+  -webkit-mask:url(/assets/brand/supergenial-logo.svg) left center/contain no-repeat;
+  mask:url(/assets/brand/supergenial-logo.svg) left center/contain no-repeat; margin-bottom:56px }
+h1 { font-size:68px; font-weight:700; letter-spacing:-.035em; line-height:1.02; text-wrap:balance }
+h1::after { content:""; display:inline-block; width:.5em; height:.72em; margin-left:.08em; vertical-align:-.02em; background:#1a1a1a }
+p { font-size:26px; line-height:36px; color:#5e5a53; margin-top:28px; text-wrap:pretty }
+.url { position:absolute; left:80px; right:80px; bottom:0; height:72px; display:flex; align-items:center;
+  border-top:1px solid #ddd6c8; font:500 16px/20px 'Geist Mono',monospace; letter-spacing:.08em; text-transform:uppercase; color:#5e5a53 }
+.illu { position:absolute; right:64px; top:72px; width:380px; height:380px; object-fit:contain; mix-blend-mode:multiply }
 </style></head><body>
-<div class="bar"></div>
-<div class="txt"><div class="brand"><img src="/assets/brand/supergenial-logo.svg" alt="Super Génial" height="36"></div>
+<div class="txt"><span class="brand" aria-label="Super Génial"></span>
 <h1 id="t"></h1><p id="s"></p></div>
 <img class="illu" id="i" alt="">
-<div class="url" id="u">supergenial.be <b>·</b> outils internes et agents IA sur mesure</div>
+<div class="url" id="u">supergenial.be · outils internes et agents IA sur mesure</div>
 <script>
 const p=new URLSearchParams(location.search);
-document.getElementById('t').innerHTML=(p.get('t')||'').replace(/[<>&]/g,'').replace(/\*([^*]+)\*/g,'<em>$1</em>');
-if(p.get('u')) document.getElementById('u').innerHTML='supergenial.be <b>·</b> '+p.get('u').replace(/[<>&]/g,'');
+document.getElementById('t').textContent=(p.get('t')||'').replace(/\*/g,'');
+if(p.get('u')) document.getElementById('u').textContent='supergenial.be · '+p.get('u');
 document.getElementById('s').textContent=p.get('s')||'';
 const img=document.getElementById('i');
 if(p.get('i')) img.src=p.get('i'); else img.remove();

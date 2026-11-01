@@ -51,7 +51,7 @@ const FR = `
                     <h1 class="display display--page">Deux prix fixes. <em>Le reste, sur devis, annoncé d'avance.</em></h1>
                     <p class="lede">Je ne vends pas des heures, je vends des résultats. Le diagnostic et les abonnements ont un prix affiché&nbsp;; chaque construction reçoit un devis à prix fixe, écrit avant de commencer. Aucun compteur d'heures, aucune surprise sur la facture.</p>
                 </div>
-                <img class="illu-side" src="/assets/illustrations/sg-tarifs.webp" decoding="async" alt="Illustration au trait : trois pots de taille croissante, d'une pousse à un arbuste chargé d'applications, et un petit robot qui les arrose" width="800" height="800">
+                <img class="illu-side" src="/assets/illustrations/tarifs-escalier.webp" decoding="async" alt="Illustration au trait : un escalier qui mène à un petit drapeau" width="800" height="800">
             </div>
         </section>
 
@@ -144,7 +144,7 @@ const EN = `
                     <h1 class="display display--page">Two fixed prices. <em>The rest on quote, agreed upfront.</em></h1>
                     <p class="lede">I don't sell hours, I sell results. The assessment and the subscriptions have a published price; each build gets a fixed-price quote, written before work starts. No hour counter, no surprise on the invoice.</p>
                 </div>
-                <img class="illu-side" src="/assets/illustrations/sg-tarifs.webp" decoding="async" alt="Line drawing: three pots of growing size, from a seedling to a small tree full of apps, watered by a small robot" width="800" height="800">
+                <img class="illu-side" src="/assets/illustrations/tarifs-escalier.webp" decoding="async" alt="Line drawing: a staircase leading to a small flag" width="800" height="800">
             </div>
         </section>
 

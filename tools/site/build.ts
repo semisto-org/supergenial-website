@@ -53,7 +53,7 @@ const notFound = page({
                         <a href="/realisations/" class="link-arrow plain">Les réalisations →</a>
                     </div>
                 </div>
-                <img class="illu-side" src="/assets/illustrations/sg-404.webp" decoding="async" alt="Illustration au trait : un petit robot perplexe, une carte à l'envers, devant un pot vide" width="800" height="800">
+                <img class="illu-side illu-avatar" src="/assets/brand/supergenial-avatar.svg" decoding="async" alt="L'avatar de Super Génial : un bloc noir qui sourit" width="512" height="512">
             </div>
         </section>`,
 }).replace("</title>", "</title>\n    <meta name=\"robots\" content=\"noindex\">");
