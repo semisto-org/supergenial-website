@@ -12,9 +12,6 @@ import { nav, footer, sectionOf, NAV_JS, PLAUSIBLE, fingerprintAssets } from "..
 
 const ROOT = dirname(dirname(new URL(import.meta.url).pathname)); // repo root
 
-const FONTS_OLD = "family=EB+Garamond:wght@400..600&";
-const FONTS_NEW = "family=EB+Garamond:ital,wght@0,400..600;1,400..600&";
-
 const files = execSync(`find . \\( -name index.html -o -name 404.html \\) -not -path "./node_modules/*" -not -path "./tools/*"`, { cwd: ROOT })
   .toString()
   .trim()
@@ -59,7 +56,6 @@ for (const rel of files) {
   }
 
   if (!html.includes("stats.semisto.org")) html = html.replace("</head>", `    ${PLAUSIBLE}\n</head>`);
-  html = html.replace(FONTS_OLD, FONTS_NEW);
   html = fingerprintAssets(html);
 
   writeFileSync(file, html);
