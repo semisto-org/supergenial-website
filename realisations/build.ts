@@ -189,7 +189,7 @@ ${OPEN("fr", INDEX_ALT)}
             de la spécification à la mise en ligne, et la plupart servent d'abord mes propres structures&nbsp;:
             je construis pour moi avant de proposer aux autres.
         </p>
-        <img class="illu illu--small" src="/assets/illustrations/sg-realisations.webp" decoding="async" alt="Illustration au trait : un petit robot longe un potager où chaque plante porte un outil : agenda, panier, carte, graphique" width="800" height="800">
+        <img class="illu illu--small" src="/assets/illustrations/laptop-mug.webp" decoding="async" alt="Illustration au trait : un ordinateur portable et une tasse fumante, près d'une fenêtre" width="800" height="800">
         <div class="article-list animate delay-3">
 ${items}
         </div>

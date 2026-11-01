@@ -90,7 +90,7 @@ const FR = `
                 <div>
                     <p class="eyebrow">Pourquoi moi</p>
                     <h2 class="h-sec">Vécu, <em>puis construit.</em></h2>
-                    <img class="illu-side illu-side--left" src="/assets/illustrations/sg-diagnostic.webp" decoding="async" alt="Illustration au trait : un petit robot découvre à la loupe une pousse cachée dans une pile de tableurs" width="800" height="800">
+                    <img class="illu-side illu-side--left" src="/assets/illustrations/diagnostic-loupe.webp" decoding="async" alt="Illustration au trait : une loupe posée sur un schéma de processus" width="800" height="800">
                 </div>
                 <div class="prose">
                     <p>En vingt ans, j'ai été des deux côtés du comptoir&nbsp;: analyste-programmeur, mais aussi co-fondateur d'un magasin, d'un lieu d'accueil avec gîtes et salles, d'une association de formation, de startups et d'e-commerces. Je connais la caisse qui ne croise pas le stock, le planning des réservations qui déborde, les inscriptions gérées à la main, les devis qui traînent.</p>
@@ -191,7 +191,7 @@ const EN = `
                 <div>
                     <p class="eyebrow">Why me</p>
                     <h2 class="h-sec">Lived it, <em>then built it.</em></h2>
-                    <img class="illu-side illu-side--left" src="/assets/illustrations/sg-diagnostic.webp" decoding="async" alt="Line drawing: a small robot finds a hidden sprout in a pile of spreadsheets with a magnifying glass" width="800" height="800">
+                    <img class="illu-side illu-side--left" src="/assets/illustrations/diagnostic-loupe.webp" decoding="async" alt="Line drawing: a magnifying glass over a process diagram" width="800" height="800">
                 </div>
                 <div class="prose">
                     <p>Over twenty years I have been on both sides of the counter: analyst-programmer, but also co-founder of a shop, a guest house with venues, a training association, start-ups and online shops. I know the till that doesn't match the stock, the overflowing booking calendar, registrations handled by hand, quotes that drag on.</p>

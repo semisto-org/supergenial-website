@@ -546,3 +546,4 @@ main:not(.wide) h1 { margin-bottom: 20px; }
 
 /* A grid right after a section title gets the same breathing room as after an intro. */
 .h-sec + :is(.tiles, .timeline, .tiers, .trust, .proofs, .offer, .missions, .res-grid, .faq, .eol-table) { margin-top: 48px; }
+.illu-avatar { max-width: 280px; aspect-ratio: 1; mix-blend-mode: normal; box-shadow: 12px 12px 0 var(--violet); }

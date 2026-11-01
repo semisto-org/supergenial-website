@@ -62,7 +62,7 @@ const FR = `
                         <a ${BK("fr")} class="btn btn-primary plain">Réserver un call de 30 minutes <span class="arr">→</span></a>
                     </div>
                 </div>
-                <img class="illu-side" src="/assets/illustrations/sg-reprise.webp" decoding="async" alt="Illustration au trait : un petit robot rempote la plante fanée qui sort d'un vieil ordinateur portable" width="800" height="800">
+                <img class="illu-side" src="/assets/illustrations/maintenance-arrosoir.webp" decoding="async" alt="Illustration au trait : un arrosoir arrose une jeune plante posée sur un tabouret" width="800" height="800">
             </div>
         </section>
 
@@ -155,7 +155,7 @@ const EN = `
                         <a ${BK("en")} class="btn btn-primary plain">Book a 30-minute call <span class="arr">→</span></a>
                     </div>
                 </div>
-                <img class="illu-side" src="/assets/illustrations/sg-reprise.webp" decoding="async" alt="Line drawing: a small robot repots the wilting plant growing out of an old laptop" width="800" height="800">
+                <img class="illu-side" src="/assets/illustrations/maintenance-arrosoir.webp" decoding="async" alt="Line drawing: a watering can waters a young plant on a stool" width="800" height="800">
             </div>
         </section>
 
