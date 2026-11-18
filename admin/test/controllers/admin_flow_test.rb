@@ -9,6 +9,14 @@ class AdminFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_session_path
   end
 
+  test "clients index groups clients by status, active first" do
+    clients(:silvea).update!(status: "prospect")
+    clients(:lux).update!(status: "ancien")
+    get clients_path
+    assert_response :success
+    assert_equal [ "Actif 1", "Prospect 1", "Ancien client 1" ], css_select(".card h2").map { |h2| h2.text.squish }
+  end
+
   test "sidebar highlights the current section" do
     get client_path(clients(:dici))
     assert_select ".sidebar a[aria-current=page]", text: "Clients"

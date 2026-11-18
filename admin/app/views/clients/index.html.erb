@@ -9,20 +9,22 @@
   <% end %>
 </nav>
 
-<div class="card">
-  <table>
-    <thead><tr><th>Client</th><th>Contact principal</th><th>Statut</th><th class="num">À facturer</th></tr></thead>
-    <tbody>
-      <% @clients.each do |client| %>
-        <% contact = client.primary_contact %>
-        <tr>
-          <td><%= link_to client, client %></td>
-          <td><%= contact ? safe_join([ contact.full_name, (mail_to(contact.email) if contact.email.present?) ].compact, " · ") : tag.span("–", class: "muted") %></td>
-          <td><%= badge client.status_label, client.status %></td>
-          <td class="num"><%= hours(client.unbilled_hours) %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-  <% if @clients.empty? %><%= empty_state "Aucun client.", hint: "Un client regroupe ses contacts, projets, contrats et factures.", action: link_to("+ Client", new_client_path, class: "button button--ghost") %><% end %>
-</div>
+<% @groups.each do |status, clients| %>
+  <div class="card">
+    <h2><%= Client::STATUSES.fetch(status, status) %> <span class="muted"><%= clients.size %></span></h2>
+    <table>
+      <thead><tr><th>Client</th><th>Contact principal</th><th class="num">À facturer</th></tr></thead>
+      <tbody>
+        <% clients.each do |client| %>
+          <% contact = client.primary_contact %>
+          <tr>
+            <td><%= link_to client, client %></td>
+            <td><%= contact ? safe_join([ contact.full_name, (mail_to(contact.email) if contact.email.present?) ].compact, " · ") : tag.span("–", class: "muted") %></td>
+            <td class="num"><%= hours(client.unbilled_hours) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>
+<% if @clients.empty? %><%= empty_state "Aucun client.", hint: "Un client regroupe ses contacts, projets, contrats et factures.", action: link_to("+ Client", new_client_path, class: "button button--ghost") %><% end %>
