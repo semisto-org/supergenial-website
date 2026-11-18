@@ -8,6 +8,7 @@ Rails.application.routes.draw do
 
   resources :clients do
     post :verify_peppol, on: :member
+    post :merge, on: :member
     resources :contacts, only: %i[ new create edit update destroy ]
   end
   resources :projects

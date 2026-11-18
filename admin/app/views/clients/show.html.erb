@@ -118,6 +118,21 @@
   <div class="card"><h2>Notes</h2><%= simple_format(@client.notes) %></div>
 <% end %>
 
+<% if can_write? %>
+  <details class="card">
+    <summary>Fusionner un doublon dans ce client</summary>
+    <p class="muted small">Contacts, projets, prestations, contrats, packs, factures et commentaires du doublon passent sur <%= @client %>,
+      ses coordonnées complètent les champs vides, puis le doublon est supprimé.</p>
+    <%= form_with url: merge_client_path(@client), class: "inline-form",
+          data: { turbo_confirm: "Fusionner ce client dans #{@client} ? Le doublon sera supprimé. C'est définitif." } do |f| %>
+      <%= f.label :duplicate_id, "Doublon" %>
+      <%= f.select :duplicate_id, Client.alphabetical.where.not(id: @client.id).map { |client| [ "#{client} (n° #{client.id})", client.id ] },
+            include_blank: "Choisir…" %>
+      <%= f.submit "Fusionner", class: "button button--small" %>
+    <% end %>
+  </details>
+<% end %>
+
 <% if @client.invoices.any? %>
   <p class="muted small">Ce client a des factures : il ne peut pas être supprimé. Passe-le en « Ancien client ».</p>
 <% else %>
