@@ -67,7 +67,7 @@ class ClientsController < ApplicationController
     @client.update!(peppol_reachable: result["isValid"], peppol_checked_at: Time.current, peppol_id: result["isValid"] ? address : @client.peppol_id)
     redirect_to @client, notice: result["isValid"] ? "#{address} reçoit les factures Peppol." : "#{address} n'est pas joignable sur Peppol."
   rescue Recommand::Error, KeyError => error
-    redirect_to @client, alert: error.is_a?(KeyError) ? "Recommand n'est pas configuré (variables RECOMMAND_* dans Coolify)." : error.message
+    redirect_to @client, alert: error.is_a?(KeyError) ? "Recommand n'est pas configuré (#{Recommand::Client.missing_env.presence&.join(", ") || "variables RECOMMAND_*"} manquante(s) dans Coolify)." : error.message
   end
 
   private
