@@ -66,7 +66,7 @@ class InvoicesController < ApplicationController
     channel = response["sentOverPeppol"] ? "par Peppol" : "par e-mail (#{Array(response['emailRecipients']).join(', ')})"
     redirect_to @invoice, notice: "#{@invoice.kind_label} #{@invoice.number} envoyée #{channel}."
   rescue InvoiceDelivery::Refused, Recommand::Error, KeyError => error
-    message = error.is_a?(KeyError) ? "Recommand n'est pas configuré (variables RECOMMAND_* dans Coolify)." : error.message
+    message = error.is_a?(KeyError) ? "Recommand n'est pas configuré (#{Recommand::Client.missing_env.presence&.join(", ") || "variables RECOMMAND_*"} manquante(s) dans Coolify)." : error.message
     redirect_to @invoice, alert: message
   end
 

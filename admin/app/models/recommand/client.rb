@@ -1,17 +1,30 @@
 require "net/http"
 
 # Minimal client for the Recommand Peppol API (https://docs.recommand.eu).
-# Runtime variables (Coolify): RECOMMAND_API_KEY, RECOMMAND_API_SECRET, RECOMMAND_COMPANY_ID,
-# RECOMMAND_BASE_URL (optional). Playground and production differ only by their keys.
+# Runtime variables (Coolify): RECOMMAND_API_KEY, RECOMMAND_API_SECRET (or RECOMMAND_SECRET),
+# RECOMMAND_COMPANY_ID, RECOMMAND_BASE_URL (optional). Playground and production differ only by their keys.
 module Recommand
   class Client
     BASE_URL = "https://app.recommand.eu"
-    REQUIRED_ENV = %w[ RECOMMAND_API_KEY RECOMMAND_API_SECRET RECOMMAND_COMPANY_ID ].freeze
+    # Each setting with the variable names it may be stored under, preferred name first.
+    SETTINGS = {
+      key: %w[ RECOMMAND_API_KEY ],
+      secret: %w[ RECOMMAND_API_SECRET RECOMMAND_SECRET ],
+      company_id: %w[ RECOMMAND_COMPANY_ID ]
+    }.freeze
 
-    def self.configured?(env = ENV) = REQUIRED_ENV.all? { |name| env[name].present? }
+    def self.configured?(env = ENV) = missing_env(env).empty?
+
+    # Preferred names of the settings that are not set.
+    def self.missing_env(env = ENV) = SETTINGS.values.reject { |names| lookup(env, names) }.map(&:first)
+
+    def self.lookup(env, names) = names.lazy.map { |name| env[name].presence }.find(&:itself)
 
     def initialize(env: ENV)
-      @key, @secret, @company_id = env.fetch("RECOMMAND_API_KEY"), env.fetch("RECOMMAND_API_SECRET"), env.fetch("RECOMMAND_COMPANY_ID")
+      missing = self.class.missing_env(env)
+      raise KeyError, "Missing #{missing.join(", ")}" if missing.any?
+
+      @key, @secret, @company_id = SETTINGS.values.map { |names| self.class.lookup(env, names) }
       @base_url = env.fetch("RECOMMAND_BASE_URL", BASE_URL)
     end
 
