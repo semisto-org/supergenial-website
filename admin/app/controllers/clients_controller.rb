@@ -5,6 +5,8 @@ class ClientsController < ApplicationController
     @status = params[:status].presence_in(Client::STATUSES.keys)
     @clients = Client.alphabetical.includes(:contacts)
     @clients = @clients.where(status: @status) if @status
+    # One section per status, in the order statuses are declared: active clients first.
+    @groups = @clients.group_by(&:status).sort_by { |status, _| Client::STATUSES.keys.index(status) || Client::STATUSES.size }
   end
 
   def show
