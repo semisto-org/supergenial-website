@@ -76,6 +76,17 @@ class McpTest < ActionDispatch::IntegrationTest
     assert Client.exists?(clients(:dici).id)
   end
 
+  test "merge_clients moves a duplicate into the kept client" do
+    token = issue_token
+    result = call_tool(token, "merge_clients", kept_id: clients(:silvea).id, duplicate_id: clients(:dici).id)
+    assert_equal clients(:dici).id, result.dig("structuredContent", "merged", "deleted_client", "id")
+    assert_not Client.exists?(clients(:dici).id)
+    assert AuditEvent.where(actor_kind: "claude_mcp", auditable_type: "Client", action: "destroy").exists?
+
+    result = call_tool(token, "merge_clients", kept_id: clients(:silvea).id, duplicate_id: clients(:silvea).id)
+    assert result["isError"]
+  end
+
   test "draft invoices are written line by line, then deleted" do
     token = issue_token
 

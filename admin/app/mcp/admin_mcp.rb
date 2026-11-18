@@ -17,7 +17,7 @@ module AdminMcp
 
   DOMAINS = {
     overview: [ Overview::GetDashboard ],
-    clients: [ Clients::SearchClients, Clients::GetClient, Clients::SaveClient, Clients::DeleteClient ],
+    clients: [ Clients::SearchClients, Clients::GetClient, Clients::SaveClient, Clients::MergeClients, Clients::DeleteClient ],
     contacts: [ Contacts::SaveContact, Contacts::DeleteContact ],
     projects: [ Projects::ListProjects, Projects::GetProject, Projects::SaveProject, Projects::DeleteProject ],
     hourly_rates: [ HourlyRates::ListHourlyRates, HourlyRates::AddHourlyRate, HourlyRates::DeleteHourlyRate ],

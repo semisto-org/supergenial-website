@@ -24,6 +24,9 @@ class Invoice < ApplicationRecord
   # The original PDF of a document issued outside the admin (OkiOki).
   has_one_attached :document
 
+  # Set by ClientMerge: an issued document may move to the client it was merged into (its buyer snapshot stays).
+  attr_accessor :reassigning_client
+
   # A new line without description is a blank row of the form: its quantity, price and VAT keep their defaults, so only the
   # description tells it apart. A saved line emptied by mistake still fails validation instead of silently vanishing.
   accepts_nested_attributes_for :lines, allow_destroy: true, reject_if: ->(attributes) { attributes[:id].blank? && attributes[:description].blank? }
@@ -109,7 +112,7 @@ class Invoice < ApplicationRecord
 
     def issued_documents_are_immutable
       return unless locked?
-      changed_fields = changed - MUTABLE_WHEN_ISSUED
+      changed_fields = changed - MUTABLE_WHEN_ISSUED - (reassigning_client ? %w[ client_id ] : [])
       errors.add(:base, "Une facture émise ne se modifie plus : crée une note de crédit.") if changed_fields.any?
     end
 

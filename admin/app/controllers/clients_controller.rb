@@ -1,5 +1,5 @@
 class ClientsController < ApplicationController
-  before_action :set_client, only: %i[ show edit update destroy verify_peppol ]
+  before_action :set_client, only: %i[ show edit update destroy verify_peppol merge ]
 
   def index
     @status = params[:status].presence_in(Client::STATUSES.keys)
@@ -45,6 +45,17 @@ class ClientsController < ApplicationController
         alert: "Impossible de supprimer #{@client} : #{helpers.pluralize(@client.invoices.count, "facture")} y #{@client.invoices.many? ? "sont liées" : "est liée"}. " \
                "Passe-le en « Ancien client », ou supprime d'abord ses factures."
     end
+  end
+
+  # Moves everything a duplicate owns into this client, then deletes the duplicate.
+  def merge
+    duplicate = Client.where.not(id: @client.id).find_by(id: params[:duplicate_id])
+    return redirect_to(@client, alert: "Choisis le client à fusionner.") unless duplicate
+
+    ClientMerge.new(kept: @client, duplicate:).merge!
+    redirect_to @client, notice: "#{duplicate} a été fusionné dans #{@client}.", status: :see_other
+  rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotDestroyed => error
+    redirect_to @client, alert: "Fusion impossible : #{error.record.errors.full_messages.to_sentence.presence || error.message}", status: :see_other
   end
 
   # Looks the client up in the Peppol network through Recommand and keeps the result.

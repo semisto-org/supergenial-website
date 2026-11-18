@@ -136,6 +136,18 @@ class AdminFlowTest < ActionDispatch::IntegrationTest
     assert_equal 390, contract.current_amount
   end
 
+  test "merge a duplicate client from the client page" do
+    get client_path(clients(:silvea))
+    assert_select "form[action=?]", merge_client_path(clients(:silvea))
+
+    post merge_client_path(clients(:silvea)), params: { duplicate_id: clients(:dici).id }
+    assert_redirected_to client_path(clients(:silvea))
+    assert_not Client.exists?(clients(:dici).id)
+
+    post merge_client_path(clients(:silvea)), params: { duplicate_id: clients(:silvea).id }
+    assert_equal "Choisis le client à fusionner.", flash[:alert]
+  end
+
   test "delete a client without invoices, with everything it owns" do
     client = clients(:dici)
     assert_difference -> { Client.count } => -1, -> { TimeEntry.count } => -2, -> { Project.count } => -client.projects.count do
