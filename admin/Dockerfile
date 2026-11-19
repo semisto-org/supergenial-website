@@ -7,8 +7,9 @@
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version
 ARG RUBY_VERSION=3.3.14
-# Image tirée via mirror.gcr.io : Docker Hub rate-limite les pulls anonymes sur l'IP partagée du VPS Semisto.
-FROM mirror.gcr.io/library/ruby:$RUBY_VERSION-slim AS base
+# Pulled from the AWS ECR Public mirror of Docker official images: Docker Hub and mirror.gcr.io
+# both rate-limit anonymous pulls from the shared Semisto VPS IP (429 on new tags).
+FROM public.ecr.aws/docker/library/ruby:$RUBY_VERSION-slim AS base
 
 # Rails app lives here
 WORKDIR /rails
