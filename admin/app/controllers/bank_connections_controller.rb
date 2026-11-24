@@ -11,6 +11,8 @@ class BankConnectionsController < ApplicationController
     return redirect_to(bank_connections_path, alert: "Enable Banking n'est pas configuré (variables ENABLE_BANKING_* dans Coolify).") unless EnableBanking::Client.configured?
 
     client = EnableBanking::Client.new
+    # Earlier attempts that never came back from the bank would stay "pending" forever.
+    BankConnection.pending.where(session_id: nil).destroy_all
     connection = BankConnection.create!(aspsp_name: params[:aspsp_name].presence || BankConnection::DEFAULT_BANK, country: "BE",
                                         psu_type: params[:psu_type].presence_in(BankConnection::PSU_TYPES.keys) || "business")
     validity = client.aspsps(connection.country).find { |aspsp| aspsp["name"] == connection.aspsp_name }&.dig("maximum_consent_validity") || 90.days.to_i

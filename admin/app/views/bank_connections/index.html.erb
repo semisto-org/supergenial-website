@@ -8,7 +8,8 @@
   <div class="card">
     <h2>Connecter un compte</h2>
     <p class="small">Tu seras envoyé chez la banque pour donner ton accord, puis ramené ici. Les comptes doivent d'abord être reliés dans le portail Enable Banking (mode restreint).</p>
-    <%= form_with url: bank_connections_path, class: "inline-form" do |f| %>
+    <%# Turbo would follow the redirect to the bank with fetch, which the browser blocks (other origin): plain submit. %>
+    <%= form_with url: bank_connections_path, class: "inline-form", data: { turbo: false } do |f| %>
       <%= f.text_field :aspsp_name, value: BankConnection::DEFAULT_BANK, "aria-label": "Banque" %>
       <%= f.select :psu_type, BankConnection::PSU_TYPES.invert, {}, "aria-label": "Type d'accès" %>
       <%= f.submit "Connecter", class: "button" %>
