@@ -9,6 +9,16 @@ class BankConnectionsTest < ActionDispatch::IntegrationTest
     assert_match "ENABLE_BANKING_APPLICATION_ID", response.body
   end
 
+  test "the connect form leaves Turbo out, so the browser follows the redirect to the bank" do
+    env = { "ENABLE_BANKING_APPLICATION_ID" => "app", "ENABLE_BANKING_PRIVATE_KEY" => "key" }
+    previous = env.keys.index_with { |name| ENV[name] }
+    ENV.update(env)
+    get bank_connections_path
+    assert_select "form[action='#{bank_connections_path}'][data-turbo='false']"
+  ensure
+    ENV.update(previous)
+  end
+
   test "a refused consent is reported" do
     connection = BankConnection.create!(aspsp_name: "Belfius", country: "BE")
     get callback_bank_connections_path(state: connection.state, error: "access_denied")
