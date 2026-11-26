@@ -65,16 +65,40 @@ class TimeReportPdf
 
     def show_project? = @report.project.nil? && @report.entries.any?(&:project)
 
+    # Over several months, each month opens with its name and subtotal; the rows below stay in date order.
     def entries(pdf)
       header = columns.map { |label, _| caps(label, color: INK) }
-      rows = @report.entries.map do |entry|
-        description = escape(entry.description.presence || "Prestation")
-        description += "  #{ink(MUTED)}· #{escape(note(entry))}</color>" if note(entry)
-        [ date(entry.performed_on), (escape(entry.project&.name) if show_project?), description, hours(entry.hours),
-          (amount_cell(entry) if @report.with_amounts?) ].compact
+      months = @report.entries.group_by { |entry| entry.performed_on.beginning_of_month }
+      rows = months.flat_map do |month, entries|
+        next entries.map { |entry| entry_row(entry) } if months.one?
+        [ month_row(month, entries), *entries.map { |entry| entry_row(entry) } ]
       end
+      month_rows = rows.each_index.select { |index| rows[index].first.is_a?(Hash) }.map { |index| index + 1 }
       compact_table(pdf, [ header, *rows ], widths: columns.each_with_index.filter_map { |(_, width), index| [ index, width ] if width }.to_h,
-                    right_from: columns.index { |label, _| label == "Durée" })
+                    right_from: columns.index { |label, _| label == "Durée" }) do |table|
+        month_rows.each do |index|
+          table.row(index).padding = [ index == 1 ? 6 : 12, 5, 3, 5 ]
+          table.row(index).border_color = [ INK ] * 4
+          table.row(index).column(0).padding_left = 0
+          table.row(index).column(-1).padding_right = 0
+        end
+      end
+    end
+
+    def entry_row(entry)
+      description = escape(entry.description.presence || "Prestation")
+      description += "  #{ink(MUTED)}· #{escape(note(entry))}</color>" if note(entry)
+      [ date(entry.performed_on), (escape(entry.project&.name) if show_project?), description, hours(entry.hours),
+        (amount_cell(entry) if @report.with_amounts?) ].compact
+    end
+
+    # The month name spans the columns before the duration; its subtotals sit under the duration and amount.
+    def month_row(month, entries)
+      name = I18n.l(month, format: "%B %Y").capitalize
+      span = columns.index { |label, _| label == "Durée" }
+      [ { content: "<font name='Garamond' size='12'><i>#{ink(INK)}#{escape(name)}</color></i></font>", colspan: span },
+        "<b>#{ink(INK)}#{hours(entries.sum(&:hours))}</color></b>",
+        ("<b>#{ink(INK)}#{money(entries.sum { |entry| @report.amount(entry) })}</color></b>" if @report.with_amounts?) ].compact
     end
 
     # Hours that will not be billed by the hour say why, so the client is never surprised.
@@ -141,7 +165,7 @@ class TimeReportPdf
       pdf.move_cursor_to bottom
     end
 
-    def compact_table(pdf, data, right_from:, widths: {})
+    def compact_table(pdf, data, right_from:, widths: {}, &)
       last = data.first.size - 1
       pdf.table(data, header: true, width: pdf.bounds.width, column_widths: widths,
                 cell_style: { size: SIZE, padding: ROW_PADDING, borders: [ :bottom ], border_width: 0.4, border_color: [ RULE ] * 4, inline_format: true, leading: 1 }) do |table|
@@ -151,6 +175,7 @@ class TimeReportPdf
         table.column(0).padding_left = 0
         table.column(last).padding_right = 0
         table.columns(right_from..last).align = :right if right_from && right_from <= last
+        yield table if block_given?
       end
     end
 end

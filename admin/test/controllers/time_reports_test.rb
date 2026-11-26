@@ -13,6 +13,12 @@ class TimeReportsTest < ActionDispatch::IntegrationTest
     assert_includes response.headers["Content-Disposition"], "releve-heures-#{clients(:dici).name.parameterize}-2026-10-01-2026-10-31.pdf"
   end
 
+  test "a period over several months renders" do
+    clients(:dici).time_entries.create!(performed_on: "2026-09-30", hours: 1, description: "Kick-off")
+    get client_time_report_path(clients(:dici), from: "2026-09-01", to: "2026-10-31", amounts: "1")
+    assert_equal "application/pdf", response.media_type
+  end
+
   test "an empty period still renders, a reversed one goes back to the client" do
     get client_time_report_path(clients(:dici), from: "2020-01-01", to: "2020-01-31")
     assert_equal "application/pdf", response.media_type
