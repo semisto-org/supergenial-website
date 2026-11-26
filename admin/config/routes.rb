@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   resources :clients do
     post :verify_peppol, on: :member
     post :merge, on: :member
+    resource :time_report, only: :show
     resources :contacts, only: %i[ new create edit update destroy ]
   end
   resources :projects
