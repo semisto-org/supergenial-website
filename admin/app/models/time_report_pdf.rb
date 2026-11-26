@@ -1,9 +1,10 @@
-# Time statement sent to a client: the detail of the hours worked over a period, in the look of the invoices.
+# Time statement sent to a client: the detail of the hours worked over a period, in the look of the invoices
+# but set tight, so that a busy month fits on few pages (about 40 entries a page).
 class TimeReportPdf
   include PdfBranding
 
-  ROBOT = InvoicePdf::ROBOT
-  ROBOT_WIDTH = 96
+  SIZE = 8.5
+  ROW_PADDING = [ 3.5, 5 ].freeze
 
   def initialize(report)
     @report = report
@@ -16,19 +17,16 @@ class TimeReportPdf
   def render
     Prawn::Document.new(page_size: "A4", margin: MARGIN, info: { Title: title, Author: @seller["legal_name"].to_s, Creator: "Admin Super Génial" }) do |pdf|
       register_fonts(pdf)
-      pdf.font "Inter", size: 9.5
-      pdf.default_leading 1.5
+      pdf.font "Inter", size: SIZE
+      pdf.default_leading 1
       pdf.fill_color TEXT
-      header(pdf, "Relevé d'heures")
-      details(pdf)
-      parties(pdf)
+      heading(pdf)
       if @report.empty?
-        pdf.font("Garamond", style: :italic, size: 13) { pdf.text "Aucune prestation sur cette période.", color: MUTED }
+        pdf.font("Garamond", style: :italic, size: 12) { pdf.text "Aucune prestation sur cette période.", color: MUTED }
       else
         entries(pdf)
         totals(pdf)
-        project_summary(pdf)
-        packs(pdf)
+        summaries(pdf)
       end
       footer(pdf)
     end.render
@@ -41,19 +39,28 @@ class TimeReportPdf
 
     def hours(value) = "#{number(value)} h"
 
-    def details(pdf)
-      items = [ [ "Période", "#{date(@report.from)} – #{date(@report.to)}" ], [ "Date", date(Date.current) ] ]
-      items << [ "Projet", @report.project.name ] if @report.project
-      field_rows(pdf, items, width: pdf.bounds.width, size: 10, font: "Inter", min_width: 96)
-      pdf.move_down 14
-      pdf.stroke_color RULE
-      pdf.line_width 0.5
+    # Logo and title on one line, then client, period and date as a single row of fields: no address blocks,
+    # the seller identity already sits in the footer.
+    def heading(pdf)
+      top = pdf.cursor
+      logo(pdf, at: [ 0, top - 4 ], height: 20)
+      pdf.bounding_box([ pdf.bounds.width - 240, top ], width: 240) do
+        pdf.font("Garamond", style: :italic, size: 24) { pdf.text "Relevé d'heures", color: INK, align: :right }
+      end
+      pdf.move_down 8
+      pdf.stroke_color INK
+      pdf.line_width 0.75
       pdf.stroke_horizontal_rule
-      pdf.move_down 26
+      pdf.move_down 10
+      items = [ [ "Client", @report.client.name ], [ "Période", "#{date(@report.from)} – #{date(@report.to)}" ] ]
+      items << [ "Projet", @report.project.name ] if @report.project
+      items << [ "Émis le", date(Date.current) ]
+      field_rows(pdf, items, width: pdf.bounds.width, size: 9.5, font: "Inter", min_width: 80)
+      pdf.move_down 16
     end
 
     def columns
-      [ [ "Date", 62 ], ([ "Projet", 104 ] if show_project?), [ "Description", nil ], [ "Durée", 52 ], ([ "Montant HTVA", 78 ] if @report.with_amounts?) ].compact
+      [ [ "Date", 52 ], ([ "Projet", 100 ] if show_project?), [ "Description", nil ], [ "Durée", 44 ], ([ "Montant HTVA", 70 ] if @report.with_amounts?) ].compact
     end
 
     def show_project? = @report.project.nil? && @report.entries.any?(&:project)
@@ -62,91 +69,88 @@ class TimeReportPdf
       header = columns.map { |label, _| caps(label, color: INK) }
       rows = @report.entries.map do |entry|
         description = escape(entry.description.presence || "Prestation")
-        description += "\n<font size='8'>#{ink(MUTED)}#{escape(note(entry))}</color></font>" if note(entry)
+        description += "  #{ink(MUTED)}· #{escape(note(entry))}</color>" if note(entry)
         [ date(entry.performed_on), (escape(entry.project&.name) if show_project?), description, hours(entry.hours),
           (amount_cell(entry) if @report.with_amounts?) ].compact
       end
-      widths = columns.each_with_index.filter_map { |(_, width), index| [ index, width ] if width }.to_h
-      last = columns.size - 1
-      pdf.table([ header, *rows ], header: true, width: pdf.bounds.width, column_widths: widths,
-                cell_style: { size: 9.5, padding: [ 8, 6 ], borders: [ :bottom ], border_width: 0.5, border_color: [ RULE ] * 4, inline_format: true, leading: 2 }) do |table|
-        table.row(0).padding = [ 0, 6, 7, 6 ]
-        table.row(0).border_color = [ INK ] * 4
-        table.row(0).border_width = 0.75
-        table.column(0).padding_left = 0
-        table.column(last).padding_right = 0
-        table.columns((columns.index { |label, _| label == "Durée" })..last).align = :right
-      end
+      compact_table(pdf, [ header, *rows ], widths: columns.each_with_index.filter_map { |(_, width), index| [ index, width ] if width }.to_h,
+                    right_from: columns.index { |label, _| label == "Durée" })
     end
 
     # Hours that will not be billed by the hour say why, so the client is never surprised.
     def note(entry)
-      if entry.au_pack? then "Déduit du pack « #{entry.pack.label} »"
-      elsif entry.offert? then "Offert"
+      if entry.au_pack? then "pack « #{entry.pack.label} »"
+      elsif entry.offert? then "offert"
       end
     end
 
     def amount_cell(entry) = @report.billable?(entry) ? money(entry.amount) : "–"
 
+    # A single closing line under the table: details on the left, the total in large type on the right.
     def totals(pdf)
-      robot_height = ROBOT_WIDTH * 283.0 / 325
-      pdf.start_new_page if pdf.cursor < robot_height + 60
-      pdf.move_down 20
+      pdf.start_new_page if pdf.cursor < 40
+      pdf.move_down 8
       top = pdf.cursor
-      width = 214
-      pdf.image ROBOT.to_s, at: [ pdf.bounds.width - width - ROBOT_WIDTH - 26, top - 4 ], width: ROBOT_WIDTH
-      pdf.bounding_box([ pdf.bounds.width - width, top ], width:) do
-        rows = [ [ "Prestations", @report.entries.size.to_s ] ]
-        rows << [ "Dont offertes", hours(@report.offered_hours) ] if @report.offered_hours.positive?
-        rows << [ "Montant HTVA", money(@report.total_amount) ] if @report.with_amounts?
-        rows.each do |label, value|
-          pdf.float { pdf.text label, color: MUTED }
-          pdf.text value, align: :right
-          pdf.move_down 4
-        end
-        pdf.move_down 4
-        pdf.stroke_color INK
-        pdf.line_width 0.75
-        pdf.stroke_horizontal_rule
+      details = [ "#{@report.entries.size} prestations" ]
+      details << "dont #{hours(@report.offered_hours)} offertes" if @report.offered_hours.positive?
+      details << "#{money(@report.total_amount)} HTVA" if @report.with_amounts?
+      pdf.bounding_box([ 0, top ], width: pdf.bounds.width - 200) do
         pdf.move_down 8
+        pdf.text details.join("  ·  "), color: MUTED
+      end
+      pdf.bounding_box([ pdf.bounds.width - 200, top ], width: 200) do
         pdf.float do
-          pdf.move_down 10
+          pdf.move_down 9
           pdf.text caps("Total des heures", color: INK), inline_format: true
         end
-        pdf.font("Garamond", style: :bold, size: 25) { pdf.text hours(@report.total_hours), color: INK, align: :right }
+        pdf.font("Garamond", style: :bold, size: 20) { pdf.text hours(@report.total_hours), color: INK, align: :right }
       end
-      pdf.move_cursor_to [ pdf.cursor, top - robot_height - 4 ].min
     end
 
-    def project_summary(pdf)
-      return unless @report.several_projects?
-      rows = @report.project_totals.map { |project, total| [ escape(project&.name || "Sans projet"), hours(total) ] }
-      section(pdf, "Par projet", [ [ "Projet", "Durée" ], *rows ])
-    end
-
-    # Prepaid packs drawn on during the period, with their balance today.
-    def packs(pdf)
-      return if @report.packs.empty?
-      rows = @report.packs.map do |pack|
-        used = @report.entries.select { |entry| entry.pack_id == pack.id }.sum(&:hours)
-        [ escape(pack.label), hours(pack.hours), hours(used), hours(pack.remaining_hours) ]
+    # Hours per project and prepaid packs side by side, when there is something to say.
+    def summaries(pdf)
+      tables = []
+      if @report.several_projects?
+        rows = @report.project_totals.map { |project, total| [ escape(project&.name || "Sans projet"), hours(total) ] }
+        tables << [ "Par projet", [ [ "Projet", "Durée" ], *rows ] ]
       end
-      section(pdf, "Packs d'heures", [ [ "Pack", "Acheté", "Sur la période", "Solde au #{date(Date.current)}" ], *rows ])
+      if @report.packs.any?
+        rows = @report.packs.map do |pack|
+          used = @report.entries.select { |entry| entry.pack_id == pack.id }.sum(&:hours)
+          [ escape(pack.label), hours(pack.hours), hours(used), hours(pack.remaining_hours) ]
+        end
+        tables << [ "Packs d'heures", [ [ "Pack", "Acheté", "Période", "Solde au #{date(Date.current)}" ], *rows ] ]
+      end
+      return if tables.empty?
+
+      height = 40 + tables.map { |_, (_, *rows)| rows.size }.max * 16
+      pdf.start_new_page if pdf.cursor < height
+      pdf.move_down 18
+      gap = 24
+      width = tables.one? ? pdf.bounds.width : (pdf.bounds.width - gap) / 2
+      top = pdf.cursor
+      bottom = top
+      tables.each_with_index do |(heading, (labels, *rows)), index|
+        pdf.bounding_box([ index * (width + gap), top ], width:) do
+          pdf.font("Garamond", style: :italic, size: 13) { pdf.text heading, color: INK }
+          pdf.move_down 3
+          compact_table(pdf, [ labels.map { |label| caps(label, color: INK) }, *rows ], right_from: 1)
+        end
+        bottom = [ bottom, pdf.cursor ].min
+      end
+      pdf.move_cursor_to bottom
     end
 
-    def section(pdf, heading, (labels, *rows))
-      pdf.start_new_page if pdf.cursor < 60 + rows.size * 24
-      pdf.move_down 26
-      pdf.font("Garamond", style: :italic, size: 17) { pdf.text heading, color: INK }
-      pdf.move_down 6
-      pdf.table([ labels.map { |label| caps(label, color: INK) }, *rows ], header: true, width: pdf.bounds.width,
-                cell_style: { size: 9.5, padding: [ 7, 6 ], borders: [ :bottom ], border_width: 0.5, border_color: [ RULE ] * 4, inline_format: true }) do |table|
-        table.row(0).padding = [ 0, 6, 7, 6 ]
+    def compact_table(pdf, data, right_from:, widths: {})
+      last = data.first.size - 1
+      pdf.table(data, header: true, width: pdf.bounds.width, column_widths: widths,
+                cell_style: { size: SIZE, padding: ROW_PADDING, borders: [ :bottom ], border_width: 0.4, border_color: [ RULE ] * 4, inline_format: true, leading: 1 }) do |table|
+        table.row(0).padding = [ 0, 5, 5, 5 ]
         table.row(0).border_color = [ INK ] * 4
         table.row(0).border_width = 0.75
         table.column(0).padding_left = 0
-        table.column(labels.size - 1).padding_right = 0
-        table.columns(1..(labels.size - 1)).align = :right if labels.size > 1
+        table.column(last).padding_right = 0
+        table.columns(right_from..last).align = :right if right_from && right_from <= last
       end
     end
 end
