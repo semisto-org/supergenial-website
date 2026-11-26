@@ -60,7 +60,7 @@ class TimeReportPdf
     end
 
     def columns
-      [ [ "Date", 52 ], ([ "Projet", 100 ] if show_project?), [ "Description", nil ], [ "Durée", 44 ], ([ "Montant HTVA", 70 ] if @report.with_amounts?) ].compact
+      [ [ "Date", 64 ], ([ "Projet", 100 ] if show_project?), [ "Description", nil ], [ "Durée", 44 ], ([ "Montant HTVA", 70 ] if @report.with_amounts?) ].compact
     end
 
     def show_project? = @report.project.nil? && @report.entries.any?(&:project)
