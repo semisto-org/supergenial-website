@@ -56,6 +56,14 @@ class McpTest < ActionDispatch::IntegrationTest
     assert TimeEntry.find(entry_id).facture?
   end
 
+  test "time report tool totals the period and links the pdf" do
+    result = call_tool(issue_token, "get_time_report", client_id: clients(:dici).id, from: "2026-10-01", to: "2026-10-31")
+    report = result.fetch("structuredContent")
+    assert_equal 3.5, report["total_hours"]
+    assert_equal 2, report["time_entries"].size
+    assert_includes report["pdf_url"], "/clients/#{clients(:dici).id}/time_report?from=2026-10-01&to=2026-10-31"
+  end
+
   test "changes made through Claude are recorded in the audit log" do
     token = issue_token
     call_tool(token, "save_client", id: clients(:dici).id, notes: "Via Claude")

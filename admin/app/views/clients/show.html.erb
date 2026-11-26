@@ -95,6 +95,19 @@
     <%= link_to "Tout voir", time_entries_path(client_id: @client.id, status: "") %>
   </header>
   <%= render "time_entries/table", time_entries: @time_entries, show_client: false %>
+  <footer class="card-footer">
+    <% report_from, report_to = TimeReport.default_period %>
+    <%= form_with url: client_time_report_path(@client), method: :get, class: "inline-form", data: { turbo: false }, html: { target: "_blank" } do |f| %>
+      <strong>Relevé d'heures</strong>
+      <%= f.date_field :from, value: report_from, required: true, "aria-label": "Du" %>
+      <%= f.date_field :to, value: report_to, required: true, "aria-label": "Au" %>
+      <% if @client.projects.any? %>
+        <%= f.select :project_id, @client.projects.order(:name).map { |project| [ project.name, project.id ] }, { include_blank: "Tous les projets" }, "aria-label": "Projet" %>
+      <% end %>
+      <label class="small"><%= f.check_box :amounts, {}, "1", nil %> montants</label>
+      <%= f.submit "PDF", class: "button button--small", name: nil %>
+    <% end %>
+  </footer>
 </div>
 
 <div class="card">
