@@ -6,7 +6,7 @@ Le code source est remis au client (GitHub) ; les applications sont hébergées 
 
 ## Offre
 - [Diagnostic IA](https://www.supergenial.be/diagnostic-ia/) : deux semaines, prix fixe 3 500 € HTVA, interviews, inventaire des tableurs et des abonnements, top 3 des opportunités chiffrées sur cinq ans ; déduit si une construction suit dans les 90 jours.
-- [Tarifs](https://www.supergenial.be/tarifs/) : construction sur mesure sur devis à prix fixe ; abonnements Essentiel 390 €, Évolution 890 €, Partenaire 1 890 € par mois HTVA, sans engagement. Jamais à l'heure.
+- [Tarifs](https://www.supergenial.be/tarifs/) : construction sur mesure sur devis à prix fixe ; maintenance 300 € par an ; abonnements Évolution 890 € et Partenaire 1 890 € par mois HTVA, sans engagement. Jamais à l'heure.
 - [Reprise d'application](https://www.supergenial.be/maintenance/) : reprise, documentation et mise à niveau par paliers testés de toute application web existante (Ruby on Rails, PHP, Node, Python…), audit à prix fixe annoncé d'avance.
 - [Réalisations](https://www.supergenial.be/realisations/) : études de cas présentées par problème métier.
 
