@@ -28,7 +28,7 @@ Les services tiers (logiciels, API, modèles d'IA) sont refacturés au tarif con
 Super Génial livre les fonctionnalités de la spécification écrite ; pour le reste (performances, disponibilité, résultats de l'IA), il est tenu d'une obligation de moyens. Les délais sont indicatifs, sauf délai impératif écrit. Le Client fournit à temps informations, accès et validations ; son retard décale le planning.
 
 ## 9. Livraison et réception
-Après chaque livraison, le Client signale par écrit les non-conformités à la spécification dans les 10 jours ouvrables ; à défaut, ou dès l'usage en production, la livraison est acceptée. Ces non-conformités, et les anomalies signalées dans les 30 jours suivant l'acceptation, sont corrigées sans frais.
+Après chaque livraison, le Client signale par écrit les non-conformités à la spécification dans les 10 jours ouvrables ; à défaut, ou dès l'usage en production, la livraison est acceptée. Ces non-conformités, et les anomalies signalées dans les 3 mois suivant l'acceptation (garantie), sont corrigées sans frais.
 
 ## 10. Propriété intellectuelle
 Au paiement complet, Super Génial cède au Client les droits patrimoniaux sur le code et la documentation développés spécifiquement pour lui (reproduction, adaptation, distribution, communication au public), pour le monde entier et la durée des droits, dans la mesure où ils existent, une partie du code pouvant être générée par IA. Le code est remis dans un dépôt accessible au Client.
