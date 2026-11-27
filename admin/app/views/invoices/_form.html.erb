@@ -14,8 +14,10 @@
 
     <h3>Lignes</h3>
     <div data-controller="invoice-lines">
+      <%= field f, :prices_include_vat, :check_box, data: { action: "invoice-lines#togglePriceBasis", invoice_lines_target: "priceBasis" },
+                hint: "Le total à payer vaut exactement la somme encodée ; l’HTVA et la TVA en sont déduites." %>
       <table class="lines-form">
-        <thead><tr><th>Description</th><th>Quantité</th><th>Unité</th><th>Prix unitaire HTVA</th><th>TVA</th><th>Période</th><th></th></tr></thead>
+        <thead><tr><th>Description</th><th>Quantité</th><th>Unité</th><th>Prix unitaire <span data-invoice-lines-target="priceLabel"><%= invoice.prices_include_vat? ? "TVAC" : "HTVA" %></span></th><th>TVA</th><th>Période</th><th></th></tr></thead>
         <tbody data-invoice-lines-target="body">
           <%= f.fields_for :lines, include_id: false do |line| %>
             <%= render "line_fields", line: %>

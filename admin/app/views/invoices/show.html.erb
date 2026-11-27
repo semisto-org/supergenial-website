@@ -59,13 +59,13 @@
 <% if @invoice.admin? %>
   <div class="card">
     <table>
-      <thead><tr><th>Description</th><th class="num">Quantité</th><th class="num">Prix unitaire</th><th class="num">TVA</th><th class="num">Total HTVA</th></tr></thead>
+      <thead><tr><th>Description</th><th class="num">Quantité</th><th class="num">Prix unitaire HTVA</th><th class="num">TVA</th><th class="num">Total HTVA</th></tr></thead>
       <tbody>
         <% @invoice.lines.each do |line| %>
           <tr>
             <td><%= line.description %><% if line.period_start && line.period_end %><br><small class="muted"><%= date(line.period_start) %> – <%= date(line.period_end) %></small><% end %></td>
             <td class="num"><%= number_with_precision(line.quantity, precision: 2, strip_insignificant_zeros: true, separator: ",") %> <%= line.unit_label %></td>
-            <td class="num"><%= eur(line.unit_price) %></td>
+            <td class="num"><%= eur(line.net_unit_price, precision: [ 2, PdfBranding.decimals(line.net_unit_price) ].max) %></td>
             <td class="num"><%= @invoice.standard? ? percent(line.vat_rate) : "–" %></td>
             <td class="num"><%= eur(line.net_amount) %></td>
           </tr>

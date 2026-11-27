@@ -11,7 +11,7 @@ class AdminMcp::Invoices::SaveInvoice < AdminMcp::Tool
       description: { type: "string" },
       quantity: { type: "number" },
       unit: { type: "string", enum: InvoiceLine::UNITS.keys },
-      unit_price: { type: "number", description: "Excluding VAT." },
+      unit_price: { type: "number", description: "Excluding VAT, or VAT included when the invoice has prices_include_vat." },
       vat_rate: { type: "number", enum: VatRegime::RATES },
       period_start: { type: "string", format: "date" },
       period_end: { type: "string", format: "date" }
@@ -25,6 +25,8 @@ class AdminMcp::Invoices::SaveInvoice < AdminMcp::Tool
     project_id: { type: [ "integer", "null" ] },
     label: { type: "string" },
     vat_regime: { type: "string", enum: VatRegime::REGIMES.keys },
+    prices_include_vat: { type: "boolean", description: "Line unit prices are VAT included (default false): the total to pay is then exactly " \
+                                                       "the sum of the lines, and the amounts excluding VAT are derived from it." },
     issued_on: { type: "string", format: "date", description: "Draft date; issue_invoice sets the final date." },
     lines: { type: "array", items: LINE, minItems: 1 },
     paid_on: { type: [ "string", "null" ], format: "date" },
@@ -41,7 +43,7 @@ class AdminMcp::Invoices::SaveInvoice < AdminMcp::Tool
           invoice.vat_regime = VatRegime.suggest(invoice.client)
         end
 
-        invoice.assign_attributes(attributes.slice(:client_id, :project_id, :label, :vat_regime, :issued_on, :paid_on, :notes))
+        invoice.assign_attributes(attributes.slice(:client_id, :project_id, :label, :vat_regime, :prices_include_vat, :issued_on, :paid_on, :notes))
         replace_lines(invoice, lines) if lines
         invoice.save!
         { invoice: AdminMcp::Serializer.invoice(invoice.reload, detail: true) }

@@ -10,6 +10,18 @@ class InvoicingTest < ActionDispatch::IntegrationTest
     Invoice.last
   end
 
+  test "a draft entered VAT included totals exactly the entered amounts" do
+    post invoices_path, params: { invoice: { source: "admin", client_id: clients(:dici).id, label: "Atelier", issued_on: "2026-10-24", vat_regime: "standard",
+                                             prices_include_vat: "1", lines_attributes: { "0" => { description: "Atelier", quantity: "1", unit: "unit", unit_price: "40", vat_rate: "21" } } } }
+    invoice = Invoice.last
+    assert invoice.prices_include_vat?
+    assert_equal [ 33.06, 6.94, 40 ], [ invoice.amount, invoice.vat_amount, invoice.total ]
+    get edit_invoice_path(invoice)
+    assert_select "span[data-invoice-lines-target=priceLabel]", "TVAC"
+    get invoice_path(invoice)
+    assert_response :success
+  end
+
   test "draft, issue, pdf, credit note" do
     invoice = create_draft
     assert_redirected_to invoice_path(invoice)

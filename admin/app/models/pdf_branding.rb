@@ -19,8 +19,14 @@ module PdfBranding
   FIELD_HEIGHT = 28
   FIELD_GAP = 10
 
+  # Significant decimals of a number: 2 for 12.40, 3 for 11.017.
+  def self.decimals(value) = value.to_d.to_s("F").split(".")[1].to_s.sub(/0+\z/, "").length
+
   private
-    def money(value) = ActiveSupport::NumberHelper.number_to_currency(value, unit: "€", format: "%n %u", separator: ",", delimiter: " ")
+    def money(value, precision: 2) = ActiveSupport::NumberHelper.number_to_currency(value, unit: "€", format: "%n %u", separator: ",", delimiter: " ", precision:)
+
+    # A unit price shows every decimal it really has, and at least two.
+    def unit_money(value) = money(value, precision: [ 2, PdfBranding.decimals(value) ].max)
 
     def number(value) = ActiveSupport::NumberHelper.number_to_rounded(value, precision: 2, strip_insignificant_zeros: true, separator: ",")
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_220000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_27_140000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -325,6 +325,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_220000) do
     t.text "send_error"
     t.string "external_id"
     t.integer "vat_period_id"
+    t.boolean "prices_include_vat", default: false, null: false
     t.index ["client_id"], name: "index_invoices_on_client_id"
     t.index ["credited_invoice_id"], name: "index_invoices_on_credited_invoice_id"
     t.index ["issued_on"], name: "index_invoices_on_issued_on"

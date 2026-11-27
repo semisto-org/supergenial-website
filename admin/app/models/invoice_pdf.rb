@@ -81,7 +81,7 @@ class InvoicePdf
       header = [ "Description", "Quantité", "Prix unitaire", "TVA", "Total HTVA" ].map { |label| caps(label, color: INK) }
       rows = @invoice.lines.map do |line|
         period = line.period_start && line.period_end ? "\n<font size='8'>#{ink(MUTED)}#{date(line.period_start)} – #{date(line.period_end)}</color></font>" : ""
-        [ "#{escape(line.description)}#{period}", "#{number(line.quantity)} #{escape(line.unit_label)}", money(line.unit_price),
+        [ "#{escape(line.description)}#{period}", "#{number(line.quantity)} #{escape(line.unit_label)}", unit_money(line.net_unit_price),
           @invoice.standard? ? "#{number(line.vat_rate)} %" : "–", money(line.net_amount) ]
       end
       pdf.table([ header, *rows ], header: true, width: pdf.bounds.width, column_widths: { 1 => 66, 2 => 78, 3 => 40, 4 => 80 },
