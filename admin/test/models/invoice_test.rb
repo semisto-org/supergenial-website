@@ -12,6 +12,64 @@ class InvoiceTest < ActiveSupport::TestCase
     assert_equal 299.6, invoice.total
   end
 
+  test "prices VAT included give exactly the entered total" do
+    invoice = draft(prices_include_vat: true, lines: [ { description: "Atelier", quantity: 1, unit_price: 40, vat_rate: 21 } ])
+    assert_equal 33.06, invoice.amount
+    assert_equal 6.94, invoice.vat_amount
+    assert_equal 40, invoice.total
+    assert_equal [ { rate: 21, taxable: 33.06, vat: 6.94 } ], invoice.vat_subtotals
+    assert_equal 33.06, invoice.lines.first.net_unit_price
+  end
+
+  test "prices VAT included over several lines and rates add up to the entered amounts" do
+    invoice = draft(prices_include_vat: true, lines: [ { description: "A", quantity: 3, unit_price: 13.33, vat_rate: 21 },
+                                                       { description: "B", quantity: 1, unit_price: 9.99, vat_rate: 21 },
+                                                       { description: "C", quantity: 7, unit_price: 0.99, vat_rate: 21 },
+                                                       { description: "D", quantity: 1, unit_price: 25, vat_rate: 6 } ])
+    assert_equal 39.99 + 9.99 + 6.93 + 25, invoice.total
+    assert_equal invoice.subtotal, invoice.vat_subtotals.sum { |row| row[:taxable] }
+    assert_equal invoice.vat_amount, invoice.vat_subtotals.sum { |row| row[:vat] }
+    invoice.lines.each { |line| assert_equal line.net_amount, (line.quantity * line.net_unit_price).round(2) }
+    assert_equal 23.58, invoice.vat_subtotals.find { |row| row[:rate] == 6 }[:taxable]
+  end
+
+  test "the taxable amount of a gross amount keeps the usual VAT rounding whenever it can" do
+    (1..5000).each do |cents|
+      gross = cents.to_d / 100
+      [ 21, 12, 6 ].each do |rate|
+        taxable = Invoice.taxable_in(gross, rate)
+        assert_operator (taxable + (taxable * rate / 100).round(2) - gross).abs, :<=, 0.01, "#{gross} at #{rate} %"
+        assert_operator (gross - taxable - taxable * rate / 100).abs, :<, 0.01
+      end
+    end
+  end
+
+  test "prices VAT included under reverse charge carry no VAT" do
+    invoice = draft(client: clients(:lux), prices_include_vat: true, lines: [ { description: "A", quantity: 1, unit_price: 40, vat_rate: 21 } ])
+    assert_equal 40, invoice.amount
+    assert_equal 0, invoice.vat_amount
+  end
+
+  test "peppol and pdf of an invoice with prices VAT included" do
+    invoice = draft(prices_include_vat: true, lines: [ { description: "A", quantity: 3, unit_price: 13.33, vat_rate: 21 } ])
+    invoice.issue!
+    document = PeppolDocument.new(invoice).to_h
+    line = document[:lines].first
+    assert_equal "33.05", line[:netAmount]
+    assert_equal "11.017", line[:netPriceAmount]
+    assert_equal "39.99", document[:totals][:payableAmount]
+    assert_equal({ taxableAmount: "33.05", vatAmount: "6.94", category: "S", percentage: "21.00" }, document[:vat][:subtotals].first)
+    pdf = InvoicePdf.new(invoice)
+    assert pdf.render.start_with?("%PDF")
+    assert_match "11,017", pdf.send(:unit_money, invoice.lines.first.net_unit_price)
+
+    credit_note = invoice.build_credit_note
+    credit_note.save!
+    assert credit_note.prices_include_vat?
+    assert_equal(-33.05, credit_note.amount)
+    assert_equal(-39.99, credit_note.total)
+  end
+
   test "numbering continues after the last OkiOki number, shared with credit notes" do
     assert_equal "2026-043", InvoiceNumbering.next(2026)
     invoice = draft

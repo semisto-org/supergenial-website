@@ -204,6 +204,7 @@ fr:
         status: Statut
         source: Origine
         vat_regime: Régime TVA
+        prices_include_vat: Prix encodés TVA comprise (TVAC)
         due_on: Échéance
         vat_amount: TVA
         lines: Lignes
@@ -212,7 +213,7 @@ fr:
         description: Description
         quantity: Quantité
         unit: Unité
-        unit_price: Prix unitaire HTVA
+        unit_price: Prix unitaire
         vat_rate: TVA (%)
         period_start: Début de période
         period_end: Fin de période

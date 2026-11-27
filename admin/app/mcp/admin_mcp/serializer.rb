@@ -84,7 +84,7 @@ module AdminMcp::Serializer
 
   def invoice(invoice, detail: false)
     data = invoice.slice(:id, :client_id, :project_id, :kind, :status, :source, :number, :label, :issued_on, :due_on, :paid_on,
-                         :vat_regime, :credited_invoice_id, :peppol_status, :sent_at)
+                         :vat_regime, :prices_include_vat, :credited_invoice_id, :peppol_status, :sent_at)
                   .merge(client_name: invoice.client.name, amount_excl_vat: money(invoice.amount),
                          vat_amount: money(invoice.vat_amount), total_incl_vat: money(invoice.total), paid: invoice.paid?)
     return data unless detail
@@ -92,7 +92,7 @@ module AdminMcp::Serializer
     data.merge(notes: invoice.notes, structured_reference: invoice.structured_reference, send_error: invoice.send_error,
                lines: invoice.lines.map { |line|
                  line.slice(:id, :position, :description, :unit, :period_start, :period_end)
-                     .merge(quantity: line.quantity.to_f, unit_price: money(line.unit_price), vat_rate: line.vat_rate.to_f, net_amount: money(line.net_amount))
+                     .merge(quantity: line.quantity.to_f, unit_price: money(line.unit_price), net_unit_price: line.net_unit_price.to_f, vat_rate: line.vat_rate.to_f, net_amount: money(line.net_amount))
                },
                vat_subtotals: invoice.vat_subtotals.map { |row| row.transform_values { |value| money(value) } },
                credit_notes: invoice.credit_notes.map { |note| { id: note.id, number: note.number, status: note.status } })

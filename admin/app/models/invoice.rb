@@ -1,6 +1,8 @@
 # A sales document of Super Génial: an invoice or a credit note.
 # Issued by the admin (lines, VAT, Peppol), or a reference to an older OkiOki / Harvest document.
 # amount is the total excluding VAT, negative for credit notes, so that sums give the turnover.
+# With prices_include_vat, line prices are entered VAT included: the amounts excluding VAT are derived from them so
+# that the total to pay is exactly the sum of the entered amounts (40 € entered, 40,00 € to pay).
 class Invoice < ApplicationRecord
   include Commentable
   include Choices
@@ -51,7 +53,9 @@ class Invoice < ApplicationRecord
 
   def sign = credit_note? ? -1 : 1
 
-  def subtotal = lines.reject(&:marked_for_destruction?).sum(&:net_amount)
+  def kept_lines = lines.reject(&:marked_for_destruction?)
+
+  def subtotal = kept_lines.sum(&:net_amount)
 
   def total = amount.to_d + sign * vat_amount.to_d
 
@@ -60,11 +64,41 @@ class Invoice < ApplicationRecord
   def vat_category = regime[:category]
 
   # VAT breakdown per rate, as the Peppol document and the VAT return need it.
+  # Prices VAT included: the gross amounts of a rate are split into a taxable amount and the VAT that adds up to them.
   def vat_subtotals
-    lines.reject(&:marked_for_destruction?).group_by { |line| standard? ? line.vat_rate : 0 }.map do |rate, rate_lines|
-      taxable = rate_lines.sum(&:net_amount)
-      { rate: rate.to_d, taxable:, vat: (taxable * rate.to_d / 100).round(2) }
+    kept_lines.group_by(&:applied_vat_rate).map do |rate, rate_lines|
+      if prices_include_vat?
+        gross = rate_lines.sum(&:entered_amount)
+        taxable = self.class.taxable_in(gross, rate)
+        { rate:, taxable:, vat: gross - taxable }
+      else
+        taxable = rate_lines.sum(&:net_amount)
+        { rate:, taxable:, vat: (taxable * rate / 100).round(2) }
+      end
     end
+  end
+
+  # The amount excluding VAT of a line entered VAT included. Each line gets its share of the taxable amount of its rate,
+  # and the rounding cents go to its largest line, so that lines always add up to the VAT breakdown.
+  def net_amount_of(line)
+    rate = line.applied_vat_rate
+    group = kept_lines.select { |other| other.applied_vat_rate == rate }
+    return (line.entered_amount / (1 + rate / 100)).round(2) unless group.any? { |other| other.equal?(line) }
+
+    shares = group.to_h { |other| [ other.object_id, (other.entered_amount / (1 + rate / 100)).round(2) ] }
+    largest = group.max_by { |other| other.entered_amount.abs }
+    shares[largest.object_id] += self.class.taxable_in(group.sum(&:entered_amount), rate) - shares.values.sum
+    shares.fetch(line.object_id)
+  end
+
+  # The taxable amount of a gross amount at a VAT rate. Among the cent-rounded candidates, prefer the one whose VAT,
+  # computed the usual way (taxable × rate, rounded), gives back the gross amount exactly. Some gross amounts have no
+  # such taxable amount (the VAT jumps by two cents there); the VAT then differs by one cent from taxable × rate,
+  # which the EN 16931 rule BR-CO-17 tolerates.
+  def self.taxable_in(gross, rate)
+    rate = rate.to_d
+    base = (gross.to_d / (1 + rate / 100)).round(2)
+    [ base, base - 0.01.to_d, base + 0.01.to_d ].find { |taxable| taxable + (taxable * rate / 100).round(2) == gross } || base
   end
 
   def to_s = [ number || ("brouillon" if draft?), label ].compact_blank.join(" · ")
@@ -96,7 +130,7 @@ class Invoice < ApplicationRecord
   end
 
   def build_credit_note
-    Invoice.new(kind: "credit_note", source: "admin", status: "draft", client:, project:, credited_invoice: self, vat_regime:,
+    Invoice.new(kind: "credit_note", source: "admin", status: "draft", client:, project:, credited_invoice: self, vat_regime:, prices_include_vat:,
                 issued_on: Date.current, label: "Note de crédit sur la facture #{number}").tap do |credit_note|
       lines.each { |line| credit_note.lines.build(line.slice(:position, :description, :quantity, :unit, :unit_price, :vat_rate, :period_start, :period_end)) }
     end
@@ -104,8 +138,7 @@ class Invoice < ApplicationRecord
 
   private
     def compute_totals
-      kept = lines.reject(&:marked_for_destruction?)
-      return if kept.empty?
+      return if kept_lines.empty?
       self.amount = sign * subtotal
       self.vat_amount = vat_subtotals.sum { |subtotal| subtotal[:vat] }
     end

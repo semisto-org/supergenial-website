@@ -101,7 +101,7 @@ class InvoicesController < ApplicationController
     end
 
     def invoice_params
-      params.expect(invoice: [ :client_id, :project_id, :number, :label, :issued_on, :amount, :paid_on, :notes, :source, :vat_regime,
+      params.expect(invoice: [ :client_id, :project_id, :number, :label, :issued_on, :amount, :paid_on, :notes, :source, :vat_regime, :prices_include_vat,
                                lines_attributes: [ [ :id, :position, :description, :quantity, :unit, :unit_price, :vat_rate, :period_start, :period_end, :_destroy ] ] ])
     end
 end

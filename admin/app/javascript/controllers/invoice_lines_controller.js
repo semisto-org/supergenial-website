@@ -2,7 +2,12 @@ import { Controller } from "@hotwired/stimulus"
 
 // Adds and removes invoice lines in the form, without saving first.
 export default class extends Controller {
-  static targets = [ "body", "template", "line", "destroy" ]
+  static targets = [ "body", "template", "line", "destroy", "priceBasis", "priceLabel" ]
+
+  // Prices are entered either excluding VAT or VAT included: the column header says which.
+  togglePriceBasis() {
+    this.priceLabelTarget.textContent = this.priceBasisTarget.checked ? "TVAC" : "HTVA"
+  }
 
   add() {
     const html = this.templateTarget.innerHTML.replace(/NEW_LINE/g, `${Date.now()}`)

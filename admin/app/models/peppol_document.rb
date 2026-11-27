@@ -54,7 +54,7 @@ class PeppolDocument
       @invoice.lines.map.with_index(1) do |line, index|
         {
           id: index.to_s, name: line.description, quantity: decimal(line.quantity), unitCode: line.unit_code,
-          netPriceAmount: decimal(line.unit_price), netAmount: decimal(line.net_amount),
+          netPriceAmount: price(line.net_unit_price), netAmount: decimal(line.net_amount),
           vat: { category: @invoice.vat_category, percentage: decimal(@invoice.standard? ? line.vat_rate : 0) },
           billingPeriod: (line.period_start && line.period_end ? { startDate: line.period_start.iso8601, endDate: line.period_end.iso8601 } : nil)
         }.compact
@@ -79,4 +79,7 @@ class PeppolDocument
     end
 
     def decimal(value) = format("%.2f", value.to_d)
+
+    # Unit prices may need more than two decimals (derived from a price VAT included); amounts never do.
+    def price(value) = format("%.#{[ 2, PdfBranding.decimals(value) ].max}f", value.to_d)
 end
